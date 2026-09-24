@@ -82,6 +82,23 @@ function escapeHtml(str){
   }[char]));
 }
 
+function highlightSearchText(text,keyword){
+  const safeText=escapeHtml(text);
+  const safeKeyword=escapeHtml(keyword);
+
+  if(!safeKeyword) return safeText;
+
+  const regex=new RegExp(
+    safeKeyword.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),
+    "gi"
+  );
+
+  return safeText.replace(
+    regex,
+    match=>`<mark class="search-history-highlight">${match}</mark>`
+  );
+}
+
 /*
 function renderSearchHistory(){
   if(!searchHistory.length){
@@ -139,7 +156,7 @@ function renderSearchHistory(filter=""){
       return `
         <div class="search-history-item" data-index="${index}">
           <span class="search-history-icon">◷</span>
-          <span class="search-history-text">${escapeHtml(query)}</span>
+          <span class="search-history-text">${highlightSearchText(query,filter)}</span>
           <button
             type="button"
             class="search-history-delete"
