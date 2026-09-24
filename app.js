@@ -238,6 +238,7 @@ function updateEngineButton(){
     `<img src="${engine.icon}" alt="${engine.label}">`;
 }
 
+/*
 $("#engineButton").onclick=()=>{
   const keys=Object.keys(engines);
   const i=keys.indexOf(state.engine);
@@ -248,6 +249,7 @@ $("#engineButton").onclick=()=>{
   updateEngineButton();
 };
 updateEngineButton();
+*/
 /*
 $("#engineButton").onclick=()=>{
   const keys=Object.keys(engines),i=keys.indexOf(state.engine),next=keys[(i+1)%keys.length];
@@ -255,6 +257,57 @@ $("#engineButton").onclick=()=>{
 };
 $("#engineButton").textContent=engines[state.engine].label;
 */
+
+const engineMenu = $("#engineMenu");
+
+function updateEngineButton(){
+  const engine = engines[state.engine];
+
+  $("#engineButton").innerHTML = `
+    <img src="${engine.icon}" alt="">
+    <span>${engine.label}</span>
+    <span class="engine-chevron">⌄</span>
+  `;
+}
+
+function renderEngineMenu(){
+  engineMenu.innerHTML = Object.entries(engines).map(([key, engine]) => `
+    <button type="button" data-engine="${key}">
+      <img src="${engine.icon}" alt="">
+      <span>${engine.label}</span>
+      ${key === state.engine ? '<span class="engine-check">✓</span>' : ''}
+    </button>
+  `).join("");
+}
+
+$("#engineButton").onclick = e => {
+  e.stopPropagation();
+
+  const isOpen = !engineMenu.classList.contains("hidden");
+
+  engineMenu.classList.toggle("hidden", isOpen);
+  $("#engineButton").setAttribute(
+    "aria-expanded",
+    String(!isOpen)
+  );
+};
+
+engineMenu.onclick = e => {
+  const button = e.target.closest("[data-engine]");
+  if(!button) return;
+
+  state.engine = button.dataset.engine;
+  save();
+
+  updateEngineButton();
+  renderEngineMenu();
+
+  engineMenu.classList.add("hidden");
+  $("#engineButton").setAttribute("aria-expanded", "false");
+};
+
+updateEngineButton();
+renderEngineMenu();
 
 $("#searchForm").onsubmit=e=>{
   e.preventDefault();const q=$("#searchInput").value.trim();if(!q)return;
