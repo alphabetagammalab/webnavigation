@@ -357,3 +357,11 @@ color:var(--text);text-align:left;border-radius:8px;cursor:pointer}
   background:rgba(127,127,127,.12);
   color:var(--text);
 }
+
+.search-history-highlight{
+  padding:0 1px;
+  border-radius:3px;
+  background:rgba(127,127,127,.18);
+  color:var(--text);
+  font-weight:600;
+}
