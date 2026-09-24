@@ -576,3 +576,8 @@ color:var(--text);text-align:left;border-radius:8px;cursor:pointer}
   background:rgba(127,127,127,.12);
   transform:scale(1.03);
 }
+
+.item.drag-over{
+  transform:scale(1.06);
+  opacity:1;
+}
