@@ -30,6 +30,7 @@ function tick(){
   );
   const lunar = solar.getLunar();
   const lunarText = lunar.getMonthInChinese() + "月" + lunar.getDayInChinese();
+  /*
   $("#date").textContent =
     now.toLocaleDateString("zh-CN",{
       year:"numeric",
@@ -37,6 +38,16 @@ function tick(){
       day:"numeric",
       weekday:"long"
     }) + " " + lunarText;
+  */
+  $("#date").textContent =
+    now.toLocaleDateString("zh-CN",{
+      year:"numeric",
+      month:"long",
+      day:"numeric"
+    }) + " " +
+    now.toLocaleDateString("zh-CN",{
+      weekday:"long"
+    }) + "农历" + lunarText;
 }
 setInterval(tick,1000);tick();
 
