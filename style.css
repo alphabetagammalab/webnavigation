@@ -666,3 +666,11 @@ color:var(--text);text-align:left;border-radius:8px;cursor:pointer}
   opacity:1;
   transform:scale(1.02);
 }
+
+#folderDialog.dragging-out{
+  pointer-events:none;
+}
+
+#folderDialog.dragging-out::backdrop{
+  pointer-events:none;
+}
