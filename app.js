@@ -807,10 +807,8 @@ function render(){
   itemsEl.ondragover=e=>{
   e.preventDefault();
 
-  const types=e.dataTransfer.types;
-
   if(
-    types.includes(
+    e.dataTransfer.types.includes(
       "application/x-folder-child"
     )
   ){
@@ -818,8 +816,7 @@ function render(){
   }
 };
 
-
-  itemsEl.ondrop=e=>{
+itemsEl.ondrop=e=>{
   e.preventDefault();
   e.stopPropagation();
 
@@ -875,13 +872,22 @@ function render(){
     );
 
   /*
-   * 拖到主页空白处
-   * → 放到最后
+   * 拆出到主页最后
    */
   state.items.push(child);
 
   save();
+
   render();
+
+  /*
+   * 更新当前文件夹
+   */
+  if(
+    currentFolderId===folder.id
+  ){
+    renderFolderItems(folder);
+  }
 };
   
 
