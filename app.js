@@ -1283,9 +1283,9 @@ function renderFolderItems(folder){
          ========================= */
 
       el.addEventListener("dragstart",e=>{
-  console.log("===== FOLDER DRAGSTART =====");
-  console.log("folderId:",folder.id);
-  console.log("childId:",ch.id);
+  console.log("========== DRAGSTART ==========");
+  console.log("folder:", folder.id);
+  console.log("child:", ch.id);
 
   draggedId=ch.id;
   didDrag=false;
@@ -1295,24 +1295,16 @@ function renderFolderItems(folder){
     childId:ch.id
   };
 
-  console.log(
-    "folderDragSource SET:",
-    folderDragSource
-  );
+  console.log("folderDragSource =", folderDragSource);
 
   el.classList.add("dragging");
 
   folderDialog.style.pointerEvents="none";
 
-  console.log(
-    "dialog pointerEvents:",
-    getComputedStyle(folderDialog).pointerEvents
-  );
-
   enableFolderGlobalDrag();
 
   console.log(
-    "folderGlobalDragActive:",
+    "global active =",
     folderGlobalDragActive
   );
 
@@ -1332,7 +1324,7 @@ function renderFolderItems(folder){
   );
 
   console.log(
-    "dataTransfer types:",
+    "types =",
     [...e.dataTransfer.types]
   );
 });
