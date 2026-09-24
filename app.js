@@ -13,7 +13,7 @@ let contextId=null, currentFolderId=null;
 function save(){localStorage.setItem(STORAGE,JSON.stringify(state))}
 function tick(){
   const now=new Date();
-  $("#clock").textContent=now.toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"});
+  $("#clock").textContent=now.toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
   $("#date").textContent=now.toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
 }
 setInterval(tick,1000);tick();
