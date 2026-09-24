@@ -131,7 +131,7 @@ body{
   height:52px;
   border-radius:12px;
   object-fit:contain;
-  padding:8px;
+  padding:4px;
   background:var(--icon-bg);
   box-shadow:0 1px 4px rgba(0,0,0,.10);
   display:block
