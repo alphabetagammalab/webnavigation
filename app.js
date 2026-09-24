@@ -807,92 +807,6 @@ function render(){
   itemsEl.ondragover=e=>{
   e.preventDefault();
 
-  if(
-    e.dataTransfer.types.includes(
-      "application/x-folder-child"
-    )
-  ){
-    e.dataTransfer.dropEffect="move";
-  }
-};
-
-  itemsEl.ondrop=e=>{
-  e.preventDefault();
-
-  const raw=
-    e.dataTransfer.getData(
-      "application/x-folder-child"
-    );
-
-  if(!raw){
-    return;
-  }
-
-  let source;
-
-  try{
-    source=JSON.parse(raw);
-  }catch{
-    return;
-  }
-
-  if(
-    !source.folderId ||
-    !source.childId
-  ){
-    return;
-  }
-
-  const folder=
-    state.items.find(
-      x=>x.id===source.folderId &&
-         x.type==="folder"
-    );
-
-  if(!folder || !folder.children){
-    return;
-  }
-
-  const childIndex=
-    folder.children.findIndex(
-      x=>x.id===source.childId
-    );
-
-  if(childIndex<0){
-    return;
-  }
-
-  const [child]=
-    folder.children.splice(
-      childIndex,
-      1
-    );
-
-  /*
-   * 如果拖到的是主页空白区域，
-   * 就把网站直接拆到主页。
-   */
-  state.items.push(child);
-
-  save();
-
-  render();
-
-  /*
-   * 如果当前打开的就是这个文件夹，
-   * 刷新文件夹内容。
-   */
-  if(
-    typeof currentFolderId!=="undefined" &&
-    currentFolderId===folder.id
-  ){
-    renderFolderItems(folder);
-  }
-};
-
-  itemsEl.ondragover=e=>{
-  e.preventDefault();
-
   const types=e.dataTransfer.types;
 
   if(
@@ -1231,12 +1145,22 @@ function openItem(it){
   if(it.type==="folder") openFolder(it);
   else location.href=it.url;
 }
+/*
 function openFolder(folder){
   currentFolderId=folder.id;
   $("#folderTitle").textContent=folder.name;
   renderFolderItems(folder);
   folderDialog.showModal();
 }
+*/
+
+function openFolder(folder){
+  currentFolderId=folder.id;
+  $("#folderTitle").textContent=folder.name;
+  renderFolderItems(folder);
+  folderDialog.show();
+}
+
 /*
 function renderFolderItems(folder){
   const box=$("#folderItems");box.innerHTML="";
