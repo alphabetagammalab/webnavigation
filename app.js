@@ -201,6 +201,16 @@ $("#searchInput").addEventListener("input",()=>{
 
 
 $("#searchInput").addEventListener("keydown",e=>{
+
+    if(e.key==="Escape"){
+    e.preventDefault();
+
+    searchHistoryEl.classList.add("hidden");
+    searchHistoryActiveIndex=-1;
+
+    return;
+  }
+  
   const items=[
     ...searchHistoryEl.querySelectorAll(".search-history-item")
   ];
