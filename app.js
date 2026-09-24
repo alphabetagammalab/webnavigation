@@ -3,22 +3,22 @@ const state=JSON.parse(localStorage.getItem(STORAGE)||'{"items":[],"engine":"goo
 const engines={
   google:{
     label:"Google",
-    icon:"https://www.google.com/favicon.ico",
+    icon:"icons/google.svg",
     url:q=>"https://www.google.com/search?q="+encodeURIComponent(q)
   },
   bing:{
     label:"Bing",
-    icon:"https://www.bing.com/favicon.ico",
+    icon:"icons/bing.svg",
     url:q=>"https://www.bing.com/search?q="+encodeURIComponent(q)
   },
   baidu:{
     label:"百度",
-    icon:"https://www.baidu.com/favicon.ico",
+    icon:"icons/baidu.svg",
     url:q=>"https://www.baidu.com/s?wd="+encodeURIComponent(q)
   },
   duck:{
     label:"DuckDuckGo",
-    icon:"https://duckduckgo.com/favicon.ico",
+    icon:"icons/duckduckgo.svg",
     url:q=>"https://duckduckgo.com/?q="+encodeURIComponent(q)
   }
 };
