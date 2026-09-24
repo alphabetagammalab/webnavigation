@@ -158,7 +158,15 @@ function showFolderContext(x,y,folderId,childId){
   contextMenu.style.top=Math.min(y,innerHeight-90)+"px";
   contextMenu.classList.remove("hidden");
 }
+/*
 function hideMenus(){menu.classList.add("hidden");contextMenu.classList.add("hidden")}
+*/
+function hideMenus(){
+  menu.classList.add("hidden");
+  contextMenu.classList.add("hidden");
+  engineMenu.classList.add("hidden");
+  $("#engineButton").setAttribute("aria-expanded","false");
+}
 
 function editItem(id){
   const it=state.items.find(x=>x.id===id);if(!it)return;
