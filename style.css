@@ -79,18 +79,41 @@ body{
 .search input{flex:1;height:100%;border:0;outline:0;background:transparent;color:var(--text);font-size:16px}
 .search input::placeholder{color:var(--muted)}
 .search-btn{width:54px;font-size:27px}
+
 .items{
   width:min(820px,100%);display:flex;flex-wrap:wrap;justify-content:center;
   gap:14px;margin-top:34px;min-height:76px
 }
+/*
 .item{
   width:76px;min-height:76px;border:0;background:transparent;box-shadow:none;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   gap:7px;color:var(--text);cursor:pointer;border-radius:12px;
   transition:transform .16s,opacity .16s
 }
+*/
+
+.item{
+  width:82px;
+  min-height:82px;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:7px;
+  color:var(--text);
+  cursor:pointer;
+  border-radius:12px;
+  transition:transform .16s,opacity .16s
+}
+
 .item:hover{transform:translateY(-2px);opacity:.78}
 .item.dragging{opacity:.35}
+
+/*
 .icon{
   width:44px;height:44px;border-radius:11px;object-fit:contain;
   padding:7px;background:var(--icon-bg);box-shadow:0 1px 4px rgba(0,0,0,.10);
@@ -101,6 +124,39 @@ body{
   border-radius:11px;background:var(--icon-bg);box-shadow:0 1px 4px rgba(0,0,0,.10)
 }
 .item-name{font-size:12px;line-height:18px;max-width:76px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+*/
+
+.icon{
+  width:52px;
+  height:52px;
+  border-radius:12px;
+  object-fit:contain;
+  padding:8px;
+  background:var(--icon-bg);
+  box-shadow:0 1px 4px rgba(0,0,0,.10);
+  display:block
+}
+
+.folder-icon{
+  width:52px;
+  height:52px;
+  font-size:32px;
+  line-height:52px;
+  text-align:center;
+  border-radius:12px;
+  background:var(--icon-bg);
+  box-shadow:0 1px 4px rgba(0,0,0,.10)
+}
+
+.item-name{
+  font-size:12px;
+  line-height:18px;
+  max-width:82px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis
+}
+
 .add{
   position:fixed;right:28px;bottom:28px;width:50px;height:50px;border-radius:50%;
   border:1px solid var(--border);background:var(--glass);color:var(--text);
