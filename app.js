@@ -56,6 +56,8 @@ let mergeTargetId=null;
 let mergeSourceId=null;
 let mergeTriggered=false;
 
+let folderDragSource=null;
+
 function save(){localStorage.setItem(STORAGE,JSON.stringify(state))}
 
 function saveSearchHistory(){
@@ -802,6 +804,92 @@ function render(){
     },500);
   }
 
+  itemsEl.ondragover=e=>{
+  e.preventDefault();
+
+  if(
+    e.dataTransfer.types.includes(
+      "application/x-folder-child"
+    )
+  ){
+    e.dataTransfer.dropEffect="move";
+  }
+};
+
+  itemsEl.ondrop=e=>{
+  e.preventDefault();
+
+  const raw=
+    e.dataTransfer.getData(
+      "application/x-folder-child"
+    );
+
+  if(!raw){
+    return;
+  }
+
+  let source;
+
+  try{
+    source=JSON.parse(raw);
+  }catch{
+    return;
+  }
+
+  if(
+    !source.folderId ||
+    !source.childId
+  ){
+    return;
+  }
+
+  const folder=
+    state.items.find(
+      x=>x.id===source.folderId &&
+         x.type==="folder"
+    );
+
+  if(!folder || !folder.children){
+    return;
+  }
+
+  const childIndex=
+    folder.children.findIndex(
+      x=>x.id===source.childId
+    );
+
+  if(childIndex<0){
+    return;
+  }
+
+  const [child]=
+    folder.children.splice(
+      childIndex,
+      1
+    );
+
+  /*
+   * 如果拖到的是主页空白区域，
+   * 就把网站直接拆到主页。
+   */
+  state.items.push(child);
+
+  save();
+
+  render();
+
+  /*
+   * 如果当前打开的就是这个文件夹，
+   * 刷新文件夹内容。
+   */
+  if(
+    typeof currentFolderId!=="undefined" &&
+    currentFolderId===folder.id
+  ){
+    renderFolderItems(folder);
+  }
+};
+
   state.items.forEach(it=>{
     const el=document.createElement("div");
 
@@ -991,6 +1079,7 @@ function renderFolderItems(folder){
 }
 */
 
+/*
 function renderFolderItems(folder){
   const box=$("#folderItems");
   box.innerHTML="";
@@ -1033,6 +1122,220 @@ function renderFolderItems(folder){
         ch.id
       );
     };
+
+    box.appendChild(el);
+  });
+}
+*/
+
+function renderFolderItems(folder){
+  const box=$("#folderItems");
+  box.innerHTML="";
+
+  if(!folder.children?.length){
+    box.innerHTML='<div class="empty">文件夹为空，点击“＋ 网站”添加</div>';
+    return;
+  }
+
+  let draggedId=null;
+  let didDrag=false;
+
+  folder.children.forEach(ch=>{
+    const el=document.createElement("div");
+
+    el.className="collection-item";
+    el.title="右键编辑";
+    el.draggable=true;
+    el.dataset.id=ch.id;
+
+    el.innerHTML=`
+      <div class="collection-icon">
+        <img
+          src="${ch.icon||favicon(ch.url)}"
+          onerror="this.style.visibility='hidden'"
+          alt="">
+      </div>
+      <div class="collection-name"></div>
+    `;
+
+    el.querySelector(".collection-name").textContent=ch.name;
+
+
+    /* =========================
+       开始拖拽
+       ========================= */
+
+    el.addEventListener("dragstart",e=>{
+      draggedId=ch.id;
+      didDrag=false;
+
+      folderDragSource={
+        folderId:folder.id,
+        childId:ch.id
+      };
+
+      el.classList.add("dragging");
+
+      e.dataTransfer.effectAllowed="move";
+
+      e.dataTransfer.setData(
+        "text/plain",
+        ch.id
+      );
+
+      // 标记当前来源是文件夹内部
+      e.dataTransfer.setData(
+        "application/x-folder-child",
+        JSON.stringify({
+          folderId:folder.id,
+          childId:ch.id
+        })
+      );
+    });
+
+
+    /* =========================
+       拖拽结束
+       ========================= */
+
+    el.addEventListener("dragend",()=>{
+      el.classList.remove("dragging");
+
+      box.querySelectorAll(
+        ".collection-item.drag-over"
+      ).forEach(item=>{
+        item.classList.remove("drag-over");
+      });
+
+      folderDragSource=null;
+      draggedId=null;
+
+      setTimeout(()=>{
+        didDrag=false;
+      },100);
+    });
+
+
+    /* =========================
+       文件夹内部排序
+       ========================= */
+
+    el.addEventListener("dragover",e=>{
+      e.preventDefault();
+
+      if(!draggedId || draggedId===ch.id){
+        return;
+      }
+
+      e.dataTransfer.dropEffect="move";
+
+      box.querySelectorAll(
+        ".collection-item.drag-over"
+      ).forEach(item=>{
+        item.classList.remove("drag-over");
+      });
+
+      el.classList.add("drag-over");
+    });
+
+
+    el.addEventListener("dragleave",e=>{
+      if(
+        e.relatedTarget &&
+        el.contains(e.relatedTarget)
+      ){
+        return;
+      }
+
+      el.classList.remove("drag-over");
+    });
+
+
+    /* =========================
+       放到另一个文件夹项目
+       ========================= */
+
+    el.addEventListener("drop",e=>{
+      e.preventDefault();
+      e.stopPropagation();
+
+      el.classList.remove("drag-over");
+
+      const fromId=
+        draggedId ||
+        e.dataTransfer.getData("text/plain");
+
+      const toId=ch.id;
+
+      if(!fromId || fromId===toId){
+        return;
+      }
+
+      const fromIndex=
+        folder.children.findIndex(
+          x=>x.id===fromId
+        );
+
+      const toIndex=
+        folder.children.findIndex(
+          x=>x.id===toId
+        );
+
+      if(fromIndex<0 || toIndex<0){
+        return;
+      }
+
+      const [moved]=folder.children.splice(
+        fromIndex,
+        1
+      );
+
+      folder.children.splice(
+        toIndex,
+        0,
+        moved
+      );
+
+      didDrag=true;
+
+      save();
+      renderFolderItems(folder);
+      render();
+    });
+
+
+    /* =========================
+       点击打开网站
+       ========================= */
+
+    el.addEventListener("click",e=>{
+      if(didDrag){
+        e.preventDefault();
+        e.stopPropagation();
+
+        didDrag=false;
+        return;
+      }
+
+      location.href=ch.url;
+    });
+
+
+    /* =========================
+       右键菜单
+       ========================= */
+
+    el.addEventListener("contextmenu",e=>{
+      e.preventDefault();
+
+      showFolderContext(
+        e.clientX,
+        e.clientY,
+        folder.id,
+        ch.id
+      );
+    });
+
 
     box.appendChild(el);
   });
