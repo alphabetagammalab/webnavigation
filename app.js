@@ -511,6 +511,7 @@ function openFolder(folder){
   renderFolderItems(folder);
   folderDialog.showModal();
 }
+/*
 function renderFolderItems(folder){
   const box=$("#folderItems");box.innerHTML="";
   if(!folder.children?.length){
@@ -528,6 +529,55 @@ function renderFolderItems(folder){
     box.appendChild(el);
   });
 }
+*/
+
+function renderFolderItems(folder){
+  const box=$("#folderItems");
+  box.innerHTML="";
+
+  if(!folder.children?.length){
+    box.innerHTML='<div class="empty">文件夹为空，点击“＋ 网站”添加</div>';
+    return;
+  }
+
+  folder.children.forEach(ch=>{
+    const el=document.createElement("div");
+
+    el.className="collection-item";
+    el.title="右键编辑";
+
+    el.innerHTML=`
+      <div class="collection-icon">
+        <img
+          src="${ch.icon||favicon(ch.url)}"
+          onerror="this.style.visibility='hidden'"
+          alt="">
+      </div>
+      <div class="collection-name"></div>
+    `;
+
+    el.querySelector(".collection-name").textContent=ch.name;
+
+    // 点击网站直接打开
+    el.onclick=()=>{
+      location.href=ch.url;
+    };
+
+    // 保留原来的右键编辑功能
+    el.oncontextmenu=e=>{
+      e.preventDefault();
+      showFolderContext(
+        e.clientX,
+        e.clientY,
+        folder.id,
+        ch.id
+      );
+    };
+
+    box.appendChild(el);
+  });
+}
+
 function showContext(x,y,id){
   contextId=id;
   contextMenu.style.left=Math.min(x,innerWidth-140)+"px";
