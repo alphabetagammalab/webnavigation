@@ -33,10 +33,36 @@ body{
 }
 
 .date{margin-top:12px;color:var(--muted);font-size:15px}
+/*
 .search{
   height:58px;margin:34px auto 0;width:100%;display:flex;align-items:center;
   background:var(--glass);border:1px solid var(--border);border-radius:18px;
   box-shadow:var(--shadow);backdrop-filter:blur(20px);overflow:visible
+}
+*/
+.search{
+  height:58px;
+  margin:34px auto 0;
+  width:100%;
+  display:flex;
+  align-items:center;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(20px);
+  overflow:visible;
+
+  transition:
+    background .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.search:focus-within{
+  background:rgba(255,255,255,.88);
+  border-color:rgba(0,0,0,.14);
+  box-shadow:0 14px 45px rgba(0,0,0,.12);
 }
 .engine,.search-btn{border:0;background:none;color:var(--muted);cursor:pointer}
 .engine{width:54px;font-size:20px;font-weight:600}
