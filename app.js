@@ -376,6 +376,31 @@ function normalizeUrl(url){
   if(!/^https?:\/\//i.test(url)) url="https://"+url;
   return url;
 }
+
+function folderPreview(folder){
+  const children=folder.children||[];
+
+  if(!children.length){
+    return `<div class="folder-icon">📁</div>`;
+  }
+
+  const preview=children.slice(0,4);
+
+  return `
+    <div class="folder-preview">
+      ${preview.map(ch=>`
+        <div class="folder-preview-cell">
+          <img
+            src="${ch.icon||favicon(ch.url)}"
+            onerror="this.style.visibility='hidden'"
+            alt="">
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+/*
 function render(){
   itemsEl.innerHTML="";
   if(!state.items.length){
@@ -406,6 +431,76 @@ function render(){
     itemsEl.appendChild(el);
   });
 }
+*/
+
+function render(){
+  itemsEl.innerHTML="";
+
+  if(!state.items.length){
+    itemsEl.innerHTML='<div class="empty">点击右下角 ＋ 添加网站或文件夹</div>';
+    return;
+  }
+
+  state.items.forEach(it=>{
+    const el=document.createElement("div");
+
+    el.className="item";
+    el.draggable=true;
+    el.dataset.id=it.id;
+
+    el.innerHTML=it.type==="folder"
+      ? `${folderPreview(it)}<div class="item-name"></div>`
+      : `<img class="icon" src="${it.icon||favicon(it.url)}" onerror="this.style.visibility='hidden'"><div class="item-name"></div>`;
+
+    el.querySelector(".item-name").textContent=it.name;
+
+    el.onclick=()=>openItem(it);
+
+    el.oncontextmenu=e=>{
+      e.preventDefault();
+      showContext(e.clientX,e.clientY,it.id);
+    };
+
+    el.ondragstart=()=>{
+      el.classList.add("dragging");
+    };
+
+    el.ondragend=()=>{
+      el.classList.remove("dragging");
+    };
+
+    el.ondragover=e=>e.preventDefault();
+
+    el.ondrop=e=>{
+      e.preventDefault();
+
+      const id=el.dataset.id;
+      const dragged=document.querySelector(".dragging");
+
+      if(!dragged||dragged.dataset.id===id)return;
+
+      const old=state.items.findIndex(
+        x=>x.id===dragged.dataset.id
+      );
+
+      const target=state.items.findIndex(
+        x=>x.id===id
+      );
+
+      if(old<0||target<0)return;
+
+      const [x]=state.items.splice(old,1);
+
+      state.items.splice(target,0,x);
+
+      save();
+      render();
+    };
+
+    itemsEl.appendChild(el);
+  });
+}
+  
 function openItem(it){
   if(it.type==="folder") openFolder(it);
   else location.href=it.url;
