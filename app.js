@@ -11,10 +11,32 @@ const editor=$("#editor"), folderDialog=$("#folderDialog"), contextMenu=$("#cont
 let contextId=null, currentFolderId=null;
 
 function save(){localStorage.setItem(STORAGE,JSON.stringify(state))}
-function tick(){
+/*function tick(){
   const now=new Date();
   $("#clock").textContent=now.toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
   $("#date").textContent=now.toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
+}*/
+function tick(){
+  const now=new Date();
+  $("#clock").textContent=now.toLocaleTimeString("zh-CN",{
+    hour:"2-digit",
+    minute:"2-digit",
+    second:"2-digit"
+  });
+  const solar = Solar.fromYmd(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    now.getDate()
+  );
+  const lunar = solar.getLunar();
+  const lunarText = lunar.getMonthInChinese() + "月" + lunar.getDayInChinese();
+  $("#date").textContent =
+    now.toLocaleDateString("zh-CN",{
+      year:"numeric",
+      month:"long",
+      day:"numeric",
+      weekday:"long"
+    }) + " " + lunarText;
 }
 setInterval(tick,1000);tick();
 
