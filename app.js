@@ -82,6 +82,7 @@ function escapeHtml(str){
   }[char]));
 }
 
+/*
 function renderSearchHistory(){
   if(!searchHistory.length){
     searchHistoryEl.classList.add("hidden");
@@ -115,9 +116,65 @@ function renderSearchHistory(){
 
   searchHistoryEl.classList.remove("hidden");
 }
+*/
 
+
+function renderSearchHistory(filter=""){
+  const keyword=filter.trim().toLowerCase();
+
+  const filteredHistory=searchHistory.filter(query=>
+    query.toLowerCase().includes(keyword)
+  );
+
+  if(!filteredHistory.length){
+    searchHistoryEl.classList.add("hidden");
+    searchHistoryEl.innerHTML="";
+    return;
+  }
+
+  searchHistoryEl.innerHTML=`
+    ${filteredHistory.map(query=>{
+      const index=searchHistory.indexOf(query);
+
+      return `
+        <div class="search-history-item" data-index="${index}">
+          <span class="search-history-icon">◷</span>
+          <span class="search-history-text">${escapeHtml(query)}</span>
+          <button
+            type="button"
+            class="search-history-delete"
+            data-delete="${index}"
+            title="删除">
+            ×
+          </button>
+        </div>
+      `;
+    }).join("")}
+
+    <div class="search-history-footer">
+      <button
+        type="button"
+        class="search-history-clear">
+        清空搜索历史
+      </button>
+    </div>
+  `;
+
+  searchHistoryEl.classList.remove("hidden");
+}
+
+/*
 $("#searchInput").addEventListener("focus",()=>{
   renderSearchHistory();
+});
+*/
+
+$("#searchInput").addEventListener("focus",()=>{
+  renderSearchHistory($("#searchInput").value);
+});
+
+$("#searchInput").addEventListener("input",()=>{
+  renderSearchHistory($("#searchInput").value);
 });
 
 searchHistoryEl.addEventListener("click",e=>{
