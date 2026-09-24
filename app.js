@@ -507,6 +507,7 @@ document.addEventListener("keydown",e=>{
 render();
 */
 
+/*
 document.addEventListener("click",e=>{
   if(!e.target.closest("#contextMenu"))
     contextMenu.classList.add("hidden");
@@ -518,6 +519,29 @@ document.addEventListener("click",e=>{
   if(!e.target.closest("#engineMenu") && !e.target.closest("#engineButton")){
     engineMenu.classList.add("hidden");
     $("#engineButton").setAttribute("aria-expanded","false");
+  }
+});
+*/
+
+document.addEventListener("click",e=>{
+  if(!e.target.closest("#contextMenu"))
+    contextMenu.classList.add("hidden");
+
+  if(!e.target.closest("#addButton") && !e.target.closest("#menu"))
+    menu.classList.add("hidden");
+
+  // 点击搜索引擎下拉框和按钮以外的地方，关闭下拉框
+  if(!e.target.closest("#engineMenu") && !e.target.closest("#engineButton")){
+    engineMenu.classList.add("hidden");
+    $("#engineButton").setAttribute("aria-expanded","false");
+  }
+
+  // 点击搜索框和历史记录以外的地方，关闭搜索历史
+  if(
+    !e.target.closest("#searchInput") &&
+    !e.target.closest("#searchHistory")
+  ){
+    searchHistoryEl.classList.add("hidden");
   }
 });
 
