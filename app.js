@@ -1269,6 +1269,7 @@ function renderFolderItems(folder){
         <div class="collection-icon">
           <img
             src="${ch.icon||favicon(ch.url)}"
+            draggable="false"
             onerror="this.style.visibility='hidden'"
             alt="">
         </div>
