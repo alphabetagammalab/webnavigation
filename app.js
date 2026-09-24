@@ -1132,214 +1132,378 @@ function renderFolderItems(folder){
   const box=$("#folderItems");
   box.innerHTML="";
 
-  if(!folder.children?.length){
-    box.innerHTML='<div class="empty">文件夹为空，点击“＋ 网站”添加</div>';
-    return;
-  }
-
   let draggedId=null;
   let didDrag=false;
 
-  folder.children.forEach(ch=>{
-    const el=document.createElement("div");
+  /* =========================
+     文件夹为空
+     ========================= */
 
-    el.className="collection-item";
-    el.title="右键编辑";
-    el.draggable=true;
-    el.dataset.id=ch.id;
-
-    el.innerHTML=`
-      <div class="collection-icon">
-        <img
-          src="${ch.icon||favicon(ch.url)}"
-          onerror="this.style.visibility='hidden'"
-          alt="">
-      </div>
-      <div class="collection-name"></div>
-    `;
-
-    el.querySelector(".collection-name").textContent=ch.name;
-
+  if(!folder.children?.length){
+    box.innerHTML=
+      '<div class="empty">文件夹为空，点击“＋ 网站”添加</div>';
+  }else{
 
     /* =========================
-       开始拖拽
+       渲染文件夹项目
        ========================= */
 
-    el.addEventListener("dragstart",e=>{
-      draggedId=ch.id;
-      didDrag=false;
+    folder.children.forEach(ch=>{
+      const el=document.createElement("div");
 
-      folderDragSource={
-        folderId:folder.id,
-        childId:ch.id
-      };
+      el.className="collection-item";
+      el.title="右键编辑";
+      el.draggable=true;
+      el.dataset.id=ch.id;
 
-      el.classList.add("dragging");
+      el.innerHTML=`
+        <div class="collection-icon">
+          <img
+            src="${ch.icon||favicon(ch.url)}"
+            onerror="this.style.visibility='hidden'"
+            alt="">
+        </div>
+        <div class="collection-name"></div>
+      `;
 
-      e.dataTransfer.effectAllowed="move";
+      el.querySelector(".collection-name").textContent=ch.name;
 
-      e.dataTransfer.setData(
-        "text/plain",
-        ch.id
-      );
 
-      // 标记当前来源是文件夹内部
-      e.dataTransfer.setData(
-        "application/x-folder-child",
-        JSON.stringify({
+      /* =========================
+         开始拖拽
+         ========================= */
+
+      el.addEventListener("dragstart",e=>{
+        draggedId=ch.id;
+        didDrag=false;
+
+        folderDragSource={
           folderId:folder.id,
           childId:ch.id
-        })
-      );
-    });
+        };
 
+        el.classList.add("dragging");
 
-    /* =========================
-       拖拽结束
-       ========================= */
+        e.dataTransfer.effectAllowed="move";
 
-    el.addEventListener("dragend",()=>{
-      el.classList.remove("dragging");
-
-      box.querySelectorAll(
-        ".collection-item.drag-over"
-      ).forEach(item=>{
-        item.classList.remove("drag-over");
-      });
-
-      folderDragSource=null;
-      draggedId=null;
-
-      setTimeout(()=>{
-        didDrag=false;
-      },100);
-    });
-
-
-    /* =========================
-       文件夹内部排序
-       ========================= */
-
-    el.addEventListener("dragover",e=>{
-      e.preventDefault();
-
-      if(!draggedId || draggedId===ch.id){
-        return;
-      }
-
-      e.dataTransfer.dropEffect="move";
-
-      box.querySelectorAll(
-        ".collection-item.drag-over"
-      ).forEach(item=>{
-        item.classList.remove("drag-over");
-      });
-
-      el.classList.add("drag-over");
-    });
-
-
-    el.addEventListener("dragleave",e=>{
-      if(
-        e.relatedTarget &&
-        el.contains(e.relatedTarget)
-      ){
-        return;
-      }
-
-      el.classList.remove("drag-over");
-    });
-
-
-    /* =========================
-       放到另一个文件夹项目
-       ========================= */
-
-    el.addEventListener("drop",e=>{
-      e.preventDefault();
-      e.stopPropagation();
-
-      el.classList.remove("drag-over");
-
-      const fromId=
-        draggedId ||
-        e.dataTransfer.getData("text/plain");
-
-      const toId=ch.id;
-
-      if(!fromId || fromId===toId){
-        return;
-      }
-
-      const fromIndex=
-        folder.children.findIndex(
-          x=>x.id===fromId
+        e.dataTransfer.setData(
+          "text/plain",
+          ch.id
         );
 
-      const toIndex=
-        folder.children.findIndex(
-          x=>x.id===toId
+        e.dataTransfer.setData(
+          "application/x-folder-child",
+          JSON.stringify({
+            folderId:folder.id,
+            childId:ch.id
+          })
         );
-
-      if(fromIndex<0 || toIndex<0){
-        return;
-      }
-
-      const [moved]=folder.children.splice(
-        fromIndex,
-        1
-      );
-
-      folder.children.splice(
-        toIndex,
-        0,
-        moved
-      );
-
-      didDrag=true;
-
-      save();
-      renderFolderItems(folder);
-      render();
-    });
+      });
 
 
-    /* =========================
-       点击打开网站
-       ========================= */
+      /* =========================
+         拖拽结束
+         ========================= */
 
-    el.addEventListener("click",e=>{
-      if(didDrag){
+      el.addEventListener("dragend",()=>{
+        el.classList.remove("dragging");
+
+        box.querySelectorAll(
+          ".collection-item.drag-over"
+        ).forEach(item=>{
+          item.classList.remove("drag-over");
+        });
+
+        const dropOut=$("#folderDropOut");
+
+        if(dropOut){
+          dropOut.classList.remove("drag-over");
+        }
+
+        folderDragSource=null;
+        draggedId=null;
+
+        setTimeout(()=>{
+          didDrag=false;
+        },100);
+      });
+
+
+      /* =========================
+         文件夹内部拖拽排序
+         ========================= */
+
+      el.addEventListener("dragover",e=>{
+        e.preventDefault();
+
+        if(!draggedId || draggedId===ch.id){
+          return;
+        }
+
+        e.dataTransfer.dropEffect="move";
+
+        box.querySelectorAll(
+          ".collection-item.drag-over"
+        ).forEach(item=>{
+          item.classList.remove("drag-over");
+        });
+
+        el.classList.add("drag-over");
+      });
+
+
+      el.addEventListener("dragleave",e=>{
+        if(
+          e.relatedTarget &&
+          el.contains(e.relatedTarget)
+        ){
+          return;
+        }
+
+        el.classList.remove("drag-over");
+      });
+
+
+      /* =========================
+         文件夹内部排序
+         ========================= */
+
+      el.addEventListener("drop",e=>{
         e.preventDefault();
         e.stopPropagation();
 
-        didDrag=false;
-        return;
-      }
+        el.classList.remove("drag-over");
 
-      location.href=ch.url;
+        const raw=
+          e.dataTransfer.getData(
+            "application/x-folder-child"
+          );
+
+        /*
+         * 如果不是文件夹内部拖拽，
+         * 不在这里处理。
+         */
+        if(raw){
+          let source;
+
+          try{
+            source=JSON.parse(raw);
+          }catch{
+            source=null;
+          }
+
+          if(
+            source &&
+            source.folderId===folder.id
+          ){
+            draggedId=source.childId;
+          }
+        }
+
+        const fromId=
+          draggedId ||
+          e.dataTransfer.getData("text/plain");
+
+        const toId=ch.id;
+
+        if(!fromId || fromId===toId){
+          return;
+        }
+
+        const fromIndex=
+          folder.children.findIndex(
+            x=>x.id===fromId
+          );
+
+        const toIndex=
+          folder.children.findIndex(
+            x=>x.id===toId
+          );
+
+        if(fromIndex<0 || toIndex<0){
+          return;
+        }
+
+        const [moved]=
+          folder.children.splice(
+            fromIndex,
+            1
+          );
+
+        folder.children.splice(
+          toIndex,
+          0,
+          moved
+        );
+
+        didDrag=true;
+
+        save();
+
+        renderFolderItems(folder);
+        render();
+      });
+
+
+      /* =========================
+         点击打开
+         ========================= */
+
+      el.addEventListener("click",e=>{
+        if(didDrag){
+          e.preventDefault();
+          e.stopPropagation();
+
+          didDrag=false;
+          return;
+        }
+
+        location.href=ch.url;
+      });
+
+
+      /* =========================
+         右键菜单
+         ========================= */
+
+      el.addEventListener("contextmenu",e=>{
+        e.preventDefault();
+
+        showFolderContext(
+          e.clientX,
+          e.clientY,
+          folder.id,
+          ch.id
+        );
+      });
+
+
+      box.appendChild(el);
     });
+  }
 
 
-    /* =========================
-       右键菜单
-       ========================= */
+  /* =========================
+     拖出文件夹区域
+     ========================= */
 
-    el.addEventListener("contextmenu",e=>{
-      e.preventDefault();
+  const dropOut=$("#folderDropOut");
 
-      showFolderContext(
-        e.clientX,
-        e.clientY,
-        folder.id,
-        ch.id
+  if(!dropOut){
+    return;
+  }
+
+
+  /* =========================
+     进入拖出区域
+     ========================= */
+
+  dropOut.ondragover=e=>{
+    e.preventDefault();
+
+    /*
+     * 只接受文件夹内部项目
+     */
+    const raw=
+      e.dataTransfer.getData(
+        "application/x-folder-child"
       );
-    });
+
+    if(!raw){
+      return;
+    }
+
+    e.dataTransfer.dropEffect="move";
+
+    dropOut.classList.add("drag-over");
+  };
 
 
-    box.appendChild(el);
-  });
+  /* =========================
+     离开拖出区域
+     ========================= */
+
+  dropOut.ondragleave=e=>{
+    if(
+      e.relatedTarget &&
+      dropOut.contains(e.relatedTarget)
+    ){
+      return;
+    }
+
+    dropOut.classList.remove("drag-over");
+  };
+
+
+  /* =========================
+     放入拖出区域
+     ========================= */
+
+  dropOut.ondrop=e=>{
+    e.preventDefault();
+    e.stopPropagation();
+
+    dropOut.classList.remove("drag-over");
+
+    const raw=
+      e.dataTransfer.getData(
+        "application/x-folder-child"
+      );
+
+    if(!raw){
+      return;
+    }
+
+    let source;
+
+    try{
+      source=JSON.parse(raw);
+    }catch{
+      return;
+    }
+
+    if(
+      !source ||
+      source.folderId!==folder.id ||
+      !source.childId
+    ){
+      return;
+    }
+
+    const childIndex=
+      folder.children.findIndex(
+        x=>x.id===source.childId
+      );
+
+    if(childIndex<0){
+      return;
+    }
+
+    /*
+     * 从当前文件夹删除
+     */
+    const [child]=
+      folder.children.splice(
+        childIndex,
+        1
+      );
+
+    /*
+     * 放回主页
+     */
+    state.items.push(child);
+
+    save();
+
+    /*
+     * 重新渲染
+     */
+    render();
+
+    renderFolderItems(folder);
+  };
 }
+
 
 function showContext(x,y,id){
   contextId=id;
