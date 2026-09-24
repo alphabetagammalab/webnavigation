@@ -4,21 +4,25 @@ const engines={
   google:{
     label:"Google",
     icon:"icons/google.svg",
+    placeholder:"Search with Google or enter address",
     url:q=>"https://www.google.com/search?q="+encodeURIComponent(q)
   },
   bing:{
     label:"Bing",
     icon:"icons/bing.svg",
+    placeholder:"Search with Bing or enter address",
     url:q=>"https://www.bing.com/search?q="+encodeURIComponent(q)
   },
   baidu:{
     label:"百度",
     icon:"icons/baidu.svg",
+    placeholder:"使用百度搜索或输入网址",
     url:q=>"https://www.baidu.com/s?wd="+encodeURIComponent(q)
   },
   duck:{
     label:"DuckDuckGo",
     icon:"icons/duckduckgo.svg",
+    placeholder:"Search with DuckDuckGo or enter address",
     url:q=>"https://duckduckgo.com/?q="+encodeURIComponent(q)
   }
 };
@@ -268,6 +272,8 @@ function updateEngineButton(){
     <span>${engine.label}</span>
     <span class="engine-chevron">⌄</span>
   `;
+
+  $("#searchInput").placeholder = engine.placeholder;
 }
 
 function renderEngineMenu(){
