@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>New Tab</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div id="clock" class="clock">00:00</div>
+      <div id="date" class="date"></div>
+
+      <form id="searchForm" class="search">
+        <button type="button" id="engineButton" class="engine" title="切换搜索引擎">G</button>
+        <input id="searchInput" autocomplete="off" placeholder="搜索或输入网址">
+        <button class="search-btn" title="搜索">⌕</button>
+      </form>
+    </section>
+
+    <section id="items" class="items"></section>
+
+    <button id="addButton" class="add" title="添加">＋</button>
+  </main>
+
+  <div id="menu" class="menu hidden">
+    <button data-action="site">🌐 网站</button>
+    <button data-action="folder">📁 文件夹</button>
+  </div>
+
+  <div id="contextMenu" class="context-menu hidden">
+    <button data-action="edit">编辑</button>
+    <button data-action="delete">删除</button>
+  </div>
+
+  <dialog id="editor">
+    <form method="dialog" id="editorForm" class="dialog">
+      <h2 id="dialogTitle">添加网站</h2>
+      <input type="hidden" id="itemId">
+      <input type="hidden" id="itemType">
+      <label id="nameLabel">名称<input id="nameInput" required></label>
+      <label id="urlLabel">网址<input id="urlInput" placeholder="https://example.com"></label>
+      <label id="iconLabel">图标 URL（可选）<input id="iconInput" placeholder="留空自动获取网站图标"></label>
+      <div class="dialog-actions">
+        <button type="button" id="cancelButton" class="secondary">取消</button>
+        <button type="submit" class="primary">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="folderDialog">
+    <div class="dialog">
+      <div class="folder-head">
+        <h2 id="folderTitle">文件夹</h2>
+        <button id="folderAdd" class="secondary">＋ 网站</button>
+      </div>
+      <div id="folderItems" class="folder-items"></div>
+      <button id="closeFolder" class="secondary wide">关闭</button>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
