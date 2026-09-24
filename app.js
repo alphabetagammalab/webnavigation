@@ -1,11 +1,36 @@
 const STORAGE="minimal_itab_v2";
 const state=JSON.parse(localStorage.getItem(STORAGE)||'{"items":[],"engine":"google"}');
 const engines={
+  google:{
+    label:"Google",
+    icon:"https://www.google.com/favicon.ico",
+    url:q=>"https://www.google.com/search?q="+encodeURIComponent(q)
+  },
+  bing:{
+    label:"Bing",
+    icon:"https://www.bing.com/favicon.ico",
+    url:q=>"https://www.bing.com/search?q="+encodeURIComponent(q)
+  },
+  baidu:{
+    label:"百度",
+    icon:"https://www.baidu.com/favicon.ico",
+    url:q=>"https://www.baidu.com/s?wd="+encodeURIComponent(q)
+  },
+  duck:{
+    label:"DuckDuckGo",
+    icon:"https://duckduckgo.com/favicon.ico",
+    url:q=>"https://duckduckgo.com/?q="+encodeURIComponent(q)
+  }
+};
+/*
+const engines={
   google:{label:"G",url:q=>"https://www.google.com/search?q="+encodeURIComponent(q)},
   bing:{label:"B",url:q=>"https://www.bing.com/search?q="+encodeURIComponent(q)},
   baidu:{label:"百",url:q=>"https://www.baidu.com/s?wd="+encodeURIComponent(q)},
   duck:{label:"D",url:q=>"https://duckduckgo.com/?q="+encodeURIComponent(q)}
 };
+*/
+
 const $=s=>document.querySelector(s), itemsEl=$("#items"), menu=$("#menu");
 const editor=$("#editor"), folderDialog=$("#folderDialog"), contextMenu=$("#contextMenu");
 let contextId=null, currentFolderId=null;
@@ -207,11 +232,29 @@ $("#editorForm").onsubmit=e=>{
   save();render();editor.close();
 };
 
+function updateEngineButton(){
+  const engine=engines[state.engine];
+  $("#engineButton").innerHTML=
+    `<img src="${engine.icon}" alt="${engine.label}">`;
+}
+
+$("#engineButton").onclick=()=>{
+  const keys=Object.keys(engines);
+  const i=keys.indexOf(state.engine);
+  const next=keys[(i+1)%keys.length];
+
+  state.engine=next;
+  save();
+  updateEngineButton();
+};
+updateEngineButton();
+/*
 $("#engineButton").onclick=()=>{
   const keys=Object.keys(engines),i=keys.indexOf(state.engine),next=keys[(i+1)%keys.length];
   state.engine=next;save();$("#engineButton").textContent=engines[next].label;
 };
 $("#engineButton").textContent=engines[state.engine].label;
+*/
 
 $("#searchForm").onsubmit=e=>{
   e.preventDefault();const q=$("#searchInput").value.trim();if(!q)return;
