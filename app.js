@@ -367,10 +367,26 @@ function tick(){
 }
 setInterval(tick,1000);tick();
 
+/*
 function favicon(url){
   try{return "https://www.google.com/s2/favicons?sz=128&domain="+encodeURIComponent(new URL(url).hostname)}
   catch{return ""}
 }
+*/
+
+function favicon(url){
+  try{
+    const u=new URL(url);
+    const host=u.hostname;
+
+    // 优先使用 Google favicon 服务的较大尺寸
+    return "https://www.google.com/s2/favicons?sz=256&domain="
+      + encodeURIComponent(host);
+  }catch{
+    return "";
+  }
+}
+
 function normalizeUrl(url){
   url=url.trim();
   if(!/^https?:\/\//i.test(url)) url="https://"+url;
@@ -790,6 +806,7 @@ $("#cancelButton").onclick=()=>editor.close();
 $("#closeFolder").onclick=()=>folderDialog.close();
 $("#folderAdd").onclick=addSiteToFolder;
 
+/*
 $("#editorForm").onsubmit=e=>{
   e.preventDefault();
   const id=$("#itemId").value,type=$("#itemType").value;
@@ -802,6 +819,56 @@ $("#editorForm").onsubmit=e=>{
     state.items.push({id:crypto.randomUUID(),type,name,url,icon,children:[]});
   }
   save();render();editor.close();
+};
+*/
+
+$("#editorForm").onsubmit=e=>{
+  e.preventDefault();
+
+  const id=$("#itemId").value;
+  const type=$("#itemType").value;
+
+  let name=$("#nameInput").value.trim();
+  let url=$("#urlInput").value.trim();
+  let icon=$("#iconInput").value.trim();
+
+  if(!name)return;
+
+  if(type==="site"){
+    if(!url)return;
+
+    url=normalizeUrl(url);
+
+    // 没有手动填写图标时，自动使用高清 favicon
+    if(!icon){
+      icon=favicon(url);
+    }
+  }
+
+  if(id){
+    const it=state.items.find(x=>x.id===id);
+
+    if(!it)return;
+
+    Object.assign(it,{
+      name,
+      url,
+      icon
+    });
+  }else{
+    state.items.push({
+      id:crypto.randomUUID(),
+      type,
+      name,
+      url,
+      icon,
+      children:[]
+    });
+  }
+
+  save();
+  render();
+  editor.close();
 };
 
 function updateEngineButton(){
