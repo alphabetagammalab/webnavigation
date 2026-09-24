@@ -322,6 +322,7 @@ $("#searchForm").onsubmit=e=>{
   else location.href=engines[state.engine].url(q);
 };
 
+/*
 document.addEventListener("click",e=>{
   if(!e.target.closest("#contextMenu"))contextMenu.classList.add("hidden");
   if(!e.target.closest("#addButton")&&!e.target.closest("#menu"))menu.classList.add("hidden");
@@ -330,4 +331,39 @@ document.addEventListener("keydown",e=>{
   if(e.key==="/"&&document.activeElement.tagName!=="INPUT"){e.preventDefault();$("#searchInput").focus()}
   if(e.key==="Escape"){hideMenus();if(editor.open)editor.close();if(folderDialog.open)folderDialog.close()}
 });
+render();
+*/
+
+document.addEventListener("click",e=>{
+  if(!e.target.closest("#contextMenu"))
+    contextMenu.classList.add("hidden");
+
+  if(!e.target.closest("#addButton") && !e.target.closest("#menu"))
+    menu.classList.add("hidden");
+
+  // 点击搜索引擎下拉框和按钮以外的地方，关闭下拉框
+  if(!e.target.closest("#engineMenu") && !e.target.closest("#engineButton")){
+    engineMenu.classList.add("hidden");
+    $("#engineButton").setAttribute("aria-expanded","false");
+  }
+});
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="/" && document.activeElement.tagName!=="INPUT"){
+    e.preventDefault();
+    $("#searchInput").focus();
+  }
+
+  if(e.key==="Escape"){
+    hideMenus();
+
+    // ESC 同样关闭搜索引擎下拉框
+    engineMenu.classList.add("hidden");
+    $("#engineButton").setAttribute("aria-expanded","false");
+
+    if(editor.open) editor.close();
+    if(folderDialog.open) folderDialog.close();
+  }
+});
+
 render();
