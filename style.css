@@ -17,7 +17,21 @@ body{
 }
 .page{min-height:100vh;padding:10vh 28px 70px;display:flex;align-items:center;flex-direction:column}
 .hero{width:min(720px,100%);text-align:center}
+/*
 .clock{font-size:clamp(54px,8vw,88px);font-weight:300;letter-spacing:-3px;line-height:1}
+*/
+.clock{
+  width:5.2em;
+  margin:0 auto;
+  font-size:clamp(54px,8vw,88px);
+  font-weight:300;
+  letter-spacing:-3px;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum";
+  white-space:nowrap;
+}
+
 .date{margin-top:12px;color:var(--muted);font-size:15px}
 .search{
   height:58px;margin:34px auto 0;width:100%;display:flex;align-items:center;
