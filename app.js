@@ -414,6 +414,7 @@ function folderPreview(folder){
       ${preview.map(ch=>`
         <div class="folder-preview-cell">
           <img
+            draggable="false"
             src="${ch.icon||favicon(ch.url)}"
             onerror="this.style.visibility='hidden'"
             alt="">
