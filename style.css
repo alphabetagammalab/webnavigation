@@ -642,3 +642,27 @@ color:var(--text);text-align:left;border-radius:8px;cursor:pointer}
   transform:scale(1.06);
   opacity:1;
 }
+
+
+.folder-drop-out{
+  margin-top:18px;
+  padding:14px 20px;
+  border:1px dashed var(--border);
+  border-radius:14px;
+  text-align:center;
+  font-size:12px;
+  color:var(--text);
+  opacity:.55;
+  transition:
+    background .16s,
+    border-color .16s,
+    transform .16s,
+    opacity .16s;
+}
+
+.folder-drop-out.drag-over{
+  background:var(--icon-bg);
+  border-color:var(--text);
+  opacity:1;
+  transform:scale(1.02);
+}
