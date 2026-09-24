@@ -110,15 +110,21 @@
   </dialog>
 
   <dialog id="folderDialog">
-    <div class="dialog">
-      <div class="folder-head">
-        <h2 id="folderTitle">文件夹</h2>
-        <button id="folderAdd" class="secondary">＋ 网站</button>
-      </div>
-      <div id="folderItems" class="folder-items"></div>
-      <button id="closeFolder" class="secondary wide">关闭</button>
+  <div class="dialog">
+    <div class="folder-head">
+      <h2 id="folderTitle">文件夹</h2>
+      <button id="folderAdd" class="secondary">＋ 网站</button>
     </div>
-  </dialog>
+
+    <div id="folderItems" class="folder-items"></div>
+
+    <div id="folderDropOut" class="folder-drop-out">
+      ↓ 拖到这里移出文件夹
+    </div>
+
+    <button id="closeFolder" class="secondary wide">关闭</button>
+  </div>
+</dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.js"></script>
   <script src="app.js"></script>
