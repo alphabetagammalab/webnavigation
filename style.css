@@ -203,6 +203,21 @@ border:1px solid var(--border);background:rgba(127,127,127,.08);color:var(--text
   .items{gap:10px}.item{width:70px;min-height:72px}
   .add{right:18px;bottom:18px}
   .menu{right:18px;bottom:78px}
+
+  .folder-items{
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+  }
+
+  .collection-item{
+    min-height:105px;
+    padding:10px 6px;
+  }
+
+  .collection-icon{
+    width:46px;
+    height:46px;
+  }
 }
 
 .context-menu{
