@@ -37,9 +37,124 @@ const engines={
 
 const $=s=>document.querySelector(s), itemsEl=$("#items"), menu=$("#menu");
 const editor=$("#editor"), folderDialog=$("#folderDialog"), contextMenu=$("#contextMenu");
+
+// 搜索历史
+const SEARCH_HISTORY="minimal_itab_search_history";
+const MAX_SEARCH_HISTORY=10;
+let searchHistory=JSON.parse(
+  localStorage.getItem(SEARCH_HISTORY)||"[]"
+);
+
+const searchHistoryEl=$("#searchHistory");
+
 let contextId=null, currentFolderId=null;
 
 function save(){localStorage.setItem(STORAGE,JSON.stringify(state))}
+
+function saveSearchHistory(){
+  localStorage.setItem(
+    SEARCH_HISTORY,
+    JSON.stringify(searchHistory)
+  );
+}
+
+function addSearchHistory(query){
+  query=query.trim();
+  if(!query) return;
+
+  searchHistory=searchHistory.filter(
+    item=>item.toLowerCase()!==query.toLowerCase()
+  );
+
+  searchHistory.unshift(query);
+  searchHistory=searchHistory.slice(0,MAX_SEARCH_HISTORY);
+
+  saveSearchHistory();
+}
+
+function escapeHtml(str){
+  return str.replace(/[&<>"']/g,char=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[char]));
+}
+
+function renderSearchHistory(){
+  if(!searchHistory.length){
+    searchHistoryEl.classList.add("hidden");
+    searchHistoryEl.innerHTML="";
+    return;
+  }
+
+  searchHistoryEl.innerHTML=`
+    ${searchHistory.map((query,index)=>`
+      <div class="search-history-item" data-index="${index}">
+        <span class="search-history-icon">◷</span>
+        <span class="search-history-text">${escapeHtml(query)}</span>
+        <button
+          type="button"
+          class="search-history-delete"
+          data-delete="${index}"
+          title="删除">
+          ×
+        </button>
+      </div>
+    `).join("")}
+
+    <div class="search-history-footer">
+      <button
+        type="button"
+        class="search-history-clear">
+        清空搜索历史
+      </button>
+    </div>
+  `;
+
+  searchHistoryEl.classList.remove("hidden");
+}
+
+$("#searchInput").addEventListener("focus",()=>{
+  renderSearchHistory();
+});
+
+searchHistoryEl.addEventListener("click",e=>{
+  const deleteButton=e.target.closest("[data-delete]");
+
+  if(deleteButton){
+    const index=Number(deleteButton.dataset.delete);
+
+    searchHistory.splice(index,1);
+    saveSearchHistory();
+    renderSearchHistory();
+
+    return;
+  }
+
+  if(e.target.closest(".search-history-clear")){
+    searchHistory=[];
+    saveSearchHistory();
+    renderSearchHistory();
+
+    return;
+  }
+
+  const item=e.target.closest(".search-history-item");
+
+  if(!item) return;
+
+  const index=Number(item.dataset.index);
+  const query=searchHistory[index];
+
+  if(!query) return;
+
+  $("#searchInput").value=query;
+  searchHistoryEl.classList.add("hidden");
+  $("#searchInput").focus();
+});
+
 /*function tick(){
   const now=new Date();
   $("#clock").textContent=now.toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
@@ -341,11 +456,44 @@ updateEngineButton();
 renderEngineMenu();
 
 $("#searchForm").onsubmit=e=>{
+  e.preventDefault();
+
+  const q=$("#searchInput").value.trim();
+
+  if(!q)return;
+
+  const isUrl =
+    /^https?:\/\//i.test(q) ||
+    /^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(q);
+
+  // 只有真正的搜索关键词才保存
+  if(!isUrl){
+    addSearchHistory(q);
+  }
+
+  // 搜索后关闭历史记录
+  searchHistoryEl.classList.add("hidden");
+
+  if(/^https?:\/\//i.test(q)){
+    location.href=q;
+  }
+  else if(/^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(q)){
+    location.href=normalizeUrl(q);
+  }
+  else{
+    location.href=engines[state.engine].url(q);
+  }
+};
+
+/*
+$("#searchForm").onsubmit=e=>{
   e.preventDefault();const q=$("#searchInput").value.trim();if(!q)return;
   if(/^https?:\/\//i.test(q))location.href=q;
   else if(/^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(q))location.href=normalizeUrl(q);
   else location.href=engines[state.engine].url(q);
 };
+*/
+
 
 /*
 document.addEventListener("click",e=>{
