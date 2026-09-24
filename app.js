@@ -51,6 +51,11 @@ let searchHistoryActiveIndex=-1;
 
 let contextId=null, currentFolderId=null;
 
+let mergeTimer=null;
+let mergeTargetId=null;
+let mergeSourceId=null;
+let mergeTriggered=false;
+
 function save(){localStorage.setItem(STORAGE,JSON.stringify(state))}
 
 function saveSearchHistory(){
@@ -519,6 +524,7 @@ function render(){
 }
 */
 
+/*
 function render(){
   itemsEl.innerHTML="";
 
@@ -644,6 +650,316 @@ function render(){
     itemsEl.appendChild(el);
   });
 }
+
+*/
+
+
+function render(){
+  itemsEl.innerHTML="";
+
+  if(!state.items.length){
+    itemsEl.innerHTML='<div class="empty">点击右下角 ＋ 添加网站或文件夹</div>';
+    return;
+  }
+
+  let draggedId=null;
+  let dragMoved=false;
+
+  function clearMergeTimer(){
+    if(mergeTimer){
+      clearTimeout(mergeTimer);
+      mergeTimer=null;
+    }
+
+    itemsEl.querySelectorAll(".item.merge-target")
+      .forEach(x=>x.classList.remove("merge-target"));
+
+    mergeTargetId=null;
+    mergeSourceId=null;
+  }
+
+  function startMergeTimer(targetId,sourceId,targetEl){
+    if(targetId===sourceId)return;
+
+    // 已经在等待同一个目标，不重复创建 timer
+    if(
+      mergeTargetId===targetId &&
+      mergeSourceId===sourceId &&
+      mergeTimer
+    ){
+      return;
+    }
+
+    clearMergeTimer();
+
+    mergeTargetId=targetId;
+    mergeSourceId=sourceId;
+
+    targetEl.classList.add("merge-target");
+
+    mergeTimer=setTimeout(()=>{
+      const source=state.items.find(x=>x.id===sourceId);
+      const target=state.items.find(x=>x.id===targetId);
+
+      if(!source || !target)return;
+
+      mergeTriggered=true;
+
+      // 文件夹 → 文件夹：合并
+      if(source.type==="folder" && target.type==="folder"){
+
+        target.children=target.children||[];
+        source.children=source.children||[];
+
+        target.children.push(...source.children);
+
+        state.items=state.items.filter(
+          x=>x.id!==source.id
+        );
+
+        save();
+        render();
+        return;
+      }
+
+      // 网站 → 文件夹：加入文件夹
+      if(source.type==="site" && target.type==="folder"){
+
+        target.children=target.children||[];
+
+        target.children.push(source);
+
+        state.items=state.items.filter(
+          x=>x.id!==source.id
+        );
+
+        save();
+        render();
+        return;
+      }
+
+      // 文件夹 → 网站：把网站和文件夹合成新文件夹
+      if(source.type==="folder" && target.type==="site"){
+
+        const folder={
+          id:crypto.randomUUID(),
+          type:"folder",
+          name:target.name,
+          url:"",
+          icon:"",
+          children:[
+            target,
+            ...((source.children||[]))
+          ]
+        };
+
+        const targetIndex=state.items.findIndex(
+          x=>x.id===target.id
+        );
+
+        state.items=state.items.filter(
+          x=>x.id!==source.id &&
+          x.id!==target.id
+        );
+
+        state.items.splice(targetIndex,0,folder);
+
+        save();
+        render();
+        return;
+      }
+
+      // 网站 → 网站：创建新文件夹
+      if(source.type==="site" && target.type==="site"){
+
+        const targetIndex=state.items.findIndex(
+          x=>x.id===target.id
+        );
+
+        const folder={
+          id:crypto.randomUUID(),
+          type:"folder",
+          name:target.name,
+          url:"",
+          icon:"",
+          children:[
+            target,
+            source
+          ]
+        };
+
+        state.items=state.items.filter(
+          x=>x.id!==source.id &&
+          x.id!==target.id
+        );
+
+        state.items.splice(targetIndex,0,folder);
+
+        save();
+        render();
+      }
+
+    },500);
+  }
+
+  state.items.forEach(it=>{
+    const el=document.createElement("div");
+
+    el.className="item";
+    el.draggable=true;
+    el.dataset.id=it.id;
+
+    el.innerHTML=it.type==="folder"
+      ? `${folderPreview(it)}<div class="item-name"></div>`
+      : `<img class="icon" src="${it.icon||favicon(it.url)}" onerror="this.style.visibility='hidden'" alt=""><div class="item-name"></div>`;
+
+    el.querySelector(".item-name").textContent=it.name;
+
+    // 点击
+    el.onclick=e=>{
+      if(dragMoved || mergeTriggered){
+        e.preventDefault();
+        e.stopPropagation();
+
+        dragMoved=false;
+        mergeTriggered=false;
+        return;
+      }
+
+      openItem(it);
+    };
+
+    // 右键
+    el.oncontextmenu=e=>{
+      e.preventDefault();
+
+      clearMergeTimer();
+
+      showContext(
+        e.clientX,
+        e.clientY,
+        it.id
+      );
+    };
+
+    // 开始拖拽
+    el.ondragstart=e=>{
+      draggedId=it.id;
+      dragMoved=false;
+      mergeTriggered=false;
+
+      clearMergeTimer();
+
+      el.classList.add("dragging");
+
+      e.dataTransfer.effectAllowed="move";
+      e.dataTransfer.setData(
+        "text/plain",
+        it.id
+      );
+    };
+
+    // 拖拽结束
+    el.ondragend=()=>{
+      el.classList.remove("dragging");
+
+      clearMergeTimer();
+
+      draggedId=null;
+
+      setTimeout(()=>{
+        dragMoved=false;
+        mergeTriggered=false;
+      },100);
+    };
+
+    // 拖到目标图标
+    el.ondragover=e=>{
+      e.preventDefault();
+
+      if(!draggedId || draggedId===it.id){
+        clearMergeTimer();
+        return;
+      }
+
+      e.dataTransfer.dropEffect="move";
+
+      /*
+       * 鼠标停留在目标图标上 500ms：
+       * 进入聚合模式
+       */
+      startMergeTimer(
+        it.id,
+        draggedId,
+        el
+      );
+    };
+
+    // 离开目标
+    el.ondragleave=e=>{
+      // 防止进入目标内部元素时误触发
+      if(e.relatedTarget && el.contains(e.relatedTarget)){
+        return;
+      }
+
+      clearMergeTimer();
+    };
+
+    // 松开
+    el.ondrop=e=>{
+      e.preventDefault();
+      e.stopPropagation();
+
+      const fromId=
+        draggedId ||
+        e.dataTransfer.getData("text/plain");
+
+      const toId=it.id;
+
+      clearMergeTimer();
+
+      /*
+       * 如果已经执行了聚合，
+       * 就不再执行普通排序。
+       */
+      if(mergeTriggered){
+        return;
+      }
+
+      if(!fromId || fromId===toId)return;
+
+      const old=state.items.findIndex(
+        x=>x.id===fromId
+      );
+
+      const target=state.items.findIndex(
+        x=>x.id===toId
+      );
+
+      if(old<0 || target<0)return;
+
+      const [moved]=state.items.splice(
+        old,
+        1
+      );
+
+      state.items.splice(
+        target,
+        0,
+        moved
+      );
+
+      dragMoved=true;
+
+      save();
+      render();
+    };
+
+    itemsEl.appendChild(el);
+  });
+}
+
+
   
 function openItem(it){
   if(it.type==="folder") openFolder(it);
