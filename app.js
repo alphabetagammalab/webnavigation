@@ -68,6 +68,7 @@ function tick(){
       weekday:"long"
     }) + " " + lunarText;
   */
+  /*
   $("#date").textContent =
     now.toLocaleDateString("zh-CN",{
       year:"numeric",
@@ -77,6 +78,22 @@ function tick(){
     now.toLocaleDateString("zh-CN",{
       weekday:"long"
     }) + " " + "农历" + lunarText;
+    */
+
+  $("#dateSolar").textContent =
+  now.toLocaleDateString("zh-CN",{
+    year:"numeric",
+    month:"long",
+    day:"numeric"
+  });
+
+  $("#dateWeekday").textContent =
+    now.toLocaleDateString("zh-CN",{
+      weekday:"long"
+    });
+
+  $("#dateLunar").textContent = "农历" + lunarText;
+  
 }
 setInterval(tick,1000);tick();
 
