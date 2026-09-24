@@ -365,3 +365,8 @@ color:var(--text);text-align:left;border-radius:8px;cursor:pointer}
   color:var(--text);
   font-weight:600;
 }
+
+
+.search-history-item.active{
+  background:rgba(127,127,127,.16);
+}
