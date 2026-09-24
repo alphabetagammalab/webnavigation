@@ -1282,33 +1282,43 @@ function renderFolderItems(folder){
          ========================= */
 
       el.addEventListener("dragstart",e=>{
-        draggedId=ch.id;
-        didDrag=false;
+  draggedId=ch.id;
+  didDrag=false;
 
-        folderDragSource={
-          folderId:folder.id,
-          childId:ch.id
-        };
+  folderDragSource={
+    folderId:folder.id,
+    childId:ch.id
+  };
 
-        el.classList.add("dragging");
+  el.classList.add("dragging");
 
-        folderDialog.classList.add("dragging-out");
+  /*
+   * 关键：
+   * 拖拽开始后，文件夹弹窗不再拦截鼠标事件。
+   * 这样鼠标拖出弹窗后，主页可以接收到 dragover / drop。
+   */
+  folderDialog.style.pointerEvents="none";
 
-        e.dataTransfer.effectAllowed="move";
+  /*
+   * 开启全页面拖拽接收
+   */
+  enableFolderGlobalDrag();
 
-        e.dataTransfer.setData(
-          "text/plain",
-          ch.id
-        );
+  e.dataTransfer.effectAllowed="move";
 
-        e.dataTransfer.setData(
-          "application/x-folder-child",
-          JSON.stringify({
-            folderId:folder.id,
-            childId:ch.id
-          })
-        );
-      });
+  e.dataTransfer.setData(
+    "text/plain",
+    ch.id
+  );
+
+  e.dataTransfer.setData(
+    "application/x-folder-child",
+    JSON.stringify({
+      folderId:folder.id,
+      childId:ch.id
+    })
+  );
+});
 
 
       /* =========================
@@ -1316,29 +1326,28 @@ function renderFolderItems(folder){
          ========================= */
 
       el.addEventListener("dragend",()=>{
-        el.classList.remove("dragging");
+  el.classList.remove("dragging");
 
-        folderDialog.classList.remove("dragging-out");
+  box.querySelectorAll(
+    ".collection-item.drag-over"
+  ).forEach(item=>{
+    item.classList.remove("drag-over");
+  });
 
-        box.querySelectorAll(
-          ".collection-item.drag-over"
-        ).forEach(item=>{
-          item.classList.remove("drag-over");
-        });
+  /*
+   * 拖拽结束，恢复文件夹弹窗的鼠标事件。
+   */
+  folderDialog.style.pointerEvents="";
 
-        const dropOut=$("#folderDropOut");
+  disableFolderGlobalDrag();
 
-        if(dropOut){
-          dropOut.classList.remove("drag-over");
-        }
+  folderDragSource=null;
+  draggedId=null;
 
-        folderDragSource=null;
-        draggedId=null;
-
-        setTimeout(()=>{
-          didDrag=false;
-        },100);
-      });
+  setTimeout(()=>{
+    didDrag=false;
+  },100);
+});
 
 
       /* =========================
@@ -1493,127 +1502,134 @@ function renderFolderItems(folder){
       box.appendChild(el);
     });
   }
+}
 
 
-  /* =========================
-     拖出文件夹区域
-     ========================= */
+let folderGlobalDragActive=false;
 
-  const dropOut=$("#folderDropOut");
+function enableFolderGlobalDrag(){
 
-  if(!dropOut){
+  if(folderGlobalDragActive){
     return;
   }
 
+  folderGlobalDragActive=true;
 
-  /* =========================
-     进入拖出区域
-     ========================= */
+  document.addEventListener(
+    "dragover",
+    folderGlobalDragOver,
+    true
+  );
 
-  dropOut.ondragover=e=>{
-    e.preventDefault();
-
-    /*
-     * 只接受文件夹内部项目
-     */
-    const raw=
-      e.dataTransfer.getData(
-        "application/x-folder-child"
-      );
-
-    if(!raw){
-      return;
-    }
-
-    e.dataTransfer.dropEffect="move";
-
-    dropOut.classList.add("drag-over");
-  };
+  document.addEventListener(
+    "drop",
+    folderGlobalDrop,
+    true
+  );
+}
 
 
-  /* =========================
-     离开拖出区域
-     ========================= */
+function disableFolderGlobalDrag(){
 
-  dropOut.ondragleave=e=>{
-    if(
-      e.relatedTarget &&
-      dropOut.contains(e.relatedTarget)
-    ){
-      return;
-    }
+  if(!folderGlobalDragActive){
+    return;
+  }
 
-    dropOut.classList.remove("drag-over");
-  };
+  folderGlobalDragActive=false;
+
+  document.removeEventListener(
+    "dragover",
+    folderGlobalDragOver,
+    true
+  );
+
+  document.removeEventListener(
+    "drop",
+    folderGlobalDrop,
+    true
+  );
+}
 
 
-  /* =========================
-     放入拖出区域
-     ========================= */
+function folderGlobalDragOver(e){
 
-  dropOut.ondrop=e=>{
-    e.preventDefault();
-    e.stopPropagation();
+  if(!folderDragSource){
+    return;
+  }
 
-    dropOut.classList.remove("drag-over");
+  /*
+   * 文件夹内部自己的目标元素继续自己处理。
+   */
+  if(e.target.closest(".collection-item")){
+    return;
+  }
 
-    const raw=
-      e.dataTransfer.getData(
-        "application/x-folder-child"
-      );
+  e.preventDefault();
 
-    if(!raw){
-      return;
-    }
+  e.dataTransfer.dropEffect="move";
+}
 
-    let source;
 
-    try{
-      source=JSON.parse(raw);
-    }catch{
-      return;
-    }
+function folderGlobalDrop(e){
 
-    if(
-      !source ||
-      source.folderId!==folder.id ||
-      !source.childId
-    ){
-      return;
-    }
+  if(!folderDragSource){
+    return;
+  }
 
-    const childIndex=
-      folder.children.findIndex(
-        x=>x.id===source.childId
-      );
+  /*
+   * 文件夹内部排序交给原来的 drop 处理。
+   */
+  if(e.target.closest(".collection-item")){
+    return;
+  }
 
-    if(childIndex<0){
-      return;
-    }
+  /*
+   * 如果拖到了主页图标，
+   * 交给主页 .item 的 drop 处理。
+   */
+  if(e.target.closest(".item")){
+    return;
+  }
 
-    /*
-     * 从当前文件夹删除
-     */
-    const [child]=
-      folder.children.splice(
-        childIndex,
-        1
-      );
+  e.preventDefault();
+  e.stopPropagation();
 
-    /*
-     * 放回主页
-     */
-    state.items.push(child);
+  const source=folderDragSource;
 
-    save();
+  const folder=
+    state.items.find(
+      x=>
+        x.id===source.folderId &&
+        x.type==="folder"
+    );
 
-    /*
-     * 重新渲染
-     */
-    render();
+  if(!folder || !folder.children){
+    return;
+  }
 
-    renderFolderItems(folder);
-  };
+  const index=
+    folder.children.findIndex(
+      x=>x.id===source.childId
+    );
+
+  if(index<0){
+    return;
+  }
+
+  const [child]=
+    folder.children.splice(index,1);
+
+  /*
+   * 拖到主页空白区域
+   * → 放到主页最后
+   */
+  state.items.push(child);
+
+  save();
+
+  render();
+
+  renderFolderItems(folder);
 }
 
 
