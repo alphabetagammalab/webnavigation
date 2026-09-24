@@ -433,6 +433,7 @@ function render(){
 }
 */
 
+/*
 function render(){
   itemsEl.innerHTML="";
 
@@ -492,6 +493,133 @@ function render(){
       const [x]=state.items.splice(old,1);
 
       state.items.splice(target,0,x);
+
+      save();
+      render();
+    };
+
+    itemsEl.appendChild(el);
+  });
+}
+*/
+
+function render(){
+  itemsEl.innerHTML="";
+
+  if(!state.items.length){
+    itemsEl.innerHTML='<div class="empty">点击右下角 ＋ 添加网站或文件夹</div>';
+    return;
+  }
+
+  let draggedId=null;
+  let dragMoved=false;
+
+  state.items.forEach(it=>{
+    const el=document.createElement("div");
+
+    el.className="item";
+    el.draggable=true;
+    el.dataset.id=it.id;
+
+    el.innerHTML=it.type==="folder"
+      ? `${folderPreview(it)}<div class="item-name"></div>`
+      : `<img class="icon" src="${it.icon||favicon(it.url)}" onerror="this.style.visibility='hidden'"><div class="item-name"></div>`;
+
+    el.querySelector(".item-name").textContent=it.name;
+
+    // 点击打开
+    el.onclick=e=>{
+      if(dragMoved){
+        e.preventDefault();
+        e.stopPropagation();
+        dragMoved=false;
+        return;
+      }
+
+      openItem(it);
+    };
+
+    // 右键菜单
+    el.oncontextmenu=e=>{
+      e.preventDefault();
+      showContext(e.clientX,e.clientY,it.id);
+    };
+
+    // 开始拖动
+    el.ondragstart=e=>{
+      draggedId=it.id;
+      dragMoved=false;
+
+      el.classList.add("dragging");
+
+      e.dataTransfer.effectAllowed="move";
+      e.dataTransfer.setData("text/plain",it.id);
+    };
+
+    // 拖动结束
+    el.ondragend=()=>{
+      el.classList.remove("dragging");
+
+      itemsEl.querySelectorAll(".item.drag-over")
+        .forEach(x=>x.classList.remove("drag-over"));
+
+      draggedId=null;
+
+      // 防止拖动结束后紧接着触发 click
+      setTimeout(()=>{
+        dragMoved=false;
+      },100);
+    };
+
+    // 拖到图标上
+    el.ondragover=e=>{
+      e.preventDefault();
+
+      if(!draggedId || draggedId===it.id)return;
+
+      e.dataTransfer.dropEffect="move";
+
+      itemsEl.querySelectorAll(".item.drag-over")
+        .forEach(x=>x.classList.remove("drag-over"));
+
+      el.classList.add("drag-over");
+    };
+
+    // 离开目标
+    el.ondragleave=()=>{
+      el.classList.remove("drag-over");
+    };
+
+    // 松开鼠标，重新排序
+    el.ondrop=e=>{
+      e.preventDefault();
+      e.stopPropagation();
+
+      el.classList.remove("drag-over");
+
+      const fromId=
+        draggedId ||
+        e.dataTransfer.getData("text/plain");
+
+      const toId=it.id;
+
+      if(!fromId || fromId===toId)return;
+
+      const old=state.items.findIndex(
+        x=>x.id===fromId
+      );
+
+      const target=state.items.findIndex(
+        x=>x.id===toId
+      );
+
+      if(old<0 || target<0)return;
+
+      const [moved]=state.items.splice(old,1);
+
+      state.items.splice(target,0,moved);
+
+      dragMoved=true;
 
       save();
       render();
