@@ -26,6 +26,15 @@ body{
 }
 .engine,.search-btn{border:0;background:none;color:var(--muted);cursor:pointer}
 .engine{width:54px;font-size:20px;font-weight:600}
+
+#engineButton img{
+  width:20px;
+  height:20px;
+  object-fit:contain;
+  display:block;
+  margin:auto;
+}
+
 .search input{flex:1;height:100%;border:0;outline:0;background:transparent;color:var(--text);font-size:16px}
 .search input::placeholder{color:var(--muted)}
 .search-btn{width:54px;font-size:27px}
