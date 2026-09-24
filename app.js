@@ -1283,6 +1283,10 @@ function renderFolderItems(folder){
          ========================= */
 
       el.addEventListener("dragstart",e=>{
+  console.log("===== FOLDER DRAGSTART =====");
+  console.log("folderId:",folder.id);
+  console.log("childId:",ch.id);
+
   draggedId=ch.id;
   didDrag=false;
 
@@ -1291,19 +1295,26 @@ function renderFolderItems(folder){
     childId:ch.id
   };
 
+  console.log(
+    "folderDragSource SET:",
+    folderDragSource
+  );
+
   el.classList.add("dragging");
 
-  /*
-   * 关键：
-   * 拖拽开始后，文件夹弹窗不再拦截鼠标事件。
-   * 这样鼠标拖出弹窗后，主页可以接收到 dragover / drop。
-   */
   folderDialog.style.pointerEvents="none";
 
-  /*
-   * 开启全页面拖拽接收
-   */
+  console.log(
+    "dialog pointerEvents:",
+    getComputedStyle(folderDialog).pointerEvents
+  );
+
   enableFolderGlobalDrag();
+
+  console.log(
+    "folderGlobalDragActive:",
+    folderGlobalDragActive
+  );
 
   e.dataTransfer.effectAllowed="move";
 
@@ -1319,7 +1330,13 @@ function renderFolderItems(folder){
       childId:ch.id
     })
   );
+
+  console.log(
+    "dataTransfer types:",
+    [...e.dataTransfer.types]
+  );
 });
+
 
 
       /* =========================
