@@ -500,3 +500,23 @@ color:var(--text);text-align:left;border-radius:8px;cursor:pointer}
   object-fit:contain;
   display:block;
 }
+
+
+.item{
+  cursor:grab;
+}
+
+.item:active{
+  cursor:grabbing;
+}
+
+.item.dragging{
+  opacity:.4;
+  transform:scale(.95);
+}
+
+.item.drag-over{
+  border-color:var(--accent);
+  background:rgba(127,127,127,.12);
+  transform:scale(1.03);
+}
