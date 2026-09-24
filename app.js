@@ -47,6 +47,8 @@ let searchHistory=JSON.parse(
 
 const searchHistoryEl=$("#searchHistory");
 
+let searchHistoryActiveIndex=-1;
+
 let contextId=null, currentFolderId=null;
 
 function save(){localStorage.setItem(STORAGE,JSON.stringify(state))}
@@ -137,6 +139,8 @@ function renderSearchHistory(){
 
 
 function renderSearchHistory(filter=""){
+  searchHistoryActiveIndex=-1;
+  
   const keyword=filter.trim().toLowerCase();
 
   const filteredHistory=searchHistory.filter(query=>
@@ -193,6 +197,73 @@ $("#searchInput").addEventListener("focus",()=>{
 $("#searchInput").addEventListener("input",()=>{
   renderSearchHistory($("#searchInput").value);
 });
+
+
+
+$("#searchInput").addEventListener("keydown",e=>{
+  const items=[
+    ...searchHistoryEl.querySelectorAll(".search-history-item")
+  ];
+
+  if(searchHistoryEl.classList.contains("hidden") || !items.length){
+    return;
+  }
+
+  if(e.key==="ArrowDown"){
+    e.preventDefault();
+
+    searchHistoryActiveIndex++;
+
+    if(searchHistoryActiveIndex>=items.length){
+      searchHistoryActiveIndex=0;
+    }
+
+    updateSearchHistoryActive(items);
+    return;
+  }
+
+  if(e.key==="ArrowUp"){
+    e.preventDefault();
+
+    searchHistoryActiveIndex--;
+
+    if(searchHistoryActiveIndex<0){
+      searchHistoryActiveIndex=items.length-1;
+    }
+
+    updateSearchHistoryActive(items);
+    return;
+  }
+
+  if(e.key==="Enter" && searchHistoryActiveIndex>=0){
+    e.preventDefault();
+
+    const item=items[searchHistoryActiveIndex];
+    const index=Number(item.dataset.index);
+    const query=searchHistory[index];
+
+    if(query){
+      $("#searchInput").value=query;
+      searchHistoryEl.classList.add("hidden");
+      searchHistoryActiveIndex=-1;
+    }
+  }
+});
+
+function updateSearchHistoryActive(items){
+  items.forEach((item,index)=>{
+    item.classList.toggle(
+      "active",
+      index===searchHistoryActiveIndex
+    );
+  });
+
+  if(searchHistoryActiveIndex>=0){
+    items[searchHistoryActiveIndex].scrollIntoView({
+      block:"nearest"
+    });
+  }
+}
 
 searchHistoryEl.addEventListener("click",e=>{
   const deleteButton=e.target.closest("[data-delete]");
