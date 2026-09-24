@@ -30,6 +30,7 @@
         <button class="search-btn" title="搜索">⌕</button>
       </form>
       -->
+      <!--
       <form id="searchForm" class="search">
   <div class="engine-wrap">
     <button
@@ -48,6 +49,33 @@
 
   <button class="search-btn" title="搜索">⌕</button>
 </form>
+    -->
+
+      <div class="search-wrap">
+  <form id="searchForm" class="search">
+    <div class="engine-wrap">
+      <button
+        type="button"
+        id="engineButton"
+        class="engine"
+        title="选择搜索引擎"
+        aria-haspopup="listbox"
+        aria-expanded="false">
+      </button>
+
+      <div id="engineMenu" class="engine-menu hidden"></div>
+    </div>
+
+    <input
+      id="searchInput"
+      autocomplete="off"
+      placeholder="搜索或输入网址">
+
+    <button class="search-btn" title="搜索">⌕</button>
+  </form>
+
+  <div id="searchHistory" class="search-history hidden"></div>
+</div>
       
     </section>
 
