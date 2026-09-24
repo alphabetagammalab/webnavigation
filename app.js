@@ -47,7 +47,7 @@ function tick(){
     }) + " " +
     now.toLocaleDateString("zh-CN",{
       weekday:"long"
-    }) + "农历" + lunarText;
+    }) + " " + "农历" + lunarText;
 }
 setInterval(tick,1000);tick();
 
