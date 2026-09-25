@@ -1251,6 +1251,63 @@ document.querySelector(
     return;
   }
 
+  const item =
+    findItem(
+      state.sites,
+      contextId
+    );
+
+  hideContext();
+
+  if (!item) {
+    return;
+  }
+
+  if (
+    a === 'open' &&
+    item.type === 'site'
+  ) {
+    location.href = item.url;
+  }
+
+  if (
+    a === 'newtab' &&
+    item.type === 'site'
+  ) {
+    window.open(
+      item.url,
+      '_blank'
+    );
+  }
+
+  if (a === 'edit') {
+    openEditor(
+      contextId
+    );
+  }
+
+  if (a === 'delete') {
+    removeItem(
+      state.sites,
+      contextId
+    );
+
+    save();
+    render();
+  }
+};
+
+/*
+document.querySelector(
+  '#contextMenu'
+).onclick = e => {
+  const a =
+    e.target.dataset.action;
+
+  if (!a) {
+    return;
+  }
+
   hideContext();
 
   if (a === 'edit') {
@@ -1269,6 +1326,8 @@ document.querySelector(
     render();
   }
 };
+*/
+
 
 document.addEventListener(
   'click',
