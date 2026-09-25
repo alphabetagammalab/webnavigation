@@ -1320,21 +1320,26 @@ document
 
 
 /*日期显示为中文并显示农历*/
+
 function tick(){
   const now=new Date();
+
   $("#clock").textContent=now.toLocaleTimeString("zh-CN",{
     hour:"2-digit",
     minute:"2-digit",
     second:"2-digit"
   });
+
   const solar = Solar.fromYmd(
     now.getFullYear(),
     now.getMonth() + 1,
     now.getDate()
   );
+
   const lunar = solar.getLunar();
+
   const lunarText = lunar.getMonthInChinese() + "月" + lunar.getDayInChinese();
-  /*
+
   $("#date").textContent =
     now.toLocaleDateString("zh-CN",{
       year:"numeric",
@@ -1342,35 +1347,10 @@ function tick(){
       day:"numeric",
       weekday:"long"
     }) + " " + lunarText;
-  */
-  /*
-  $("#date").textContent =
-    now.toLocaleDateString("zh-CN",{
-      year:"numeric",
-      month:"long",
-      day:"numeric"
-    }) + " " +
-    now.toLocaleDateString("zh-CN",{
-      weekday:"long"
-    }) + " " + "农历" + lunarText;
-    */
-
-  $("#dateSolar").textContent =
-  now.toLocaleDateString("zh-CN",{
-    year:"numeric",
-    month:"long",
-    day:"numeric"
-  });
-
-  $("#dateWeekday").textContent =
-    now.toLocaleDateString("zh-CN",{
-      weekday:"long"
-    });
-
-  $("#dateLunar").textContent = "农历" + lunarText;
-  
 }
-setInterval(tick,1000);tick();
+
+setInterval(tick,1000);
+tick();
 
 
 /*
