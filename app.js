@@ -77,6 +77,51 @@ function renderSearchHistory() {
   }
 
   box.innerHTML =
+  history
+    .map(
+      item => `
+        <div class="search-history-row">
+          <button
+            class="search-history-item"
+            type="button"
+            data-query="${encodeURIComponent(item)}"
+          >
+            <span class="search-history-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="8"></circle>
+                <path d="M12 7v5l3 2"></path>
+              </svg>
+            </span>
+            <span class="search-history-text">${item}</span>
+          </button>
+
+          <button
+            class="search-history-delete"
+            type="button"
+            data-history-delete="${encodeURIComponent(item)}"
+            aria-label="删除这条搜索历史"
+            title="删除"
+          >
+            ×
+          </button>
+        </div>
+      `
+    )
+    .join('') +
+  `
+    <div class="search-history-footer">
+      <button
+        class="search-history-clear"
+        type="button"
+        data-history-action="clear"
+      >
+        清空搜索历史
+      </button>
+    </div>
+  `;
+
+  /*
+  box.innerHTML =
     history
       .map(
         item =>
@@ -94,7 +139,8 @@ function renderSearchHistory() {
         </button>
       </div>
     `;
-
+*/
+  
   box.classList.remove('hidden');
 }
 
