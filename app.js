@@ -1508,12 +1508,12 @@ function dclose(id) {
     '#' + id
   )?.close();
 }
-
+/*
 document.querySelector(
   '#addBtn'
 ).onclick =
   () => openEditor();
-
+*/
 document.querySelector(
   '#settingsBtn'
 ).onclick = () => {
