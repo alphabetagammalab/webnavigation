@@ -1,244 +1,1621 @@
-const STORAGE='minimal_nav_local_v2';
-const ENGINES={
-  google:{name:'Google',short:'G',url:'https://www.google.com/search?q='},
-  bing:{name:'Bing',short:'B',url:'https://www.bing.com/search?q='},
-  duck:{name:'DuckDuckGo',short:'D',url:'https://duckduckgo.com/?q='},
-  baidu:{name:'Baidu',short:'百',url:'https://www.baidu.com/s?wd='}
-};
-const uid=()=>crypto.randomUUID();
-const site=(name,url,icon='')=>({id:uid(),type:'site',name,url,icon});
-const defaultSites=[
-  site('Google','https://www.google.com'),site('YouTube','https://www.youtube.com'),site('GitHub','https://github.com'),site('ChatGPT','https://chatgpt.com'),
-  site('Google Scholar','https://scholar.google.com'),site('Nature','https://www.nature.com'),site('PNAS','https://www.pnas.org'),site('Cloudflare','https://www.cloudflare.com'),site('Wikipedia','https://www.wikipedia.org')
-];
-const defaultState=()=>({version:3,engine:'google',theme:'auto',showDate:true,sites:defaultSites});
-let state=loadState();
-let editingId=null,contextId=null,calendarDate=new Date(),currentCollectionId=null;
+```javascript
+const STORAGE = 'minimal_nav_local_v2';
 
-function loadState(){
-  try{const raw=JSON.parse(localStorage.getItem(STORAGE)||'null');if(raw)return sanitize(raw)}catch{}
-  try{const old=JSON.parse(localStorage.getItem('minimal_nav_local_v1')||localStorage.getItem('minimal_nav_local')||'null');if(old)return sanitize(old)}catch{}
+const ENGINES = {
+  google: {
+    name: 'Google',
+    short: 'G',
+    url: 'https://www.google.com/search?q='
+  },
+  bing: {
+    name: 'Bing',
+    short: 'B',
+    url: 'https://www.bing.com/search?q='
+  },
+  duck: {
+    name: 'DuckDuckGo',
+    short: 'D',
+    url: 'https://duckduckgo.com/?q='
+  },
+  baidu: {
+    name: 'Baidu',
+    short: '百',
+    url: 'https://www.baidu.com/s?wd='
+  }
+};
+
+const uid = () => crypto.randomUUID();
+
+const site = (name, url, icon = '') => ({
+  id: uid(),
+  type: 'site',
+  name,
+  url,
+  icon
+});
+
+const defaultSites = [
+  site('Google', 'https://www.google.com'),
+  site('YouTube', 'https://www.youtube.com'),
+  site('GitHub', 'https://github.com'),
+  site('ChatGPT', 'https://chatgpt.com'),
+  site('Google Scholar', 'https://scholar.google.com'),
+  site('Nature', 'https://www.nature.com'),
+  site('PNAS', 'https://www.pnas.org'),
+  site('Cloudflare', 'https://www.cloudflare.com'),
+  site('Wikipedia', 'https://www.wikipedia.org')
+];
+
+const defaultState = () => ({
+  version: 3,
+  engine: 'google',
+  theme: 'auto',
+  showDate: true,
+  sites: defaultSites
+});
+
+let state = loadState();
+
+let editingId = null;
+let contextId = null;
+let calendarDate = new Date();
+let currentCollectionId = null;
+
+
+function loadState() {
+  try {
+    const raw = JSON.parse(
+      localStorage.getItem(STORAGE) || 'null'
+    );
+
+    if (raw) {
+      return sanitize(raw);
+    }
+  } catch {}
+
+  try {
+    const old = JSON.parse(
+      localStorage.getItem('minimal_nav_local_v1') ||
+      localStorage.getItem('minimal_nav_local') ||
+      'null'
+    );
+
+    if (old) {
+      return sanitize(old);
+    }
+  } catch {}
+
   return defaultState();
 }
-function normalizeItem(i){
-  if(!i)return null;
-  if(i.type==='folder'||Array.isArray(i.children)||Array.isArray(i.items)){
-    const children=Array.isArray(i.children)?i.children:Array.isArray(i.items)?i.items:[];
-    return {id:i.id||uid(),type:'folder',name:i.name||'聚合',children:children.map(normalizeItem).filter(Boolean)};
+
+
+function normalizeItem(i) {
+  if (!i) {
+    return null;
   }
-  return {id:i.id||uid(),type:'site',name:i.name||i.title||'未命名',url:i.url||'',icon:i.icon||i.iconUrl||''};
+
+  if (
+    i.type === 'folder' ||
+    Array.isArray(i.children) ||
+    Array.isArray(i.items)
+  ) {
+    const children =
+      Array.isArray(i.children)
+        ? i.children
+        : Array.isArray(i.items)
+          ? i.items
+          : [];
+
+    return {
+      id: i.id || uid(),
+      type: 'folder',
+      name: i.name || '聚合',
+      children: children
+        .map(normalizeItem)
+        .filter(Boolean)
+    };
+  }
+
+  return {
+    id: i.id || uid(),
+    type: 'site',
+    name: i.name || i.title || '未命名',
+    url: i.url || '',
+    icon: i.icon || i.iconUrl || ''
+  };
 }
-function sanitize(x){
-  let sites=[];
-  if(Array.isArray(x.sites))sites=x.sites.map(normalizeItem).filter(Boolean);
-  else if(Array.isArray(x.groups))sites=x.groups.flatMap(g=>Array.isArray(g.items)?g.items:[]).map(normalizeItem).filter(Boolean);
-  return {version:3,engine:ENGINES[x.engine]?x.engine:'google',theme:['auto','dark','light'].includes(x.theme)?x.theme:'auto',showDate:x.showDate!==false,sites:sites.filter(i=>i.type==='folder'?i.children.length:i.url)};
+
+
+function sanitize(x) {
+  let sites = [];
+
+  if (Array.isArray(x.sites)) {
+    sites = x.sites
+      .map(normalizeItem)
+      .filter(Boolean);
+  } else if (Array.isArray(x.groups)) {
+    sites = x.groups
+      .flatMap(g => Array.isArray(g.items) ? g.items : [])
+      .map(normalizeItem)
+      .filter(Boolean);
+  }
+
+  return {
+    version: 3,
+    engine: ENGINES[x.engine] ? x.engine : 'google',
+    theme: ['auto', 'dark', 'light'].includes(x.theme)
+      ? x.theme
+      : 'auto',
+    showDate: x.showDate !== false,
+    sites: sites.filter(
+      i => i.type === 'folder'
+        ? i.children.length
+        : i.url
+    )
+  };
 }
-function save(){localStorage.setItem(STORAGE,JSON.stringify(state))}
-function favicon(url){try{return `https://www.google.com/s2/favicons?sz=128&domain_url=${encodeURIComponent(url)}`}catch{return ''}}
-function applyTheme(){let dark=state.theme==='dark';if(state.theme==='auto')dark=matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',dark);document.querySelector('#date').style.display=state.showDate?'':'none'}
-function siteIconHtml(i){return `<img class="favicon" alt="" src="${i.icon||favicon(i.url)}">`}
-function render(){
-  applyTheme();renderEngines();
-  const root=document.querySelector('#sites');root.innerHTML='';
-  state.sites.forEach(i=>root.appendChild(createCard(i)));
+
+
+function save() {
+  localStorage.setItem(
+    STORAGE,
+    JSON.stringify(state)
+  );
+}
+
+
+function favicon(url) {
+  try {
+    return `https://www.google.com/s2/favicons?sz=128&domain_url=${encodeURIComponent(url)}`;
+  } catch {
+    return '';
+  }
+}
+
+
+function applyTheme() {
+  let dark = state.theme === 'dark';
+
+  if (state.theme === 'auto') {
+    dark = matchMedia(
+      '(prefers-color-scheme: dark)'
+    ).matches;
+  }
+
+  document.documentElement.classList.toggle(
+    'dark',
+    dark
+  );
+
+  document.querySelector('#date').style.display =
+    state.showDate ? '' : 'none';
+}
+
+
+function siteIconHtml(i) {
+  return `<img class="favicon" alt="" src="${i.icon || favicon(i.url)}">`;
+}
+
+
+function render() {
+  applyTheme();
+  renderEngines();
+
+  const root = document.querySelector('#sites');
+
+  root.innerHTML = '';
+
+  state.sites.forEach(i => {
+    root.appendChild(createCard(i));
+  });
+
   initSortable(root);
 }
-function createCard(i){
-  const card=document.createElement('article');card.className='site-card';card.dataset.id=i.id;
-  if(i.type==='folder'){
-    const icons=(i.children||[]).slice(0,4).map(ch=>ch.type==='site'?siteIconHtml(ch):'').join('');
-    card.innerHTML=`<div class="folder-icon">${icons||'<span>＋</span>'}</div><div class="site-name"></div>`;
-    card.querySelector('.site-name').textContent=i.name;
-    card.addEventListener('click',()=>openCollection(i));
-  }else{
-    card.innerHTML=`${siteIconHtml(i)}<div class="site-name"></div>`;
-    const img=card.querySelector('.favicon');img.onerror=()=>{if(i.icon){img.src=favicon(i.url)}else img.style.visibility='hidden'};
-    card.querySelector('.site-name').textContent=i.name;
-    card.addEventListener('click',()=>location.href=i.url);
+
+
+function createCard(i) {
+  const card = document.createElement('article');
+
+  card.className = 'site-card';
+  card.dataset.id = i.id;
+
+  if (i.type === 'folder') {
+    const icons = (i.children || [])
+      .slice(0, 4)
+      .map(ch =>
+        ch.type === 'site'
+          ? siteIconHtml(ch)
+          : ''
+      )
+      .join('');
+
+    card.innerHTML = `
+      <div class="folder-icon">
+        ${icons || '<span>＋</span>'}
+      </div>
+      <div class="site-name"></div>
+    `;
+
+    card.querySelector('.site-name').textContent =
+      i.name;
+
+    card.addEventListener(
+      'click',
+      () => openCollection(i)
+    );
+  } else {
+    card.innerHTML = `
+      ${siteIconHtml(i)}
+      <div class="site-name"></div>
+    `;
+
+    const img = card.querySelector('.favicon');
+
+    img.onerror = () => {
+      if (i.icon) {
+        img.src = favicon(i.url);
+      } else {
+        img.style.visibility = 'hidden';
+      }
+    };
+
+    card.querySelector('.site-name').textContent =
+      i.name;
+
+    card.addEventListener(
+      'click',
+      () => location.href = i.url
+    );
   }
-  card.addEventListener('contextmenu',e=>{e.preventDefault();showContext(e.clientX,e.clientY,i.id)});
+
+  card.addEventListener(
+    'contextmenu',
+    e => {
+      e.preventDefault();
+      showContext(
+        e.clientX,
+        e.clientY,
+        i.id
+      );
+    }
+  );
+
   return card;
 }
-let mergeTimer=null;
-let mergeSourceId=null;
-let mergeTargetId=null;
-let mergeTriggered=false;
-let pendingMerge=null;
 
-function clearMergeTimer(root){
-  if(mergeTimer){clearTimeout(mergeTimer);mergeTimer=null;}
-  mergeSourceId=null;
-  mergeTargetId=null;
-  root?.querySelectorAll('.merge-target').forEach(el=>el.classList.remove('merge-target'));
+
+let mergeTimer = null;
+let mergeSourceId = null;
+let mergeTargetId = null;
+let mergeTriggered = false;
+let pendingMerge = null;
+
+
+function clearMergeTimer(root) {
+  if (mergeTimer) {
+    clearTimeout(mergeTimer);
+    mergeTimer = null;
+  }
+
+  mergeSourceId = null;
+  mergeTargetId = null;
+
+  root?.querySelectorAll('.merge-target')
+    .forEach(el => {
+      el.classList.remove('merge-target');
+    });
 }
 
-function startMergeTimer(root,sourceId,targetId,targetEl){
-  if(!sourceId||!targetId||sourceId===targetId)return;
-  if(mergeSourceId===sourceId&&mergeTargetId===targetId&&mergeTimer)return;
+
+function startMergeTimer(
+  root,
+  sourceId,
+  targetId,
+  targetEl
+) {
+  if (
+    !sourceId ||
+    !targetId ||
+    sourceId === targetId
+  ) {
+    return;
+  }
+
+  if (
+    mergeSourceId === sourceId &&
+    mergeTargetId === targetId &&
+    mergeTimer
+  ) {
+    return;
+  }
 
   clearMergeTimer(root);
-  mergeSourceId=sourceId;
-  mergeTargetId=targetId;
+
+  mergeSourceId = sourceId;
+  mergeTargetId = targetId;
+
   targetEl?.classList.add('merge-target');
 
-  mergeTimer=setTimeout(()=>{
-    const source=state.sites.find(x=>x.id===sourceId);
-    const target=state.sites.find(x=>x.id===targetId);
-    if(!source||!target)return;
+  mergeTimer = setTimeout(() => {
+    const source = state.sites.find(
+      x => x.id === sourceId
+    );
+
+    const target = state.sites.find(
+      x => x.id === targetId
+    );
+
+    if (!source || !target) {
+      return;
+    }
+
     // Do not rebuild the DOM while SortableJS is still dragging.
     // Queue the merge and apply it from onEnd instead.
-    pendingMerge={sourceId,targetId};
-    mergeTriggered=true;
-  },600);
+    pendingMerge = {
+      sourceId,
+      targetId
+    };
+
+    mergeTriggered = true;
+  }, 600);
 }
 
-function initSortable(root){
-  if(root._sortable)root._sortable.destroy();
+
+function initSortable(root) {
+  if (root._sortable) {
+    root._sortable.destroy();
+  }
+
   clearMergeTimer(root);
 
-  root._sortable=new Sortable(root,{
-    animation:150,
-    forceFallback:true,
-    fallbackOnBody:true,
-    swapThreshold:.65,
-    ghostClass:'sortable-ghost',
-    chosenClass:'sortable-chosen',
+  root._sortable = new Sortable(root, {
+    animation: 150,
+    forceFallback: true,
+    fallbackOnBody: true,
+    swapThreshold: .65,
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
 
-    onStart:e=>{
-      mergeTriggered=false;
-      pendingMerge=null;
+    onStart: e => {
+      mergeTriggered = false;
+      pendingMerge = null;
       clearMergeTimer(root);
     },
 
-    onMove:e=>{
-      const sourceId=e.dragged?.dataset?.id;
-      const related=e.related?.closest?.('.site-card');
-      const targetId=related?.dataset?.id;
+    onMove: e => {
+      const sourceId =
+        e.dragged?.dataset?.id;
 
-      if(!sourceId||!targetId||sourceId===targetId){
+      const related =
+        e.related?.closest?.('.site-card');
+
+      const targetId =
+        related?.dataset?.id;
+
+      if (
+        !sourceId ||
+        !targetId ||
+        sourceId === targetId
+      ) {
         clearMergeTimer(root);
         return true;
       }
 
-      startMergeTimer(root,sourceId,targetId,related);
+      startMergeTimer(
+        root,
+        sourceId,
+        targetId,
+        related
+      );
+
       return true;
     },
 
-    onEnd:e=>{
-      if(pendingMerge){
-        const {sourceId,targetId}=pendingMerge;
-        pendingMerge=null;
+    onEnd: e => {
+      if (pendingMerge) {
+        const {
+          sourceId,
+          targetId
+        } = pendingMerge;
+
+        pendingMerge = null;
+
         clearMergeTimer(root);
-        mergeTriggered=false;
-        const source=state.sites.find(x=>x.id===sourceId);
-        const target=state.sites.find(x=>x.id===targetId);
-        if(source&&target&&source.id!==target.id){
-          mergeItems(source,target);
+
+        mergeTriggered = false;
+
+        const source = state.sites.find(
+          x => x.id === sourceId
+        );
+
+        const target = state.sites.find(
+          x => x.id === targetId
+        );
+
+        if (
+          source &&
+          target &&
+          source.id !== target.id
+        ) {
+          mergeItems(source, target);
           return;
         }
       }
 
-      if(mergeTriggered){
+      if (mergeTriggered) {
         clearMergeTimer(root);
-        mergeTriggered=false;
+        mergeTriggered = false;
         return;
       }
 
       clearMergeTimer(root);
 
-      const ids=[...root.children]
-        .filter(x=>x.dataset.id)
-        .map(x=>x.dataset.id);
-      const byId=new Map(state.sites.map(x=>[x.id,x]));
-      state.sites=ids.map(id=>byId.get(id)).filter(Boolean);
+      const ids = [...root.children]
+        .filter(x => x.dataset.id)
+        .map(x => x.dataset.id);
+
+      const byId = new Map(
+        state.sites.map(x => [x.id, x])
+      );
+
+      state.sites = ids
+        .map(id => byId.get(id))
+        .filter(Boolean);
+
       save();
       render();
     }
   });
 }
-function dropTargetFromEvent(e){
-  const oe=e.originalEvent;if(!oe||typeof oe.clientX!=='number')return null;
-  const el=document.elementFromPoint(oe.clientX,oe.clientY)?.closest('.site-card');
-  return el||null;
-}
-function mergeItems(source,target){
-  if(source.id===target.id)return;
-  if(source.type==='folder'&&target.type==='folder'){
-    target.children=[...(target.children||[]),...(source.children||[])];
-  }else if(source.type==='site'&&target.type==='folder'){
-    target.children=[...(target.children||[]),source];
-  }else if(source.type==='folder'&&target.type==='site'){
-    const folder={id:uid(),type:'folder',name:'未命名',children:[target,...(source.children||[])]};
-    const idx=state.sites.findIndex(x=>x.id===target.id);state.sites=state.sites.filter(x=>x.id!==source.id&&x.id!==target.id);state.sites.splice(idx,0,folder);save();render();return;
-  }else{
-    const folder={id:uid(),type:'folder',name:'未命名',children:[target,source]};
-    const idx=state.sites.findIndex(x=>x.id===target.id);state.sites=state.sites.filter(x=>x.id!==source.id&&x.id!==target.id);state.sites.splice(Math.max(0,idx),0,folder);save();render();return;
+
+
+function dropTargetFromEvent(e) {
+  const oe = e.originalEvent;
+
+  if (
+    !oe ||
+    typeof oe.clientX !== 'number'
+  ) {
+    return null;
   }
-  state.sites=state.sites.filter(x=>x.id!==source.id);save();render();toast('已聚合');
+
+  const el = document
+    .elementFromPoint(
+      oe.clientX,
+      oe.clientY
+    )
+    ?.closest('.site-card');
+
+  return el || null;
 }
-function openCollection(folder){currentCollectionId=folder.id;document.querySelector('#collectionTitle').textContent=folder.name;renderCollectionItems(folder);document.querySelector('#collectionDialog').show()}
-function renderCollectionItems(folder){
-  const box=document.querySelector('#collectionItems');box.innerHTML='';
-  (folder.children||[]).forEach(ch=>{
-    const el=document.createElement('div');el.className='collection-item';el.dataset.id=ch.id;el.innerHTML=`${ch.type==='site'?siteIconHtml(ch):'<div class="mini-folder">＋</div>'}<div class="collection-name"></div>`;el.querySelector('.collection-name').textContent=ch.name;
-    if(ch.type==='site'){const img=el.querySelector('.favicon');img.onerror=()=>{if(ch.icon)img.src=favicon(ch.url);else img.style.visibility='hidden'};el.onclick=()=>location.href=ch.url}else el.onclick=()=>openCollection(ch);
-    el.addEventListener('contextmenu',e=>{e.preventDefault();openEditor(ch.id,folder.id)});
+
+
+function mergeItems(source, target) {
+  if (source.id === target.id) {
+    return;
+  }
+
+  if (
+    source.type === 'folder' &&
+    target.type === 'folder'
+  ) {
+    target.children = [
+      ...(target.children || []),
+      ...(source.children || [])
+    ];
+  } else if (
+    source.type === 'site' &&
+    target.type === 'folder'
+  ) {
+    target.children = [
+      ...(target.children || []),
+      source
+    ];
+  } else if (
+    source.type === 'folder' &&
+    target.type === 'site'
+  ) {
+    const folder = {
+      id: uid(),
+      type: 'folder',
+      name: '未命名',
+      children: [
+        target,
+        ...(source.children || [])
+      ]
+    };
+
+    const idx = state.sites.findIndex(
+      x => x.id === target.id
+    );
+
+    state.sites = state.sites.filter(
+      x =>
+        x.id !== source.id &&
+        x.id !== target.id
+    );
+
+    state.sites.splice(
+      idx,
+      0,
+      folder
+    );
+
+    save();
+    render();
+    return;
+  } else {
+    const folder = {
+      id: uid(),
+      type: 'folder',
+      name: '未命名',
+      children: [
+        target,
+        source
+      ]
+    };
+
+    const idx = state.sites.findIndex(
+      x => x.id === target.id
+    );
+
+    state.sites = state.sites.filter(
+      x =>
+        x.id !== source.id &&
+        x.id !== target.id
+    );
+
+    state.sites.splice(
+      Math.max(0, idx),
+      0,
+      folder
+    );
+
+    save();
+    render();
+    return;
+  }
+
+  state.sites = state.sites.filter(
+    x => x.id !== source.id
+  );
+
+  save();
+  render();
+  toast('已聚合');
+}
+
+
+function openCollection(folder) {
+  currentCollectionId = folder.id;
+
+  document.querySelector(
+    '#collectionTitle'
+  ).textContent = folder.name;
+
+  renderCollectionItems(folder);
+
+  document
+    .querySelector('#collectionDialog')
+    .show();
+}
+
+
+function renderCollectionItems(folder) {
+  const box =
+    document.querySelector('#collectionItems');
+
+  box.innerHTML = '';
+
+  (folder.children || []).forEach(ch => {
+    const el = document.createElement('div');
+
+    el.className = 'collection-item';
+    el.dataset.id = ch.id;
+
+    el.innerHTML = `
+      ${
+        ch.type === 'site'
+          ? siteIconHtml(ch)
+          : '<div class="mini-folder">＋</div>'
+      }
+      <div class="collection-name"></div>
+    `;
+
+    el.querySelector(
+      '.collection-name'
+    ).textContent = ch.name;
+
+    if (ch.type === 'site') {
+      const img =
+        el.querySelector('.favicon');
+
+      img.onerror = () => {
+        if (ch.icon) {
+          img.src = favicon(ch.url);
+        } else {
+          img.style.visibility = 'hidden';
+        }
+      };
+
+      el.onclick = () =>
+        location.href = ch.url;
+    } else {
+      el.onclick = () =>
+        openCollection(ch);
+    }
+
+    el.addEventListener(
+      'contextmenu',
+      e => {
+        e.preventDefault();
+        openEditor(ch.id, folder.id);
+      }
+    );
+
     box.appendChild(el);
   });
-  const back=document.createElement('button');back.className='collection-add';back.textContent='＋ 添加网站';back.onclick=()=>openEditor(null,folder.id);box.appendChild(back);
-  if(!box._sortable)box._sortable=new Sortable(box,{animation:150,forceFallback:true,fallbackOnBody:true,filter:'.collection-add',ghostClass:'sortable-ghost',onEnd:e=>{
-    if(e.item.classList.contains('collection-add'))return;
-    const oe=e.originalEvent;
-    const dlg=document.querySelector('#collectionDialog');
-    if(oe&&typeof oe.clientX==='number'&&typeof oe.clientY==='number'){
-      const r=dlg.getBoundingClientRect();
-      const inside=oe.clientX>=r.left&&oe.clientX<=r.right&&oe.clientY>=r.top&&oe.clientY<=r.bottom;
-      if(!inside){
-        const childId=e.item.dataset.id;
-        const idx=folder.children.findIndex(x=>x.id===childId);
-        if(idx>=0){
-          const [child]=folder.children.splice(idx,1);
-          state.sites.push(child);
-          if(folder.children.length===1){
-            const last=folder.children[0];
-            const fi=state.sites.findIndex(x=>x.id===folder.id);
-            state.sites=state.sites.filter(x=>x.id!==folder.id);
-            state.sites.splice(Math.max(0,fi),0,last);
-          }else if(folder.children.length===0){
-            state.sites=state.sites.filter(x=>x.id!==folder.id);
+
+  const back =
+    document.createElement('button');
+
+  back.className = 'collection-add';
+  back.textContent = '＋ 添加网站';
+
+  back.onclick = () =>
+    openEditor(null, folder.id);
+
+  box.appendChild(back);
+
+  if (!box._sortable) {
+    box._sortable = new Sortable(box, {
+      animation: 150,
+      forceFallback: true,
+      fallbackOnBody: true,
+      filter: '.collection-add',
+      ghostClass: 'sortable-ghost',
+
+      onEnd: e => {
+        if (
+          e.item.classList.contains(
+            'collection-add'
+          )
+        ) {
+          return;
+        }
+
+        const oe = e.originalEvent;
+
+        const dlg =
+          document.querySelector(
+            '#collectionDialog'
+          );
+
+        if (
+          oe &&
+          typeof oe.clientX === 'number' &&
+          typeof oe.clientY === 'number'
+        ) {
+          const r =
+            dlg.getBoundingClientRect();
+
+          const inside =
+            oe.clientX >= r.left &&
+            oe.clientX <= r.right &&
+            oe.clientY >= r.top &&
+            oe.clientY <= r.bottom;
+
+          if (!inside) {
+            const childId =
+              e.item.dataset.id;
+
+            const idx =
+              folder.children.findIndex(
+                x => x.id === childId
+              );
+
+            if (idx >= 0) {
+              const [child] =
+                folder.children.splice(
+                  idx,
+                  1
+                );
+
+              state.sites.push(child);
+
+              if (
+                folder.children.length === 1
+              ) {
+                const last =
+                  folder.children[0];
+
+                const fi =
+                  state.sites.findIndex(
+                    x => x.id === folder.id
+                  );
+
+                state.sites =
+                  state.sites.filter(
+                    x => x.id !== folder.id
+                  );
+
+                state.sites.splice(
+                  Math.max(0, fi),
+                  0,
+                  last
+                );
+              } else if (
+                folder.children.length === 0
+              ) {
+                state.sites =
+                  state.sites.filter(
+                    x => x.id !== folder.id
+                  );
+              }
+
+              save();
+
+              dclose(
+                'collectionDialog'
+              );
+
+              currentCollectionId = null;
+
+              render();
+
+              toast('已拆分到首页');
+
+              return;
+            }
           }
-          save();dclose('collectionDialog');currentCollectionId=null;render();toast('已拆分到首页');return;
+        }
+
+        const ids = [
+          ...box.querySelectorAll(
+            '.collection-item'
+          )
+        ].map(
+          x => x.dataset.id
+        );
+
+        const byId = new Map(
+          folder.children.map(
+            x => [x.id, x]
+          )
+        );
+
+        folder.children = ids
+          .map(id => byId.get(id))
+          .filter(Boolean);
+
+        save();
+
+        renderCollectionItems(folder);
+        render();
+      }
+    });
+  } else {
+    box._sortable.option(
+      'disabled',
+      false
+    );
+  }
+}
+
+
+function openEditor(
+  id = null,
+  parentId = null
+) {
+  editingId = id;
+  window.editParentId = parentId;
+
+  const d =
+    document.querySelector(
+      '#editorDialog'
+    );
+
+  const item =
+    findItem(state.sites, id);
+
+  document.querySelector(
+    '#editorTitle'
+  ).textContent =
+    id ? '编辑网站' : '添加网站';
+
+  document.querySelector(
+    '#nameInput'
+  ).value =
+    item?.name || '';
+
+  document.querySelector(
+    '#urlInput'
+  ).value =
+    item?.url || '';
+
+  document.querySelector(
+    '#iconInput'
+  ).value =
+    item?.icon || '';
+
+  document.querySelector(
+    '#deleteBtn'
+  ).classList.toggle(
+    'hidden',
+    !id
+  );
+
+  d.showModal();
+}
+
+
+function findItem(list, id) {
+  for (const i of list) {
+    if (i.id === id) {
+      return i;
+    }
+
+    if (i.type === 'folder') {
+      const found =
+        findItem(
+          i.children || [],
+          id
+        );
+
+      if (found) {
+        return found;
+      }
+    }
+  }
+
+  return null;
+}
+
+
+function removeItem(list, id) {
+  for (
+    let n = list.length - 1;
+    n >= 0;
+    n--
+  ) {
+    if (list[n].id === id) {
+      list.splice(n, 1);
+      return true;
+    }
+
+    if (
+      list[n].type === 'folder' &&
+      removeItem(
+        list[n].children || [],
+        id
+      )
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+document
+  .querySelector('#editorForm')
+  .addEventListener(
+    'submit',
+    e => {
+      e.preventDefault();
+
+      const name =
+        document.querySelector(
+          '#nameInput'
+        ).value.trim();
+
+      const url =
+        document.querySelector(
+          '#urlInput'
+        ).value.trim();
+
+      const icon =
+        document.querySelector(
+          '#iconInput'
+        ).value.trim();
+
+      if (!name) {
+        return;
+      }
+
+      if (!/^https?:\/\//i.test(url)) {
+        toast(
+          '网址请以 http:// 或 https:// 开头'
+        );
+        return;
+      }
+
+      if (editingId) {
+        const item =
+          findItem(
+            state.sites,
+            editingId
+          );
+
+        if (
+          item &&
+          item.type === 'site'
+        ) {
+          item.name = name;
+          item.url = url;
+          item.icon = icon;
+        }
+      } else {
+        const item =
+          site(
+            name,
+            url,
+            icon
+          );
+
+        if (window.editParentId) {
+          const p =
+            findItem(
+              state.sites,
+              window.editParentId
+            );
+
+          if (p?.type === 'folder') {
+            p.children.push(item);
+          } else {
+            state.sites.push(item);
+          }
+        } else {
+          state.sites.push(item);
+        }
+      }
+
+      save();
+
+      dclose(
+        'editorDialog'
+      );
+
+      render();
+
+      if (currentCollectionId) {
+        const f =
+          findItem(
+            state.sites,
+            currentCollectionId
+          );
+
+        if (f?.type === 'folder') {
+          renderCollectionItems(f);
         }
       }
     }
-    const ids=[...box.querySelectorAll('.collection-item')].map(x=>x.dataset.id);const byId=new Map(folder.children.map(x=>[x.id,x]));folder.children=ids.map(id=>byId.get(id)).filter(Boolean);save();renderCollectionItems(folder);render();
-  }});else box._sortable.option('disabled',false);
+  );
+
+
+document.querySelector(
+  '#deleteBtn'
+).onclick = () => {
+  if (!editingId) {
+    return;
+  }
+
+  removeItem(
+    state.sites,
+    editingId
+  );
+
+  save();
+  dclose('editorDialog');
+  render();
+
+  const f =
+    findItem(
+      state.sites,
+      currentCollectionId
+    );
+
+  if (f?.type === 'folder') {
+    renderCollectionItems(f);
+  }
+};
+
+
+function showContext(x, y, id) {
+  contextId = id;
+
+  const m =
+    document.querySelector(
+      '#contextMenu'
+    );
+
+  m.classList.remove('hidden');
+
+  m.style.left =
+    Math.min(
+      x,
+      innerWidth - 160
+    ) + 'px';
+
+  m.style.top =
+    Math.min(
+      y,
+      innerHeight - 100
+    ) + 'px';
 }
-function openEditor(id=null,parentId=null){
-  editingId=id;window.editParentId=parentId;const d=document.querySelector('#editorDialog');let item=findItem(state.sites,id);
-  document.querySelector('#editorTitle').textContent=id?'编辑网站':'添加网站';document.querySelector('#nameInput').value=item?.name||'';document.querySelector('#urlInput').value=item?.url||'';document.querySelector('#iconInput').value=item?.icon||'';document.querySelector('#deleteBtn').classList.toggle('hidden',!id);d.showModal();
+
+
+function hideContext() {
+  document
+    .querySelector('#contextMenu')
+    .classList.add('hidden');
 }
-function findItem(list,id){for(const i of list){if(i.id===id)return i;if(i.type==='folder'){const found=findItem(i.children||[],id);if(found)return found}}return null}
-function removeItem(list,id){for(let n=list.length-1;n>=0;n--){if(list[n].id===id){list.splice(n,1);return true}if(list[n].type==='folder'&&removeItem(list[n].children||[],id))return true}return false}
-document.querySelector('#editorForm').addEventListener('submit',e=>{e.preventDefault();const name=document.querySelector('#nameInput').value.trim(),url=document.querySelector('#urlInput').value.trim(),icon=document.querySelector('#iconInput').value.trim();if(!name)return;if(!/^https?:\/\//i.test(url)){toast('网址请以 http:// 或 https:// 开头');return}if(editingId){const item=findItem(state.sites,editingId);if(item&&item.type==='site'){item.name=name;item.url=url;item.icon=icon}}else{const item=site(name,url,icon);if(window.editParentId){const p=findItem(state.sites,window.editParentId);if(p?.type==='folder')p.children.push(item);else state.sites.push(item)}else state.sites.push(item)}save();dclose('editorDialog');render();if(currentCollectionId){const f=findItem(state.sites,currentCollectionId);if(f?.type==='folder')renderCollectionItems(f)}});
-document.querySelector('#deleteBtn').onclick=()=>{if(!editingId)return;removeItem(state.sites,editingId);save();dclose('editorDialog');render();const f=findItem(state.sites,currentCollectionId);if(f?.type==='folder')renderCollectionItems(f)};
-function showContext(x,y,id){contextId=id;const m=document.querySelector('#contextMenu');m.classList.remove('hidden');m.style.left=Math.min(x,innerWidth-160)+'px';m.style.top=Math.min(y,innerHeight-100)+'px'}
-function hideContext(){document.querySelector('#contextMenu').classList.add('hidden')}
-document.querySelector('#contextMenu').onclick=e=>{const a=e.target.dataset.action;if(!a)return;hideContext();if(a==='edit')openEditor(contextId);if(a==='delete'){removeItem(state.sites,contextId);save();render()}};
-document.addEventListener('click',e=>{if(!e.target.closest('#contextMenu'))hideContext()});
-function search(q){q=q.trim();if(!q)return;if(/^https?:\/\//i.test(q)){location.href=q;return}if(/^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(q)){location.href='https://'+q;return}location.href=ENGINES[state.engine].url+encodeURIComponent(q)}
-const searchInput=document.querySelector('#search');searchInput.addEventListener('keydown',e=>{if(e.key==='Enter')search(searchInput.value)});
-function engineIconUrl(key){const domains={google:'google.com',bing:'bing.com',duck:'duckduckgo.com',baidu:'baidu.com'};return `https://www.google.com/s2/favicons?sz=64&domain=${domains[key]||'google.com'}`}
-function renderEngines(){const icon=document.querySelector('#engineIcon'),current=ENGINES[state.engine]||ENGINES.google;icon.src=engineIconUrl(state.engine);icon.alt=current.name;icon.title=current.name}
-document.querySelector('#engineBtn').addEventListener('click',()=>{const keys=Object.keys(ENGINES);const i=keys.indexOf(state.engine);state.engine=keys[(i+1)%keys.length];save();renderEngines()});
-function tick(){const d=new Date();document.querySelector('#clock').textContent=d.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false});document.querySelector('#date').textContent=d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}
-function toast(t){const x=document.querySelector('#toast');x.textContent=t;x.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>x.classList.remove('show'),1800)}
-function dclose(id){document.querySelector('#'+id)?.close()}
-document.querySelector('#addBtn').onclick=()=>openEditor();
-document.querySelector('#settingsBtn').onclick=()=>{document.querySelector('#settingsEngine').innerHTML=Object.entries(ENGINES).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('');document.querySelector('#settingsEngine').value=state.engine;document.querySelector('#themeSelect').value=state.theme;document.querySelector('#showDate').checked=state.showDate;document.querySelector('#settingsDialog').showModal()};
-document.querySelector('#settingsForm').addEventListener('submit',e=>{e.preventDefault();state.engine=document.querySelector('#settingsEngine').value;state.theme=document.querySelector('#themeSelect').value;state.showDate=document.querySelector('#showDate').checked;save();document.querySelector('#settingsDialog').close();render()});
-document.querySelector('#exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='my-navigation-backup.json';a.click();URL.revokeObjectURL(a.href);toast('已导出')};
-document.querySelector('#importBtn').onclick=()=>document.querySelector('#importFile').click();document.querySelector('#importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{state=sanitize(JSON.parse(await f.text()));save();render();toast('导入成功')}catch{toast('JSON 文件无效')}e.target.value=''};
-function renderCalendar(){const y=calendarDate.getFullYear(),m=calendarDate.getMonth();document.querySelector('#calendarTitle').textContent=new Date(y,m,1).toLocaleDateString('zh-CN',{year:'numeric',month:'long'});const box=document.querySelector('#calendar');box.innerHTML='';['一','二','三','四','五','六','日'].forEach(x=>{const d=document.createElement('div');d.className='weekday';d.textContent=x;box.appendChild(d)});const first=(new Date(y,m,1).getDay()+6)%7,days=new Date(y,m+1,0).getDate(),prev=new Date(y,m,0).getDate();for(let i=0;i<first;i++){const d=document.createElement('div');d.className='day other';d.textContent=prev-first+i+1;box.appendChild(d)}for(let day=1;day<=days;day++){const d=document.createElement('div');d.className='day';d.textContent=day;const now=new Date();if(day===now.getDate()&&m===now.getMonth()&&y===now.getFullYear())d.classList.add('today');box.appendChild(d)}}
-document.querySelector('#calendarBtn').onclick=()=>{calendarDate=new Date();renderCalendar();document.querySelector('#calendarDialog').showModal()};document.querySelector('#prevMonth').onclick=()=>{calendarDate.setMonth(calendarDate.getMonth()-1);renderCalendar()};document.querySelector('#nextMonth').onclick=()=>{calendarDate.setMonth(calendarDate.getMonth()+1);renderCalendar()};document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>dclose(b.dataset.close));window.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();searchInput.focus()}if(e.key==='Escape')hideContext()});matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',applyTheme);tick();setInterval(tick,1000);render();
+
+
+document
+  .querySelector('#contextMenu')
+  .onclick = e => {
+    const a =
+      e.target.dataset.action;
+
+    if (!a) {
+      return;
+    }
+
+    hideContext();
+
+    if (a === 'edit') {
+      openEditor(contextId);
+    }
+
+    if (a === 'delete') {
+      removeItem(
+        state.sites,
+        contextId
+      );
+
+      save();
+      render();
+    }
+  };
+
+
+document.addEventListener(
+  'click',
+  e => {
+    if (
+      !e.target.closest(
+        '#contextMenu'
+      )
+    ) {
+      hideContext();
+    }
+  }
+);
+
+
+function search(q) {
+  q = q.trim();
+
+  if (!q) {
+    return;
+  }
+
+  if (/^https?:\/\//i.test(q)) {
+    location.href = q;
+    return;
+  }
+
+  if (
+    /^[\w.-]+\.[a-z]{2,}(\/.*)?$/i.test(q)
+  ) {
+    location.href =
+      'https://' + q;
+    return;
+  }
+
+  location.href =
+    ENGINES[state.engine].url +
+    encodeURIComponent(q);
+}
+
+
+const searchInput =
+  document.querySelector('#search');
+
+searchInput.addEventListener(
+  'keydown',
+  e => {
+    if (e.key === 'Enter') {
+      search(
+        searchInput.value
+      );
+    }
+  }
+);
+
+
+function engineIconUrl(key) {
+  const domains = {
+    google: 'google.com',
+    bing: 'bing.com',
+    duck: 'duckduckgo.com',
+    baidu: 'baidu.com'
+  };
+
+  return `https://www.google.com/s2/favicons?sz=64&domain=${domains[key] || 'google.com'}`;
+}
+
+
+function renderEngines() {
+  const icon =
+    document.querySelector(
+      '#engineIcon'
+    );
+
+  const current =
+    ENGINES[state.engine] ||
+    ENGINES.google;
+
+  icon.src =
+    engineIconUrl(state.engine);
+
+  icon.alt =
+    current.name;
+
+  icon.title =
+    current.name;
+}
+
+
+document
+  .querySelector('#engineBtn')
+  .addEventListener(
+    'click',
+    () => {
+      const keys =
+        Object.keys(ENGINES);
+
+      const i =
+        keys.indexOf(
+          state.engine
+        );
+
+      state.engine =
+        keys[
+          (i + 1) % keys.length
+        ];
+
+      save();
+      renderEngines();
+    }
+  );
+
+
+function tick() {
+  const d = new Date();
+
+  document.querySelector(
+    '#clock'
+  ).textContent =
+    d.toLocaleTimeString(
+      'zh-CN',
+      {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }
+    );
+
+  document.querySelector(
+    '#date'
+  ).textContent =
+    d.toLocaleDateString(
+      'en-US',
+      {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric'
+      }
+    );
+}
+
+
+function toast(t) {
+  const x =
+    document.querySelector(
+      '#toast'
+    );
+
+  x.textContent = t;
+
+  x.classList.add('show');
+
+  clearTimeout(
+    window.__toast
+  );
+
+  window.__toast =
+    setTimeout(
+      () =>
+        x.classList.remove('show'),
+      1800
+    );
+}
+
+
+function dclose(id) {
+  document
+    .querySelector('#' + id)
+    ?.close();
+}
+
+
+document.querySelector(
+  '#addBtn'
+).onclick = () =>
+  openEditor();
+
+
+document.querySelector(
+  '#settingsBtn'
+).onclick = () => {
+  document.querySelector(
+    '#settingsEngine'
+  ).innerHTML =
+    Object.entries(ENGINES)
+      .map(
+        ([k, v]) =>
+          `<option value="${k}">${v.name}</option>`
+      )
+      .join('');
+
+  document.querySelector(
+    '#settingsEngine'
+  ).value =
+    state.engine;
+
+  document.querySelector(
+    '#themeSelect'
+  ).value =
+    state.theme;
+
+  document.querySelector(
+    '#showDate'
+  ).checked =
+    state.showDate;
+
+  document.querySelector(
+    '#settingsDialog'
+  ).showModal();
+};
+
+
+document
+  .querySelector('#settingsForm')
+  .addEventListener(
+    'submit',
+    e => {
+      e.preventDefault();
+
+      state.engine =
+        document.querySelector(
+          '#settingsEngine'
+        ).value;
+
+      state.theme =
+        document.querySelector(
+          '#themeSelect'
+        ).value;
+
+      state.showDate =
+        document.querySelector(
+          '#showDate'
+        ).checked;
+
+      save();
+
+      document
+        .querySelector(
+          '#settingsDialog'
+        )
+        .close();
+
+      render();
+    }
+  );
+
+
+document.querySelector(
+  '#exportBtn'
+).onclick = () => {
+  const blob =
+    new Blob(
+      [
+        JSON.stringify(
+          state,
+          null,
+          2
+        )
+      ],
+      {
+        type: 'application/json'
+      }
+    );
+
+  const a =
+    document.createElement('a');
+
+  a.href =
+    URL.createObjectURL(blob);
+
+  a.download =
+    'my-navigation-backup.json';
+
+  a.click();
+
+  URL.revokeObjectURL(
+    a.href
+  );
+
+  toast('已导出');
+};
+
+
+document.querySelector(
+  '#importBtn'
+).onclick = () =>
+  document
+    .querySelector('#importFile')
+    .click();
+
+
+document.querySelector(
+  '#importFile'
+).onchange = async e => {
+  const f =
+    e.target.files[0];
+
+  if (!f) {
+    return;
+  }
+
+  try {
+    state =
+      sanitize(
+        JSON.parse(
+          await f.text()
+        )
+      );
+
+    save();
+    render();
+    toast('导入成功');
+  } catch {
+    toast('JSON 文件无效');
+  }
+
+  e.target.value = '';
+};
+
+
+function renderCalendar() {
+  const y =
+    calendarDate.getFullYear();
+
+  const m =
+    calendarDate.getMonth();
+
+  document.querySelector(
+    '#calendarTitle'
+  ).textContent =
+    new Date(
+      y,
+      m,
+      1
+    ).toLocaleDateString(
+      'zh-CN',
+      {
+        year: 'numeric',
+        month: 'long'
+      }
+    );
+
+  const box =
+    document.querySelector(
+      '#calendar'
+    );
+
+  box.innerHTML = '';
+
+  [
+    '一',
+    '二',
+    '三',
+    '四',
+    '五',
+    '六',
+    '日'
+  ].forEach(x => {
+    const d =
+      document.createElement(
+        'div'
+      );
+
+    d.className =
+      'weekday';
+
+    d.textContent = x;
+
+    box.appendChild(d);
+  });
+
+  const first =
+    (
+      new Date(
+        y,
+        m,
+        1
+      ).getDay() + 6
+    ) % 7;
+
+  const days =
+    new Date(
+      y,
+      m + 1,
+      0
+    ).getDate();
+
+  const prev =
+    new Date(
+      y,
+      m,
+      0
+    ).getDate();
+
+  for (
+    let i = 0;
+    i < first;
+    i++
+  ) {
+    const d =
+      document.createElement(
+        'div'
+      );
+
+    d.className =
+      'day other';
+
+    d.textContent =
+      prev - first + i + 1;
+
+    box.appendChild(d);
+  }
+
+  for (
+    let day = 1;
+    day <= days;
+    day++
+  ) {
+    const d =
+      document.createElement(
+        'div'
+      );
+
+    d.className =
+      'day';
+
+    d.textContent =
+      day;
+
+    const now =
+      new Date();
+
+    if (
+      day === now.getDate() &&
+      m === now.getMonth() &&
+      y === now.getFullYear()
+    ) {
+      d.classList.add(
+        'today'
+      );
+    }
+
+    box.appendChild(d);
+  }
+}
+
+
+document.querySelector(
+  '#calendarBtn'
+).onclick = () => {
+  calendarDate =
+    new Date();
+
+  renderCalendar();
+
+  document
+    .querySelector(
+      '#calendarDialog'
+    )
+    .showModal();
+};
+
+
+document.querySelector(
+  '#prevMonth'
+).onclick = () => {
+  calendarDate.setMonth(
+    calendarDate.getMonth() - 1
+  );
+
+  renderCalendar();
+};
+
+
+document.querySelector(
+  '#nextMonth'
+).onclick = () => {
+  calendarDate.setMonth(
+    calendarDate.getMonth() + 1
+  );
+
+  renderCalendar();
+};
+
+
+document
+  .querySelectorAll(
+    '[data-close]'
+  )
+  .forEach(
+    b =>
+      b.onclick = () =>
+        dclose(
+          b.dataset.close
+        )
+  );
+
+
+window.addEventListener(
+  'keydown',
+  e => {
+    if (
+      e.key === '/' &&
+      ![
+        'INPUT',
+        'TEXTAREA'
+      ].includes(
+        document.activeElement.tagName
+      )
+    ) {
+      e.preventDefault();
+      searchInput.focus();
+    }
+
+    if (e.key === 'Escape') {
+      hideContext();
+    }
+  }
+);
+
+
+matchMedia(
+  '(prefers-color-scheme: dark)'
+)
+  .addEventListener?.(
+    'change',
+    applyTheme
+  );
+
+
+tick();
+
+setInterval(
+  tick,
+  1000
+);
+
+render();
+```
