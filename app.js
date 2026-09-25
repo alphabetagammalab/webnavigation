@@ -984,7 +984,10 @@ function initSortable(root) {
           related
         );
 
+        /*
         return true;
+        */
+        return false;
       },
 
       onEnd: e => {
