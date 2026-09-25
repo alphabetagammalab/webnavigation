@@ -175,6 +175,9 @@ document
   ?.addEventListener(
     'click',
     e => {
+
+      e.stopPropagation();
+      
       const clear =
         e.target.closest(
           '[data-history-action="clear"]'
