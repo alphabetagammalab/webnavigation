@@ -1044,9 +1044,13 @@ label select:focus {
   transform: scale(0.92);
 }
 
-.search-btn span {
-  font-size: 25px;
-  line-height: 1;
-  transform: rotate(-20deg);
+.search-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 /*搜索框添加搜索按钮*/
