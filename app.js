@@ -2283,6 +2283,37 @@ document.querySelector(
     e.target.value = '';
   };
 
+
+document.querySelector(
+  '#resetSitesBtn'
+).onclick = () => {
+  const ok =
+    confirm(
+      '确定恢复默认网站吗？\n\n当前网站、聚合和文件夹都会被替换。'
+    );
+
+  if (!ok) {
+    return;
+  }
+
+  state.sites =
+    defaultSites.map(
+      i => site(
+        i.name,
+        i.url,
+        i.icon
+      )
+    );
+
+  save();
+  render();
+
+  toast(
+    '已恢复默认网站'
+  );
+};
+
+
 function renderCalendar() {
   const y =
     calendarDate.getFullYear();
