@@ -318,6 +318,60 @@ button {
   color: var(--muted);
 }
 
+
+.search-history-item{
+  display:block;
+  width:100%;
+  padding:10px 12px;
+  border:0;
+  border-radius:12px;
+  background:transparent;
+  color:var(--text);
+  text-align:left;
+  font:inherit;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.search-history-item:hover{
+  background:rgba(100,120,150,.1);
+}
+
+.search-history-item:active{
+  background:rgba(100,120,150,.16);
+}
+
+.search-history-empty{
+  padding:11px 12px;
+  color:var(--muted);
+  font-size:13px;
+  text-align:center;
+}
+
+.search-history-footer{
+  margin-top:4px;
+  padding-top:6px;
+  border-top:1px solid var(--border);
+}
+
+.search-history-clear{
+  display:block;
+  width:100%;
+  padding:8px 12px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:var(--muted);
+  font:inherit;
+  font-size:12px;
+  cursor:pointer;
+}
+
+.search-history-clear:hover{
+  background:rgba(100,120,150,.1);
+  color:var(--text);
+}
+
 .search-engines {
   display: flex;
   justify-content: center;
