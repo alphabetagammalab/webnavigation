@@ -64,6 +64,7 @@ let mergeTimer=null;
 let mergeSourceId=null;
 let mergeTargetId=null;
 let mergeTriggered=false;
+let pendingMerge=null;
 
 function clearMergeTimer(root){
   if(mergeTimer){clearTimeout(mergeTimer);mergeTimer=null;}
@@ -85,8 +86,10 @@ function startMergeTimer(root,sourceId,targetId,targetEl){
     const source=state.sites.find(x=>x.id===sourceId);
     const target=state.sites.find(x=>x.id===targetId);
     if(!source||!target)return;
+    // Do not rebuild the DOM while SortableJS is still dragging.
+    // Queue the merge and apply it from onEnd instead.
+    pendingMerge={sourceId,targetId};
     mergeTriggered=true;
-    mergeItems(source,target);
   },600);
 }
 
@@ -104,6 +107,7 @@ function initSortable(root){
 
     onStart:e=>{
       mergeTriggered=false;
+      pendingMerge=null;
       clearMergeTimer(root);
     },
 
@@ -122,6 +126,19 @@ function initSortable(root){
     },
 
     onEnd:e=>{
+      if(pendingMerge){
+        const {sourceId,targetId}=pendingMerge;
+        pendingMerge=null;
+        clearMergeTimer(root);
+        mergeTriggered=false;
+        const source=state.sites.find(x=>x.id===sourceId);
+        const target=state.sites.find(x=>x.id===targetId);
+        if(source&&target&&source.id!==target.id){
+          mergeItems(source,target);
+          return;
+        }
+      }
+
       if(mergeTriggered){
         clearMergeTimer(root);
         mergeTriggered=false;
@@ -152,10 +169,10 @@ function mergeItems(source,target){
   }else if(source.type==='site'&&target.type==='folder'){
     target.children=[...(target.children||[]),source];
   }else if(source.type==='folder'&&target.type==='site'){
-    const folder={id:uid(),type:'folder',name:target.name,children:[target,...(source.children||[])]};
+    const folder={id:uid(),type:'folder',name:'未命名',children:[target,...(source.children||[])]};
     const idx=state.sites.findIndex(x=>x.id===target.id);state.sites=state.sites.filter(x=>x.id!==source.id&&x.id!==target.id);state.sites.splice(idx,0,folder);save();render();return;
   }else{
-    const folder={id:uid(),type:'folder',name:target.name,children:[target,source]};
+    const folder={id:uid(),type:'folder',name:'未命名',children:[target,source]};
     const idx=state.sites.findIndex(x=>x.id===target.id);state.sites=state.sites.filter(x=>x.id!==source.id&&x.id!==target.id);state.sites.splice(Math.max(0,idx),0,folder);save();render();return;
   }
   state.sites=state.sites.filter(x=>x.id!==source.id);save();render();toast('已聚合');
