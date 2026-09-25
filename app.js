@@ -201,6 +201,13 @@ document.querySelector(
     search(query);
   }
 );
+
+searchInput.addEventListener(
+  'focus',
+  () => {
+    renderSearchHistory();
+  }
+);
 /* 搜索历史显示相关 */
 
 
