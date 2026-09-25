@@ -194,6 +194,26 @@ function siteIconHtml(i) {
   return `<img class="favicon" alt="" src="${i.icon || favicon(i.url)}">`;
 }
 
+function render(){
+  applyTheme();
+  renderEngines();
+
+  const root=document.querySelector('#sites');
+  root.innerHTML='';
+
+  state.sites.forEach(i=>root.appendChild(createCard(i)));
+
+  const addCard=document.createElement('article');
+  addCard.className='site-card add-site-card';
+  addCard.innerHTML='<div class="add-site-icon">＋</div><div class="site-name">添加网站</div>';
+  addCard.addEventListener('click',()=>openEditor());
+
+  root.appendChild(addCard);
+
+  initSortable(root);
+}
+
+/*
 function render() {
   applyTheme();
   renderEngines();
@@ -211,6 +231,8 @@ function render() {
 
   initSortable(root);
 }
+
+*/
 
 function createCard(i) {
   const card =
