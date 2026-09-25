@@ -1337,6 +1337,15 @@ document.querySelector(
   }
 };
 
+/* 点击页面其他位置时自动关闭右键菜单 */
+document.addEventListener('click', e => {
+  if (
+    !e.target.closest('#contextMenu')
+  ) {
+    hideContext();
+  }
+});
+
 /*
 document.querySelector(
   '#contextMenu'
