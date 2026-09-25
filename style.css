@@ -79,6 +79,19 @@ button {
 }
 
 .clock {
+  width: 5.2em;
+  margin: 0 auto;
+  font-size: clamp(54px, 8vw, 88px);
+  font-weight: 300;
+  letter-spacing: -3px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  white-space: nowrap;
+}
+
+/*
+.clock {
   font-size: clamp(48px, 7vw, 78px);
   font-weight: 300;
   letter-spacing: -0.055em;
@@ -86,6 +99,7 @@ button {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
+*/
 
 .date {
   margin: 10px 0 28px;
