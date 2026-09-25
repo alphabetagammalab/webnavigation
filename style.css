@@ -1,6 +1,6 @@
 :root {
-  /* --bg: #eef1f5; */
-  --bg: #e5e8ed;
+  /* 
+  --bg: #eef1f5; 
   --text: #18202a;
   --muted: #7c8794;
   --card: rgba(255, 255, 255, 0.62);
@@ -10,7 +10,19 @@
   --accent: #4b78d1;
   --danger: #e05252;
   --radius: 22px;
+*/
 
+  --bg:#e7eaee;
+  --text:#18202a;
+  --muted:#7c8794;
+  --card:rgba(255,255,255,.62);
+  --card2:rgba(255,255,255,.82);
+  --border:rgba(255,255,255,.72);
+  --shadow:0 18px 55px rgba(40,52,70,.12);
+  --accent:#4b78d1;
+  --danger:#e05252;
+  --radius:22px;
+  
   font-family:
     -apple-system,
     BlinkMacSystemFont,
