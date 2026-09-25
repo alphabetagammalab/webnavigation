@@ -180,6 +180,16 @@ function save() {
   );
 }
 
+function favicon(url){
+  try{
+    const u = new URL(url);
+    return u.origin + '/favicon.ico';
+  }catch{
+    return '';
+  }
+}
+
+/*
 function favicon(url) {
   try {
     return `https://www.google.com/s2/favicons?sz=128&domain_url=${encodeURIComponent(url)}`;
@@ -187,6 +197,7 @@ function favicon(url) {
     return '';
   }
 }
+*/
 
 function applyTheme() {
   let dark = state.theme === 'dark';
@@ -208,8 +219,23 @@ function applyTheme() {
     state.showDate ? '' : 'none';
 }
 
+/*
 function siteIconHtml(i) {
   return `<img class="favicon" alt="" src="${i.icon || favicon(i.url)}">`;
+}
+*/
+
+function siteIconHtml(i) {
+  const src = i.icon || favicon(i.url);
+
+  return `
+    <img
+      class="favicon"
+      alt=""
+      src="${src}"
+      data-url="${i.url}"
+    >
+  `;
 }
 
 function render(){
@@ -289,6 +315,7 @@ function createCard(i) {
     const img =
       card.querySelector('.favicon');
 
+    /*
     img.onerror = () => {
       if (i.icon) {
         img.src = favicon(i.url);
@@ -296,6 +323,25 @@ function createCard(i) {
         img.style.visibility = 'hidden';
       }
     };
+    */
+
+    img.onerror = () => {
+  if (!img.dataset.googleFallback) {
+    img.dataset.googleFallback = '1';
+
+    try {
+      const u = new URL(i.url);
+
+      img.src =
+        'https://www.google.com/s2/favicons?sz=256&domain=' +
+        encodeURIComponent(u.hostname);
+
+      return;
+    } catch {}
+  }
+
+  img.style.visibility = 'hidden';
+};
 
     card.querySelector(
       '.site-name'
