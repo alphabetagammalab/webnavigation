@@ -725,6 +725,35 @@ function createCard(i) {
       '.site-name'
     ).textContent = i.name;
 
+
+    card
+  .querySelectorAll('.folder-icon .favicon')
+  .forEach(img => {
+    img.onerror = () => {
+      if (!img.dataset.googleFallback) {
+        img.dataset.googleFallback = '1';
+
+        try {
+          const u =
+            new URL(
+              img.dataset.url
+            );
+
+          img.src =
+            'https://www.google.com/s2/favicons?sz=256&domain=' +
+            encodeURIComponent(
+              u.hostname
+            );
+
+          return;
+        } catch {}
+      }
+
+      img.style.visibility =
+        'hidden';
+    };
+  });
+
     card.addEventListener(
       'click',
       () => location.href = i.url
