@@ -1659,6 +1659,8 @@ function search(q) {
     return;
   }
 
+  addSearchHistory(q);
+
   if (
     /^https?:\/\//i.test(q)
   ) {
