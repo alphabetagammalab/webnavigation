@@ -1075,6 +1075,18 @@ label select:focus {
 }
 
 .folder-icon .favicon {
+  width: 20px !important;
+  height: 20px !important;
+  padding: 1px !important;
+  border: 0 !important;
+  border-radius: 5px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  object-fit: contain !important;
+}
+
+/*
+.folder-icon .favicon {
   width: 100% !important;
   height: 100% !important;
   padding: 2px !important;
@@ -1083,6 +1095,7 @@ label select:focus {
   background: transparent !important;
   box-shadow: none !important;
 }
+*/
 
 .folder-icon > span {
   grid-column: 1 / -1;
