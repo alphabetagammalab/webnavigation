@@ -1359,6 +1359,73 @@ function openEditor(
       '#editorDialog'
     );
 
+  const item =
+    findItem(
+      state.sites,
+      id
+    );
+
+  const isFolder =
+    item?.type === 'folder';
+
+  document.querySelector(
+    '#editorTitle'
+  ).textContent =
+    id
+      ? isFolder
+        ? '编辑聚合'
+        : '编辑网站'
+      : '添加网站';
+
+  document.querySelector(
+    '#nameInput'
+  ).value =
+    item?.name || '';
+
+  document.querySelector(
+    '#urlInput'
+  ).value =
+    item?.url || '';
+
+  document.querySelector(
+    '#iconInput'
+  ).value =
+    item?.icon || '';
+
+  document.querySelector(
+    '#urlRow'
+  ).style.display =
+    isFolder ? 'none' : '';
+
+  document.querySelector(
+    '#iconRow'
+  ).style.display =
+    isFolder ? 'none' : '';
+
+  document.querySelector(
+    '#deleteBtn'
+  ).classList.toggle(
+    'hidden',
+    !id
+  );
+
+  d.showModal();
+}
+
+/*
+function openEditor(
+  id = null,
+  parentId = null
+) {
+  editingId = id;
+  window.editParentId =
+    parentId;
+
+  const d =
+    document.querySelector(
+      '#editorDialog'
+    );
+
   let item =
     findItem(
       state.sites,
@@ -1396,6 +1463,7 @@ function openEditor(
 
   d.showModal();
 }
+*/
 
 function findItem(
   list,
