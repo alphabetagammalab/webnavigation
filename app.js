@@ -61,7 +61,6 @@ let contextId = null;
 let calendarDate = new Date();
 let currentCollectionId = null;
 
-
 function loadState() {
   try {
     const raw = JSON.parse(
@@ -87,7 +86,6 @@ function loadState() {
 
   return defaultState();
 }
-
 
 function normalizeItem(i) {
   if (!i) {
@@ -125,7 +123,6 @@ function normalizeItem(i) {
   };
 }
 
-
 function sanitize(x) {
   let sites = [];
 
@@ -159,14 +156,12 @@ function sanitize(x) {
   };
 }
 
-
 function save() {
   localStorage.setItem(
     STORAGE,
     JSON.stringify(state)
   );
 }
-
 
 function favicon(url) {
   try {
@@ -175,7 +170,6 @@ function favicon(url) {
     return '';
   }
 }
-
 
 function applyTheme() {
   let dark = state.theme === 'dark';
@@ -197,11 +191,9 @@ function applyTheme() {
     state.showDate ? '' : 'none';
 }
 
-
 function siteIconHtml(i) {
   return `<img class="favicon" alt="" src="${i.icon || favicon(i.url)}">`;
 }
-
 
 function render() {
   applyTheme();
@@ -212,15 +204,14 @@ function render() {
 
   root.innerHTML = '';
 
-  state.sites.forEach(i => {
+  state.sites.forEach(i =>
     root.appendChild(
       createCard(i)
-    );
-  });
+    )
+  );
 
   initSortable(root);
 }
-
 
 function createCard(i) {
   const card =
@@ -241,12 +232,8 @@ function createCard(i) {
         )
         .join('');
 
-    card.innerHTML = `
-      <div class="folder-icon">
-        ${icons || '<span>＋</span>'}
-      </div>
-      <div class="site-name"></div>
-    `;
+    card.innerHTML =
+      `<div class="folder-icon">${icons || '<span>＋</span>'}</div><div class="site-name"></div>`;
 
     card.querySelector(
       '.site-name'
@@ -257,10 +244,8 @@ function createCard(i) {
       () => openCollection(i)
     );
   } else {
-    card.innerHTML = `
-      ${siteIconHtml(i)}
-      <div class="site-name"></div>
-    `;
+    card.innerHTML =
+      `${siteIconHtml(i)}<div class="site-name"></div>`;
 
     const img =
       card.querySelector('.favicon');
@@ -299,13 +284,11 @@ function createCard(i) {
   return card;
 }
 
-
 let mergeTimer = null;
 let mergeSourceId = null;
 let mergeTargetId = null;
 let mergeTriggered = false;
 let pendingMerge = null;
-
 
 function clearMergeTimer(root) {
   if (mergeTimer) {
@@ -324,7 +307,6 @@ function clearMergeTimer(root) {
     )
   );
 }
-
 
 function startMergeTimer(
   root,
@@ -369,7 +351,10 @@ function startMergeTimer(
           x => x.id === targetId
         );
 
-      if (!source || !target) {
+      if (
+        !source ||
+        !target
+      ) {
         return;
       }
 
@@ -385,7 +370,6 @@ function startMergeTimer(
     600
   );
 }
-
 
 function initSortable(root) {
   if (root._sortable) {
@@ -517,9 +501,9 @@ function initSortable(root) {
   );
 }
 
-
 function dropTargetFromEvent(e) {
-  const oe = e.originalEvent;
+  const oe =
+    e.originalEvent;
 
   if (
     !oe ||
@@ -539,8 +523,10 @@ function dropTargetFromEvent(e) {
   return el || null;
 }
 
-
-function mergeItems(source, target) {
+function mergeItems(
+  source,
+  target
+) {
   if (source.id === target.id) {
     return;
   }
@@ -642,7 +628,6 @@ function mergeItems(source, target) {
   toast('已聚合');
 }
 
-
 function openCollection(folder) {
   currentCollectionId = folder.id;
 
@@ -657,7 +642,6 @@ function openCollection(folder) {
   ).show();
 }
 
-
 function renderCollectionItems(folder) {
   const box =
     document.querySelector(
@@ -666,71 +650,64 @@ function renderCollectionItems(folder) {
 
   box.innerHTML = '';
 
-  (folder.children || [])
-    .forEach(
-      ch => {
-        const el =
-          document.createElement(
-            'div'
-          );
-
-        el.className =
-          'collection-item';
-
-        el.dataset.id =
-          ch.id;
-
-        el.innerHTML = `
-          ${
-            ch.type === 'site'
-              ? siteIconHtml(ch)
-              : '<div class="mini-folder">＋</div>'
-          }
-          <div class="collection-name"></div>
-        `;
-
-        el.querySelector(
-          '.collection-name'
-        ).textContent = ch.name;
-
-        if (ch.type === 'site') {
-          const img =
-            el.querySelector(
-              '.favicon'
-            );
-
-          img.onerror = () => {
-            if (ch.icon) {
-              img.src =
-                favicon(ch.url);
-            } else {
-              img.style.visibility =
-                'hidden';
-            }
-          };
-
-          el.onclick =
-            () => location.href = ch.url;
-        } else {
-          el.onclick =
-            () => openCollection(ch);
-        }
-
-        el.addEventListener(
-          'contextmenu',
-          e => {
-            e.preventDefault();
-
-            openEditor(
-              ch.id,
-              folder.id
-            );
-          }
+  (folder.children || []).forEach(
+    ch => {
+      const el =
+        document.createElement(
+          'div'
         );
 
-        box.appendChild(el);
+      el.className =
+        'collection-item';
+
+      el.dataset.id =
+        ch.id;
+
+      el.innerHTML =
+        `${ch.type === 'site' ? siteIconHtml(ch) : '<div class="mini-folder">＋</div>'}<div class="collection-name"></div>`;
+
+      el.querySelector(
+        '.collection-name'
+      ).textContent = ch.name;
+
+      if (ch.type === 'site') {
+        const img =
+          el.querySelector(
+            '.favicon'
+          );
+
+        img.onerror = () => {
+          if (ch.icon) {
+            img.src =
+              favicon(ch.url);
+          } else {
+            img.style.visibility =
+              'hidden';
+          }
+        };
+
+        el.onclick =
+          () => location.href = ch.url;
+      } else {
+        el.onclick =
+          () => openCollection(ch);
       }
-    );
+
+      el.addEventListener(
+        'contextmenu',
+        e => {
+          e.preventDefault();
+
+          openEditor(
+            ch.id,
+            folder.id
+          );
+        }
+      );
+
+      box.appendChild(el);
+    }
+  );
 
   const back =
     document.createElement(
@@ -905,7 +882,6 @@ function renderCollectionItems(folder) {
   }
 }
 
-
 function openEditor(
   id = null,
   parentId = null
@@ -957,8 +933,10 @@ function openEditor(
   d.showModal();
 }
 
-
-function findItem(list, id) {
+function findItem(
+  list,
+  id
+) {
   for (const i of list) {
     if (i.id === id) {
       return i;
@@ -980,15 +958,21 @@ function findItem(list, id) {
   return null;
 }
 
-
-function removeItem(list, id) {
+function removeItem(
+  list,
+  id
+) {
   for (
     let n = list.length - 1;
     n >= 0;
     n--
   ) {
     if (list[n].id === id) {
-      list.splice(n, 1);
+      list.splice(
+        n,
+        1
+      );
+
       return true;
     }
 
@@ -1005,7 +989,6 @@ function removeItem(list, id) {
 
   return false;
 }
-
 
 document
   .querySelector(
@@ -1117,7 +1100,6 @@ document
     }
   );
 
-
 document.querySelector(
   '#deleteBtn'
 ).onclick = () => {
@@ -1153,8 +1135,11 @@ document.querySelector(
   }
 };
 
-
-function showContext(x, y, id) {
+function showContext(
+  x,
+  y,
+  id
+) {
   contextId = id;
 
   const m =
@@ -1179,7 +1164,6 @@ function showContext(x, y, id) {
     ) + 'px';
 }
 
-
 function hideContext() {
   document.querySelector(
     '#contextMenu'
@@ -1187,7 +1171,6 @@ function hideContext() {
     'hidden'
   );
 }
-
 
 document.querySelector(
   '#contextMenu'
@@ -1218,7 +1201,6 @@ document.querySelector(
   }
 };
 
-
 document.addEventListener(
   'click',
   e => {
@@ -1231,7 +1213,6 @@ document.addEventListener(
     }
   }
 );
-
 
 function search(q) {
   q = q.trim();
@@ -1261,7 +1242,6 @@ function search(q) {
     encodeURIComponent(q);
 }
 
-
 const searchInput =
   document.querySelector(
     '#search'
@@ -1278,7 +1258,6 @@ searchInput.addEventListener(
   }
 );
 
-
 function engineIconUrl(key) {
   const domains = {
     google: 'google.com',
@@ -1289,7 +1268,6 @@ function engineIconUrl(key) {
 
   return `https://www.google.com/s2/favicons?sz=64&domain=${domains[key] || 'google.com'}`;
 }
-
 
 function renderEngines() {
   const icon =
@@ -1312,7 +1290,6 @@ function renderEngines() {
   icon.title =
     current.name;
 }
-
 
 document
   .querySelector(
@@ -1337,10 +1314,10 @@ document
         ];
 
       save();
+
       renderEngines();
     }
   );
-
 
 function tick() {
   const d =
@@ -1371,14 +1348,14 @@ function tick() {
     );
 }
 
-
 function toast(t) {
   const x =
     document.querySelector(
       '#toast'
     );
 
-  x.textContent = t;
+  x.textContent =
+    t;
 
   x.classList.add(
     'show'
@@ -1398,19 +1375,16 @@ function toast(t) {
     );
 }
 
-
 function dclose(id) {
   document.querySelector(
     '#' + id
   )?.close();
 }
 
-
 document.querySelector(
   '#addBtn'
-).onclick = () =>
-  openEditor();
-
+).onclick =
+  () => openEditor();
 
 document.querySelector(
   '#settingsBtn'
@@ -1447,7 +1421,6 @@ document.querySelector(
   ).showModal();
 };
 
-
 document
   .querySelector(
     '#settingsForm'
@@ -1481,7 +1454,6 @@ document
       render();
     }
   );
-
 
 document.querySelector(
   '#exportBtn'
@@ -1524,48 +1496,47 @@ document.querySelector(
   );
 };
 
-
 document.querySelector(
   '#importBtn'
-).onclick = () =>
-  document.querySelector(
-    '#importFile'
-  ).click();
-
+).onclick =
+  () =>
+    document.querySelector(
+      '#importFile'
+    ).click();
 
 document.querySelector(
   '#importFile'
-).onchange = async e => {
-  const f =
-    e.target.files[0];
+).onchange =
+  async e => {
+    const f =
+      e.target.files[0];
 
-  if (!f) {
-    return;
-  }
+    if (!f) {
+      return;
+    }
 
-  try {
-    state =
-      sanitize(
-        JSON.parse(
-          await f.text()
-        )
+    try {
+      state =
+        sanitize(
+          JSON.parse(
+            await f.text()
+          )
+        );
+
+      save();
+      render();
+
+      toast(
+        '导入成功'
       );
+    } catch {
+      toast(
+        'JSON 文件无效'
+      );
+    }
 
-    save();
-    render();
-
-    toast(
-      '导入成功'
-    );
-  } catch {
-    toast(
-      'JSON 文件无效'
-    );
-  }
-
-  e.target.value = '';
-};
-
+    e.target.value = '';
+  };
 
 function renderCalendar() {
   const y =
@@ -1702,7 +1673,6 @@ function renderCalendar() {
   }
 }
 
-
 document.querySelector(
   '#calendarBtn'
 ).onclick = () => {
@@ -1716,7 +1686,6 @@ document.querySelector(
   ).showModal();
 };
 
-
 document.querySelector(
   '#prevMonth'
 ).onclick = () => {
@@ -1727,7 +1696,6 @@ document.querySelector(
   renderCalendar();
 };
 
-
 document.querySelector(
   '#nextMonth'
 ).onclick = () => {
@@ -1737,7 +1705,6 @@ document.querySelector(
 
   renderCalendar();
 };
-
 
 document
   .querySelectorAll(
@@ -1750,7 +1717,6 @@ document
           b.dataset.close
         )
   );
-
 
 window.addEventListener(
   'keydown',
@@ -1776,7 +1742,6 @@ window.addEventListener(
   }
 );
 
-
 matchMedia(
   '(prefers-color-scheme: dark)'
 )
@@ -1784,7 +1749,6 @@ matchMedia(
     'change',
     applyTheme
   );
-
 
 tick();
 
