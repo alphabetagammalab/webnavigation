@@ -80,7 +80,7 @@ button {
 
 .clock {
   font-size: clamp(48px, 7vw, 78px);
-  font-weight: 450;
+  font-weight: 300;
   letter-spacing: -0.055em;
   line-height: 1;
   font-variant-numeric: tabular-nums;
