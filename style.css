@@ -125,6 +125,7 @@ button {
   color: #929ba7;
 }
 
+/*
 .engine-btn {
   flex: 0 0 auto;
   width: 38px;
@@ -162,6 +163,46 @@ button {
   font-size: 12px;
   line-height: 1;
 }
+*/
+
+/*修改搜索框中搜索引擎显示样式*/
+.engine-btn {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0 8px 0 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.engine-btn:hover {
+  background: transparent;
+  color: var(--text);
+}
+
+.engine-btn:active {
+  transform: scale(0.94);
+}
+
+.engine-btn img {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  object-fit: contain;
+}
+
+.engine-btn span {
+  font-size: 12px;
+  line-height: 1;
+}
+/*修改搜索框中搜索引擎显示样式*/
 
 .suggestions {
   position: absolute;
