@@ -79,6 +79,17 @@
         <button type="button" id="importBtn" class="secondary">导入 JSON</button>
         <input id="importFile" type="file" accept="application/json" hidden>
       </div>
+
+      <div class="data-actions">
+        <button
+          type="button"
+          id="resetSitesBtn"
+          class="secondary"
+          >
+          恢复默认网站
+        </button>
+      </div>
+      
       <p class="hint">所有导航数据只保存在当前浏览器的 localStorage，不使用 Cloudflare、账号或服务器同步。</p>
       <div class="dialog-actions"><span></span><button type="button" class="secondary" data-close="settingsDialog">关闭</button><button class="primary">保存</button></div>
     </form>
