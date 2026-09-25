@@ -1050,11 +1050,12 @@ document
         ).value.trim();
       */
 
-      const url = normalizeUrl(
-        document.querySelector(
-          '#urlInput'
-        ).value.trim()
-      );
+      const url =
+        normalizeUrl(
+          document.querySelector(
+            '#urlInput'
+          ).value
+        );
 
       const icon =
         document.querySelector(
