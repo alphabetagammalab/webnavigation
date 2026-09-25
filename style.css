@@ -922,15 +922,6 @@ label select:focus {
   width: max-content;
   margin: 10px auto 28px;
   white-space: nowrap;
-}
-
-.date-gap {
-  width: 18px;
-  flex: 0 0 18px;
-}
-
-.date-gap-wide {
-  width: 28px;
-  flex: 0 0 28px;
+  gap: 24px;
 }
 /*调整时间格式*/
