@@ -232,7 +232,7 @@ const searchInput=document.querySelector('#search');searchInput.addEventListener
 function engineIconUrl(key){const domains={google:'google.com',bing:'bing.com',duck:'duckduckgo.com',baidu:'baidu.com'};return `https://www.google.com/s2/favicons?sz=64&domain=${domains[key]||'google.com'}`}
 function renderEngines(){const icon=document.querySelector('#engineIcon'),current=ENGINES[state.engine]||ENGINES.google;icon.src=engineIconUrl(state.engine);icon.alt=current.name;icon.title=current.name}
 document.querySelector('#engineBtn').addEventListener('click',()=>{const keys=Object.keys(ENGINES);const i=keys.indexOf(state.engine);state.engine=keys[(i+1)%keys.length];save();renderEngines()});
-function tick(){const d=new Date();document.querySelector('#clock').textContent=d.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false});document.querySelector('#date').textContent=d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}
+function tick(){const d=new Date();document.querySelector('#clock').textContent=d.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});document.querySelector('#date').textContent=d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}
 function toast(t){const x=document.querySelector('#toast');x.textContent=t;x.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>x.classList.remove('show'),1800)}
 function dclose(id){document.querySelector('#'+id)?.close()}
 document.querySelector('#addBtn').onclick=()=>openEditor();
