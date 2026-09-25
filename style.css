@@ -1,5 +1,6 @@
 :root {
-  --bg: #eef1f5;
+  /* --bg: #eef1f5; */
+  --bg: #e5e8ed;
   --text: #18202a;
   --muted: #7c8794;
   --card: rgba(255, 255, 255, 0.62);
