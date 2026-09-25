@@ -202,12 +202,14 @@ document.querySelector(
   }
 );
 
+/*
 searchInput.addEventListener(
   'focus',
   () => {
     renderSearchHistory();
   }
 );
+*/
 /* 搜索历史显示相关 */
 
 
@@ -1734,6 +1736,13 @@ const searchInput =
   document.querySelector(
     '#search'
   );
+
+searchInput.addEventListener(
+  'focus',
+  () => {
+    renderSearchHistory();
+  }
+);
 
 searchInput.addEventListener(
   'keydown',
