@@ -57,7 +57,7 @@ function addSearchHistory(query) {
 function renderSearchHistory() {
   const box =
     document.querySelector(
-      '#searchHistory'
+      '#suggestions'
     );
 
   if (!box) {
@@ -70,6 +70,8 @@ function renderSearchHistory() {
   if (!history.length) {
     box.innerHTML =
       '<div class="search-history-empty">暂无搜索历史</div>';
+
+    box.classList.remove('hidden');
 
     return;
   }
@@ -92,6 +94,8 @@ function renderSearchHistory() {
         </button>
       </div>
     `;
+
+  box.classList.remove('hidden');
 }
 
 
