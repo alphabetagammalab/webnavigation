@@ -1318,6 +1318,52 @@ document
     }
   );
 
+
+/*日期显示为中文并显示农历*/
+function tick() {
+  const d = new Date();
+
+  document.querySelector(
+    '#clock'
+  ).textContent =
+    d.toLocaleTimeString(
+      'zh-CN',
+      {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }
+    );
+
+  const solarDate =
+    d.toLocaleDateString(
+      'zh-CN',
+      {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long'
+      }
+    );
+
+  const lunarDate =
+    d.toLocaleDateString(
+      'zh-CN-u-ca-chinese',
+      {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }
+    );
+
+  document.querySelector(
+    '#date'
+  ).textContent =
+    `${solarDate} · 农历${lunarDate}`;
+}
+
+
+/*
 function tick() {
   const d =
     new Date();
@@ -1347,6 +1393,7 @@ function tick() {
       }
     );
 }
+*/
 
 function toast(t) {
   const x =
