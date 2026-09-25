@@ -189,6 +189,29 @@ document
         return;
       }
 
+      const deleteButton =
+        e.target.closest(
+          '[data-history-delete]'
+        );
+      
+      if (deleteButton) {
+        const query =
+          decodeURIComponent(
+            deleteButton.dataset.historyDelete
+          );
+        const history =
+          loadSearchHistory().filter(
+            item => item !== query
+          );
+        saveSearchHistory(history);
+        renderSearchHistory();
+        return;
+      }
+
+
+
+      
+
       const item =
         e.target.closest(
           '.search-history-item'
