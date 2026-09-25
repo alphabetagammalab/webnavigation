@@ -906,22 +906,31 @@ label select:focus {
 
 
 /*调整日期时间间距*/
-.date{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  width:max-content;
-  margin:10px auto 28px;
-  white-space:nowrap;
+.clock {
+  font-size: clamp(48px, 7vw, 78px);
+  font-weight: 650;
+  letter-spacing: -0.055em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
-.date-gap{
-  width:18px;
-  flex:0 0 18px;
+.date {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: max-content;
+  margin: 10px auto 28px;
+  white-space: nowrap;
 }
 
-.date-gap-wide{
-  width:28px;
-  flex:0 0 28px;
+.date-gap {
+  width: 18px;
+  flex: 0 0 18px;
+}
+
+.date-gap-wide {
+  width: 28px;
+  flex: 0 0 28px;
 }
 /*调整时间格式*/
