@@ -697,6 +697,12 @@ label select:focus {
   color: var(--danger);
 }
 
+.context-divider{
+  height:1px;
+  margin:4px 0;
+  background:rgba(120,130,145,.18);
+}
+
 .toast {
   position: fixed;
   left: 50%;
