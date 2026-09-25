@@ -1579,6 +1579,25 @@ document
         return;
       }
 
+      const editingItem =
+        editingId
+          ? findItem(
+            state.sites,
+            editingId
+          )
+        : null;
+
+      if (
+        editingItem?.type !== 'folder' &&
+        !/^https?:\/\//i.test(url)
+      ) {
+        toast(
+          '网址请以 http:// 或 https:// 开头'
+        );
+        return;
+      }
+
+      /*
       if (
         !/^https?:\/\//i.test(url)
       ) {
@@ -1588,6 +1607,7 @@ document
 
         return;
       }
+      */
 
       if (editingId) {
         const item =
