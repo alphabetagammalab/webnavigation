@@ -1169,3 +1169,98 @@ label select:focus {
   stroke-linejoin: round;
 }
 /*搜索框添加搜索按钮*/
+
+/*搜索历史相关*/
+.search-history {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 100;
+
+  padding: 6px;
+
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(255,255,255,.75);
+  border-radius: 14px;
+
+  box-shadow:
+    0 12px 30px rgba(40,52,70,.12);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.search-history.hidden {
+  display: none;
+}
+
+.search-history-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 38px;
+
+  padding: 0 12px;
+  border: 0;
+  border-radius: 9px;
+
+  background: transparent;
+  color: var(--text);
+
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.search-history-item:hover {
+  background: rgba(120,130,145,.10);
+}
+
+.search-history-empty {
+  padding: 10px 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.search-history-footer {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(120,130,145,.14);
+}
+
+.search-history-clear {
+  width: 100%;
+  min-height: 32px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: transparent;
+  color: var(--muted);
+
+  font: inherit;
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+.search-history-clear:hover {
+  background: rgba(120,130,145,.10);
+  color: var(--text);
+}
+
+.dark .search-history {
+  background: rgba(30,35,44,.94);
+  border-color: rgba(255,255,255,.10);
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.28);
+}
+
+.dark .search-history-item:hover,
+.dark .search-history-clear:hover {
+  background: rgba(255,255,255,.08);
+}
+/*搜索历史相关*/
