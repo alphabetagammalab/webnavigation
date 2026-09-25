@@ -903,3 +903,20 @@ label select:focus {
     gap: 15px 8px;
   }
 }
+
+
+/*调整日期时间间距*/
+.date{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.date-gap{
+  width:18px;
+}
+
+.date-gap-wide{
+  width:28px;
+}
+/*调整时间格式*/
