@@ -325,6 +325,7 @@ function createCard(i) {
     };
     */
 
+    /*
     img.onerror = () => {
   if (!img.dataset.googleFallback) {
     img.dataset.googleFallback = '1';
@@ -342,6 +343,38 @@ function createCard(i) {
 
   img.style.visibility = 'hidden';
 };
+    */
+
+    img.onload = () => {
+      if (
+        !img.dataset.googleFallback &&
+        img.naturalWidth < 64
+      ) {
+        img.dataset.googleFallback = '1';
+        try {
+          const u = new URL(i.url);
+          img.src =
+            'https://www.google.com/s2/favicons?sz=256&domain=' + 
+            encodeURIComponent(u.hostname);
+          return;
+        } catch {}
+      }
+    };
+    
+    img.onerror = () => {
+      if (!img.dataset.googleFallback) {
+        img.dataset.googleFallback = '1';
+        try {
+          const u = new URL(i.url);
+          img.src =
+            'https://www.google.com/s2/favicons?sz=256&domain=' +
+            encodeURIComponent(u.hostname);
+          return;
+        } catch {}
+      }
+      
+      img.style.visibility = 'hidden';
+    };
 
     card.querySelector(
       '.site-name'
