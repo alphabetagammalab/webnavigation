@@ -1593,6 +1593,54 @@ document
         const item =
           findItem(
             state.sites,
+            editingId);
+        if (
+          item &&
+          item.type === 'folder'
+        ) {
+          item.name = name;
+        } else if (
+          item &&
+          item.type === 'site'
+        ) {
+          item.name = name;
+          item.url = url;
+          item.icon = icon;
+        }
+      } else {
+        const item =
+          site(
+            name,
+            url,
+            icon
+          );
+        
+        if (window.editParentId) {
+          const p =
+            findItem(
+              state.sites,
+              window.editParentId
+            );
+          if (p?.type === 'folder') {
+            p.children.push(
+              item);
+          } else {
+            state.sites.push(
+              item);
+          }
+        } else {
+          state.sites.push(
+            item
+          );
+        }
+      }
+
+      
+      /*
+      if (editingId) {
+        const item =
+          findItem(
+            state.sites,
             editingId
           );
 
@@ -1634,6 +1682,7 @@ document
           );
         }
       }
+      */
 
       save();
 
