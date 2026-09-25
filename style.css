@@ -1473,7 +1473,7 @@ label select:focus {
   margin-top: 8px;
 }
 
-/*设置底部按钮尺寸*/
+/*设置中底部按钮尺寸*/
 #settingsDialog .dialog-actions .secondary,
 #settingsDialog .dialog-actions .primary {
   width: 68px;
@@ -1483,4 +1483,11 @@ label select:focus {
   border-radius: 9px;
   font-size: 13px;
   box-sizing: border-box;
+}
+
+/*设置中导出JSON,导入JSON恢复默认网站的字体*/
+.settings-section .data-actions .secondary,
+.settings-section .reset-sites-btn {
+  font-size: 13px;
+  font-weight: 400;
 }
