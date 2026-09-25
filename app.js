@@ -135,14 +135,18 @@ function sanitize(x) {
       .filter(Boolean);
   } else if (Array.isArray(x.groups)) {
     sites = x.groups
-      .flatMap(g => Array.isArray(g.items) ? g.items : [])
+      .flatMap(
+        g => Array.isArray(g.items) ? g.items : []
+      )
       .map(normalizeItem)
       .filter(Boolean);
   }
 
   return {
     version: 3,
-    engine: ENGINES[x.engine] ? x.engine : 'google',
+    engine: ENGINES[x.engine]
+      ? x.engine
+      : 'google',
     theme: ['auto', 'dark', 'light'].includes(x.theme)
       ? x.theme
       : 'auto',
@@ -187,7 +191,9 @@ function applyTheme() {
     dark
   );
 
-  document.querySelector('#date').style.display =
+  document.querySelector(
+    '#date'
+  ).style.display =
     state.showDate ? '' : 'none';
 }
 
@@ -201,12 +207,15 @@ function render() {
   applyTheme();
   renderEngines();
 
-  const root = document.querySelector('#sites');
+  const root =
+    document.querySelector('#sites');
 
   root.innerHTML = '';
 
   state.sites.forEach(i => {
-    root.appendChild(createCard(i));
+    root.appendChild(
+      createCard(i)
+    );
   });
 
   initSortable(root);
@@ -214,20 +223,23 @@ function render() {
 
 
 function createCard(i) {
-  const card = document.createElement('article');
+  const card =
+    document.createElement('article');
 
   card.className = 'site-card';
   card.dataset.id = i.id;
 
   if (i.type === 'folder') {
-    const icons = (i.children || [])
-      .slice(0, 4)
-      .map(ch =>
-        ch.type === 'site'
-          ? siteIconHtml(ch)
-          : ''
-      )
-      .join('');
+    const icons =
+      (i.children || [])
+        .slice(0, 4)
+        .map(
+          ch =>
+            ch.type === 'site'
+              ? siteIconHtml(ch)
+              : ''
+        )
+        .join('');
 
     card.innerHTML = `
       <div class="folder-icon">
@@ -236,8 +248,9 @@ function createCard(i) {
       <div class="site-name"></div>
     `;
 
-    card.querySelector('.site-name').textContent =
-      i.name;
+    card.querySelector(
+      '.site-name'
+    ).textContent = i.name;
 
     card.addEventListener(
       'click',
@@ -249,7 +262,8 @@ function createCard(i) {
       <div class="site-name"></div>
     `;
 
-    const img = card.querySelector('.favicon');
+    const img =
+      card.querySelector('.favicon');
 
     img.onerror = () => {
       if (i.icon) {
@@ -259,8 +273,9 @@ function createCard(i) {
       }
     };
 
-    card.querySelector('.site-name').textContent =
-      i.name;
+    card.querySelector(
+      '.site-name'
+    ).textContent = i.name;
 
     card.addEventListener(
       'click',
@@ -272,6 +287,7 @@ function createCard(i) {
     'contextmenu',
     e => {
       e.preventDefault();
+
       showContext(
         e.clientX,
         e.clientY,
@@ -300,10 +316,13 @@ function clearMergeTimer(root) {
   mergeSourceId = null;
   mergeTargetId = null;
 
-  root?.querySelectorAll('.merge-target')
-    .forEach(el => {
-      el.classList.remove('merge-target');
-    });
+  root?.querySelectorAll(
+    '.merge-target'
+  ).forEach(
+    el => el.classList.remove(
+      'merge-target'
+    )
+  );
 }
 
 
@@ -334,30 +353,37 @@ function startMergeTimer(
   mergeSourceId = sourceId;
   mergeTargetId = targetId;
 
-  targetEl?.classList.add('merge-target');
+  targetEl?.classList.add(
+    'merge-target'
+  );
 
-  mergeTimer = setTimeout(() => {
-    const source = state.sites.find(
-      x => x.id === sourceId
-    );
+  mergeTimer = setTimeout(
+    () => {
+      const source =
+        state.sites.find(
+          x => x.id === sourceId
+        );
 
-    const target = state.sites.find(
-      x => x.id === targetId
-    );
+      const target =
+        state.sites.find(
+          x => x.id === targetId
+        );
 
-    if (!source || !target) {
-      return;
-    }
+      if (!source || !target) {
+        return;
+      }
 
-    // Do not rebuild the DOM while SortableJS is still dragging.
-    // Queue the merge and apply it from onEnd instead.
-    pendingMerge = {
-      sourceId,
-      targetId
-    };
+      // Do not rebuild the DOM while SortableJS is still dragging.
+      // Queue the merge and apply it from onEnd instead.
+      pendingMerge = {
+        sourceId,
+        targetId
+      };
 
-    mergeTriggered = true;
-  }, 600);
+      mergeTriggered = true;
+    },
+    600
+  );
 }
 
 
@@ -368,104 +394,127 @@ function initSortable(root) {
 
   clearMergeTimer(root);
 
-  root._sortable = new Sortable(root, {
-    animation: 150,
-    forceFallback: true,
-    fallbackOnBody: true,
-    swapThreshold: .65,
-    ghostClass: 'sortable-ghost',
-    chosenClass: 'sortable-chosen',
+  root._sortable = new Sortable(
+    root,
+    {
+      animation: 150,
+      forceFallback: true,
+      fallbackOnBody: true,
+      swapThreshold: .65,
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
 
-    onStart: e => {
-      mergeTriggered = false;
-      pendingMerge = null;
-      clearMergeTimer(root);
-    },
-
-    onMove: e => {
-      const sourceId =
-        e.dragged?.dataset?.id;
-
-      const related =
-        e.related?.closest?.('.site-card');
-
-      const targetId =
-        related?.dataset?.id;
-
-      if (
-        !sourceId ||
-        !targetId ||
-        sourceId === targetId
-      ) {
-        clearMergeTimer(root);
-        return true;
-      }
-
-      startMergeTimer(
-        root,
-        sourceId,
-        targetId,
-        related
-      );
-
-      return true;
-    },
-
-    onEnd: e => {
-      if (pendingMerge) {
-        const {
-          sourceId,
-          targetId
-        } = pendingMerge;
-
-        pendingMerge = null;
-
-        clearMergeTimer(root);
-
+      onStart: e => {
         mergeTriggered = false;
+        pendingMerge = null;
+        clearMergeTimer(root);
+      },
 
-        const source = state.sites.find(
-          x => x.id === sourceId
-        );
+      onMove: e => {
+        const sourceId =
+          e.dragged?.dataset?.id;
 
-        const target = state.sites.find(
-          x => x.id === targetId
-        );
+        const related =
+          e.related?.closest?.(
+            '.site-card'
+          );
+
+        const targetId =
+          related?.dataset?.id;
 
         if (
-          source &&
-          target &&
-          source.id !== target.id
+          !sourceId ||
+          !targetId ||
+          sourceId === targetId
         ) {
-          mergeItems(source, target);
+          clearMergeTimer(root);
+          return true;
+        }
+
+        startMergeTimer(
+          root,
+          sourceId,
+          targetId,
+          related
+        );
+
+        return true;
+      },
+
+      onEnd: e => {
+        if (pendingMerge) {
+          const {
+            sourceId,
+            targetId
+          } = pendingMerge;
+
+          pendingMerge = null;
+
+          clearMergeTimer(root);
+
+          mergeTriggered = false;
+
+          const source =
+            state.sites.find(
+              x => x.id === sourceId
+            );
+
+          const target =
+            state.sites.find(
+              x => x.id === targetId
+            );
+
+          if (
+            source &&
+            target &&
+            source.id !== target.id
+          ) {
+            mergeItems(
+              source,
+              target
+            );
+
+            return;
+          }
+        }
+
+        if (mergeTriggered) {
+          clearMergeTimer(root);
+          mergeTriggered = false;
           return;
         }
-      }
 
-      if (mergeTriggered) {
         clearMergeTimer(root);
-        mergeTriggered = false;
-        return;
+
+        const ids = [
+          ...root.children
+        ]
+          .filter(
+            x => x.dataset.id
+          )
+          .map(
+            x => x.dataset.id
+          );
+
+        const byId =
+          new Map(
+            state.sites.map(
+              x => [x.id, x]
+            )
+          );
+
+        state.sites =
+          ids
+            .map(
+              id => byId.get(id)
+            )
+            .filter(Boolean);
+
+        save();
+        render();
       }
-
-      clearMergeTimer(root);
-
-      const ids = [...root.children]
-        .filter(x => x.dataset.id)
-        .map(x => x.dataset.id);
-
-      const byId = new Map(
-        state.sites.map(x => [x.id, x])
-      );
-
-      state.sites = ids
-        .map(id => byId.get(id))
-        .filter(Boolean);
-
-      save();
-      render();
     }
-  });
+  );
 }
 
 
@@ -479,12 +528,13 @@ function dropTargetFromEvent(e) {
     return null;
   }
 
-  const el = document
-    .elementFromPoint(
-      oe.clientX,
-      oe.clientY
-    )
-    ?.closest('.site-card');
+  const el =
+    document
+      .elementFromPoint(
+        oe.clientX,
+        oe.clientY
+      )
+      ?.closest('.site-card');
 
   return el || null;
 }
@@ -525,15 +575,17 @@ function mergeItems(source, target) {
       ]
     };
 
-    const idx = state.sites.findIndex(
-      x => x.id === target.id
-    );
+    const idx =
+      state.sites.findIndex(
+        x => x.id === target.id
+      );
 
-    state.sites = state.sites.filter(
-      x =>
-        x.id !== source.id &&
-        x.id !== target.id
-    );
+    state.sites =
+      state.sites.filter(
+        x =>
+          x.id !== source.id &&
+          x.id !== target.id
+      );
 
     state.sites.splice(
       idx,
@@ -543,6 +595,7 @@ function mergeItems(source, target) {
 
     save();
     render();
+
     return;
   } else {
     const folder = {
@@ -555,15 +608,17 @@ function mergeItems(source, target) {
       ]
     };
 
-    const idx = state.sites.findIndex(
-      x => x.id === target.id
-    );
+    const idx =
+      state.sites.findIndex(
+        x => x.id === target.id
+      );
 
-    state.sites = state.sites.filter(
-      x =>
-        x.id !== source.id &&
-        x.id !== target.id
-    );
+    state.sites =
+      state.sites.filter(
+        x =>
+          x.id !== source.id &&
+          x.id !== target.id
+      );
 
     state.sites.splice(
       Math.max(0, idx),
@@ -573,12 +628,14 @@ function mergeItems(source, target) {
 
     save();
     render();
+
     return;
   }
 
-  state.sites = state.sites.filter(
-    x => x.id !== source.id
-  );
+  state.sites =
+    state.sites.filter(
+      x => x.id !== source.id
+    );
 
   save();
   render();
@@ -595,205 +652,251 @@ function openCollection(folder) {
 
   renderCollectionItems(folder);
 
-  document
-    .querySelector('#collectionDialog')
-    .show();
+  document.querySelector(
+    '#collectionDialog'
+  ).show();
 }
 
 
 function renderCollectionItems(folder) {
   const box =
-    document.querySelector('#collectionItems');
+    document.querySelector(
+      '#collectionItems'
+    );
 
   box.innerHTML = '';
 
-  (folder.children || []).forEach(ch => {
-    const el = document.createElement('div');
+  (folder.children || [])
+    .forEach(
+      ch => {
+        const el =
+          document.createElement(
+            'div'
+          );
 
-    el.className = 'collection-item';
-    el.dataset.id = ch.id;
+        el.className =
+          'collection-item';
 
-    el.innerHTML = `
-      ${
-        ch.type === 'site'
-          ? siteIconHtml(ch)
-          : '<div class="mini-folder">＋</div>'
-      }
-      <div class="collection-name"></div>
-    `;
+        el.dataset.id =
+          ch.id;
 
-    el.querySelector(
-      '.collection-name'
-    ).textContent = ch.name;
+        el.innerHTML = `
+          ${
+            ch.type === 'site'
+              ? siteIconHtml(ch)
+              : '<div class="mini-folder">＋</div>'
+          }
+          <div class="collection-name"></div>
+        `;
 
-    if (ch.type === 'site') {
-      const img =
-        el.querySelector('.favicon');
+        el.querySelector(
+          '.collection-name'
+        ).textContent = ch.name;
 
-      img.onerror = () => {
-        if (ch.icon) {
-          img.src = favicon(ch.url);
+        if (ch.type === 'site') {
+          const img =
+            el.querySelector(
+              '.favicon'
+            );
+
+          img.onerror = () => {
+            if (ch.icon) {
+              img.src =
+                favicon(ch.url);
+            } else {
+              img.style.visibility =
+                'hidden';
+            }
+          };
+
+          el.onclick =
+            () => location.href = ch.url;
         } else {
-          img.style.visibility = 'hidden';
+          el.onclick =
+            () => openCollection(ch);
         }
-      };
 
-      el.onclick = () =>
-        location.href = ch.url;
-    } else {
-      el.onclick = () =>
-        openCollection(ch);
-    }
+        el.addEventListener(
+          'contextmenu',
+          e => {
+            e.preventDefault();
 
-    el.addEventListener(
-      'contextmenu',
-      e => {
-        e.preventDefault();
-        openEditor(ch.id, folder.id);
+            openEditor(
+              ch.id,
+              folder.id
+            );
+          }
+        );
+
+        box.appendChild(el);
       }
     );
 
-    box.appendChild(el);
-  });
-
   const back =
-    document.createElement('button');
+    document.createElement(
+      'button'
+    );
 
-  back.className = 'collection-add';
-  back.textContent = '＋ 添加网站';
+  back.className =
+    'collection-add';
 
-  back.onclick = () =>
-    openEditor(null, folder.id);
+  back.textContent =
+    '＋ 添加网站';
+
+  back.onclick =
+    () => openEditor(
+      null,
+      folder.id
+    );
 
   box.appendChild(back);
 
   if (!box._sortable) {
-    box._sortable = new Sortable(box, {
-      animation: 150,
-      forceFallback: true,
-      fallbackOnBody: true,
-      filter: '.collection-add',
-      ghostClass: 'sortable-ghost',
+    box._sortable =
+      new Sortable(
+        box,
+        {
+          animation: 150,
+          forceFallback: true,
+          fallbackOnBody: true,
+          filter: '.collection-add',
+          ghostClass: 'sortable-ghost',
 
-      onEnd: e => {
-        if (
-          e.item.classList.contains(
-            'collection-add'
-          )
-        ) {
-          return;
-        }
-
-        const oe = e.originalEvent;
-
-        const dlg =
-          document.querySelector(
-            '#collectionDialog'
-          );
-
-        if (
-          oe &&
-          typeof oe.clientX === 'number' &&
-          typeof oe.clientY === 'number'
-        ) {
-          const r =
-            dlg.getBoundingClientRect();
-
-          const inside =
-            oe.clientX >= r.left &&
-            oe.clientX <= r.right &&
-            oe.clientY >= r.top &&
-            oe.clientY <= r.bottom;
-
-          if (!inside) {
-            const childId =
-              e.item.dataset.id;
-
-            const idx =
-              folder.children.findIndex(
-                x => x.id === childId
-              );
-
-            if (idx >= 0) {
-              const [child] =
-                folder.children.splice(
-                  idx,
-                  1
-                );
-
-              state.sites.push(child);
-
-              if (
-                folder.children.length === 1
-              ) {
-                const last =
-                  folder.children[0];
-
-                const fi =
-                  state.sites.findIndex(
-                    x => x.id === folder.id
-                  );
-
-                state.sites =
-                  state.sites.filter(
-                    x => x.id !== folder.id
-                  );
-
-                state.sites.splice(
-                  Math.max(0, fi),
-                  0,
-                  last
-                );
-              } else if (
-                folder.children.length === 0
-              ) {
-                state.sites =
-                  state.sites.filter(
-                    x => x.id !== folder.id
-                  );
-              }
-
-              save();
-
-              dclose(
-                'collectionDialog'
-              );
-
-              currentCollectionId = null;
-
-              render();
-
-              toast('已拆分到首页');
-
+          onEnd: e => {
+            if (
+              e.item.classList.contains(
+                'collection-add'
+              )
+            ) {
               return;
             }
+
+            const oe =
+              e.originalEvent;
+
+            const dlg =
+              document.querySelector(
+                '#collectionDialog'
+              );
+
+            if (
+              oe &&
+              typeof oe.clientX === 'number' &&
+              typeof oe.clientY === 'number'
+            ) {
+              const r =
+                dlg.getBoundingClientRect();
+
+              const inside =
+                oe.clientX >= r.left &&
+                oe.clientX <= r.right &&
+                oe.clientY >= r.top &&
+                oe.clientY <= r.bottom;
+
+              if (!inside) {
+                const childId =
+                  e.item.dataset.id;
+
+                const idx =
+                  folder.children.findIndex(
+                    x => x.id === childId
+                  );
+
+                if (idx >= 0) {
+                  const [child] =
+                    folder.children.splice(
+                      idx,
+                      1
+                    );
+
+                  state.sites.push(
+                    child
+                  );
+
+                  if (
+                    folder.children.length === 1
+                  ) {
+                    const last =
+                      folder.children[0];
+
+                    const fi =
+                      state.sites.findIndex(
+                        x => x.id === folder.id
+                      );
+
+                    state.sites =
+                      state.sites.filter(
+                        x =>
+                          x.id !== folder.id
+                      );
+
+                    state.sites.splice(
+                      Math.max(0, fi),
+                      0,
+                      last
+                    );
+                  } else if (
+                    folder.children.length === 0
+                  ) {
+                    state.sites =
+                      state.sites.filter(
+                        x =>
+                          x.id !== folder.id
+                      );
+                  }
+
+                  save();
+
+                  dclose(
+                    'collectionDialog'
+                  );
+
+                  currentCollectionId =
+                    null;
+
+                  render();
+
+                  toast(
+                    '已拆分到首页'
+                  );
+
+                  return;
+                }
+              }
+            }
+
+            const ids = [
+              ...box.querySelectorAll(
+                '.collection-item'
+              )
+            ].map(
+              x => x.dataset.id
+            );
+
+            const byId =
+              new Map(
+                folder.children.map(
+                  x => [x.id, x]
+                )
+              );
+
+            folder.children =
+              ids
+                .map(
+                  id => byId.get(id)
+                )
+                .filter(Boolean);
+
+            save();
+
+            renderCollectionItems(
+              folder
+            );
+
+            render();
           }
         }
-
-        const ids = [
-          ...box.querySelectorAll(
-            '.collection-item'
-          )
-        ].map(
-          x => x.dataset.id
-        );
-
-        const byId = new Map(
-          folder.children.map(
-            x => [x.id, x]
-          )
-        );
-
-        folder.children = ids
-          .map(id => byId.get(id))
-          .filter(Boolean);
-
-        save();
-
-        renderCollectionItems(folder);
-        render();
-      }
-    });
+      );
   } else {
     box._sortable.option(
       'disabled',
@@ -808,20 +911,26 @@ function openEditor(
   parentId = null
 ) {
   editingId = id;
-  window.editParentId = parentId;
+  window.editParentId =
+    parentId;
 
   const d =
     document.querySelector(
       '#editorDialog'
     );
 
-  const item =
-    findItem(state.sites, id);
+  let item =
+    findItem(
+      state.sites,
+      id
+    );
 
   document.querySelector(
     '#editorTitle'
   ).textContent =
-    id ? '编辑网站' : '添加网站';
+    id
+      ? '编辑网站'
+      : '添加网站';
 
   document.querySelector(
     '#nameInput'
@@ -899,7 +1008,9 @@ function removeItem(list, id) {
 
 
 document
-  .querySelector('#editorForm')
+  .querySelector(
+    '#editorForm'
+  )
   .addEventListener(
     'submit',
     e => {
@@ -924,10 +1035,13 @@ document
         return;
       }
 
-      if (!/^https?:\/\//i.test(url)) {
+      if (
+        !/^https?:\/\//i.test(url)
+      ) {
         toast(
           '网址请以 http:// 或 https:// 开头'
         );
+
         return;
       }
 
@@ -962,12 +1076,18 @@ document
             );
 
           if (p?.type === 'folder') {
-            p.children.push(item);
+            p.children.push(
+              item
+            );
           } else {
-            state.sites.push(item);
+            state.sites.push(
+              item
+            );
           }
         } else {
-          state.sites.push(item);
+          state.sites.push(
+            item
+          );
         }
       }
 
@@ -986,8 +1106,12 @@ document
             currentCollectionId
           );
 
-        if (f?.type === 'folder') {
-          renderCollectionItems(f);
+        if (
+          f?.type === 'folder'
+        ) {
+          renderCollectionItems(
+            f
+          );
         }
       }
     }
@@ -1007,7 +1131,11 @@ document.querySelector(
   );
 
   save();
-  dclose('editorDialog');
+
+  dclose(
+    'editorDialog'
+  );
+
   render();
 
   const f =
@@ -1016,8 +1144,12 @@ document.querySelector(
       currentCollectionId
     );
 
-  if (f?.type === 'folder') {
-    renderCollectionItems(f);
+  if (
+    f?.type === 'folder'
+  ) {
+    renderCollectionItems(
+      f
+    );
   }
 };
 
@@ -1030,7 +1162,9 @@ function showContext(x, y, id) {
       '#contextMenu'
     );
 
-  m.classList.remove('hidden');
+  m.classList.remove(
+    'hidden'
+  );
 
   m.style.left =
     Math.min(
@@ -1047,38 +1181,42 @@ function showContext(x, y, id) {
 
 
 function hideContext() {
-  document
-    .querySelector('#contextMenu')
-    .classList.add('hidden');
+  document.querySelector(
+    '#contextMenu'
+  ).classList.add(
+    'hidden'
+  );
 }
 
 
-document
-  .querySelector('#contextMenu')
-  .onclick = e => {
-    const a =
-      e.target.dataset.action;
+document.querySelector(
+  '#contextMenu'
+).onclick = e => {
+  const a =
+    e.target.dataset.action;
 
-    if (!a) {
-      return;
-    }
+  if (!a) {
+    return;
+  }
 
-    hideContext();
+  hideContext();
 
-    if (a === 'edit') {
-      openEditor(contextId);
-    }
+  if (a === 'edit') {
+    openEditor(
+      contextId
+    );
+  }
 
-    if (a === 'delete') {
-      removeItem(
-        state.sites,
-        contextId
-      );
+  if (a === 'delete') {
+    removeItem(
+      state.sites,
+      contextId
+    );
 
-      save();
-      render();
-    }
-  };
+    save();
+    render();
+  }
+};
 
 
 document.addEventListener(
@@ -1102,7 +1240,9 @@ function search(q) {
     return;
   }
 
-  if (/^https?:\/\//i.test(q)) {
+  if (
+    /^https?:\/\//i.test(q)
+  ) {
     location.href = q;
     return;
   }
@@ -1112,6 +1252,7 @@ function search(q) {
   ) {
     location.href =
       'https://' + q;
+
     return;
   }
 
@@ -1122,7 +1263,9 @@ function search(q) {
 
 
 const searchInput =
-  document.querySelector('#search');
+  document.querySelector(
+    '#search'
+  );
 
 searchInput.addEventListener(
   'keydown',
@@ -1159,7 +1302,9 @@ function renderEngines() {
     ENGINES.google;
 
   icon.src =
-    engineIconUrl(state.engine);
+    engineIconUrl(
+      state.engine
+    );
 
   icon.alt =
     current.name;
@@ -1170,12 +1315,16 @@ function renderEngines() {
 
 
 document
-  .querySelector('#engineBtn')
+  .querySelector(
+    '#engineBtn'
+  )
   .addEventListener(
     'click',
     () => {
       const keys =
-        Object.keys(ENGINES);
+        Object.keys(
+          ENGINES
+        );
 
       const i =
         keys.indexOf(
@@ -1194,7 +1343,8 @@ document
 
 
 function tick() {
-  const d = new Date();
+  const d =
+    new Date();
 
   document.querySelector(
     '#clock'
@@ -1230,7 +1380,9 @@ function toast(t) {
 
   x.textContent = t;
 
-  x.classList.add('show');
+  x.classList.add(
+    'show'
+  );
 
   clearTimeout(
     window.__toast
@@ -1239,16 +1391,18 @@ function toast(t) {
   window.__toast =
     setTimeout(
       () =>
-        x.classList.remove('show'),
+        x.classList.remove(
+          'show'
+        ),
       1800
     );
 }
 
 
 function dclose(id) {
-  document
-    .querySelector('#' + id)
-    ?.close();
+  document.querySelector(
+    '#' + id
+  )?.close();
 }
 
 
@@ -1264,7 +1418,9 @@ document.querySelector(
   document.querySelector(
     '#settingsEngine'
   ).innerHTML =
-    Object.entries(ENGINES)
+    Object.entries(
+      ENGINES
+    )
       .map(
         ([k, v]) =>
           `<option value="${k}">${v.name}</option>`
@@ -1293,7 +1449,9 @@ document.querySelector(
 
 
 document
-  .querySelector('#settingsForm')
+  .querySelector(
+    '#settingsForm'
+  )
   .addEventListener(
     'submit',
     e => {
@@ -1316,11 +1474,9 @@ document
 
       save();
 
-      document
-        .querySelector(
-          '#settingsDialog'
-        )
-        .close();
+      document.querySelector(
+        '#settingsDialog'
+      ).close();
 
       render();
     }
@@ -1345,10 +1501,14 @@ document.querySelector(
     );
 
   const a =
-    document.createElement('a');
+    document.createElement(
+      'a'
+    );
 
   a.href =
-    URL.createObjectURL(blob);
+    URL.createObjectURL(
+      blob
+    );
 
   a.download =
     'my-navigation-backup.json';
@@ -1359,16 +1519,18 @@ document.querySelector(
     a.href
   );
 
-  toast('已导出');
+  toast(
+    '已导出'
+  );
 };
 
 
 document.querySelector(
   '#importBtn'
 ).onclick = () =>
-  document
-    .querySelector('#importFile')
-    .click();
+  document.querySelector(
+    '#importFile'
+  ).click();
 
 
 document.querySelector(
@@ -1391,9 +1553,14 @@ document.querySelector(
 
     save();
     render();
-    toast('导入成功');
+
+    toast(
+      '导入成功'
+    );
   } catch {
-    toast('JSON 文件无效');
+    toast(
+      'JSON 文件无效'
+    );
   }
 
   e.target.value = '';
@@ -1437,19 +1604,24 @@ function renderCalendar() {
     '五',
     '六',
     '日'
-  ].forEach(x => {
-    const d =
-      document.createElement(
-        'div'
+  ].forEach(
+    x => {
+      const d =
+        document.createElement(
+          'div'
+        );
+
+      d.className =
+        'weekday';
+
+      d.textContent =
+        x;
+
+      box.appendChild(
+        d
       );
-
-    d.className =
-      'weekday';
-
-    d.textContent = x;
-
-    box.appendChild(d);
-  });
+    }
+  );
 
   const first =
     (
@@ -1490,7 +1662,9 @@ function renderCalendar() {
     d.textContent =
       prev - first + i + 1;
 
-    box.appendChild(d);
+    box.appendChild(
+      d
+    );
   }
 
   for (
@@ -1522,7 +1696,9 @@ function renderCalendar() {
       );
     }
 
-    box.appendChild(d);
+    box.appendChild(
+      d
+    );
   }
 }
 
@@ -1535,11 +1711,9 @@ document.querySelector(
 
   renderCalendar();
 
-  document
-    .querySelector(
-      '#calendarDialog'
-    )
-    .showModal();
+  document.querySelector(
+    '#calendarDialog'
+  ).showModal();
 };
 
 
@@ -1594,7 +1768,9 @@ window.addEventListener(
       searchInput.focus();
     }
 
-    if (e.key === 'Escape') {
+    if (
+      e.key === 'Escape'
+    ) {
       hideContext();
     }
   }
