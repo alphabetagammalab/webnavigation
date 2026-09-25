@@ -345,6 +345,7 @@ function createCard(i) {
 };
     */
 
+    /*
     img.onload = () => {
       if (
         !img.dataset.googleFallback &&
@@ -355,6 +356,24 @@ function createCard(i) {
           const u = new URL(i.url);
           img.src =
             'https://www.google.com/s2/favicons?sz=256&domain=' + 
+            encodeURIComponent(u.hostname);
+          return;
+        } catch {}
+      }
+    };
+   */
+
+    img.onload = () => {
+      if (
+        !i.icon &&
+        !img.dataset.googleFallback &&
+        img.naturalWidth < 64
+      ) {
+        img.dataset.googleFallback = '1';
+        try {
+          const u = new URL(i.url);
+          img.src =
+            'https://www.google.com/s2/favicons?sz=256&domain=' +
             encodeURIComponent(u.hostname);
           return;
         } catch {}
