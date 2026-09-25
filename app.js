@@ -54,7 +54,7 @@ function addSearchHistory(query) {
   saveSearchHistory(history);
 }
 
-function renderSearchHistory() {
+function renderSearchHistory(keyword = '') {
   const box =
     document.querySelector(
       '#suggestions'
@@ -67,65 +67,55 @@ function renderSearchHistory() {
   const history =
     loadSearchHistory();
 
-  if (!history.length) {
-    box.innerHTML =
-      '<div class="search-history-empty">暂无搜索历史</div>';
+  keyword = keyword.trim().toLowerCase();
 
-    box.classList.remove('hidden');
+  const filteredHistory =
+    keyword
+      ? history.filter(
+          item =>
+            item
+              .toLowerCase()
+              .includes(keyword)
+        )
+      : history;
 
+  if (!filteredHistory.length) {
+    box.innerHTML = '';
+    box.classList.add('hidden');
     return;
   }
 
   box.innerHTML =
-  history
-    .map(
-      item => `
-        <div class="search-history-row">
-          <button
-            class="search-history-item"
-            type="button"
-            data-query="${encodeURIComponent(item)}"
-          >
-            <span class="search-history-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="12" r="8"></circle>
-                <path d="M12 7v5l3 2"></path>
-              </svg>
-            </span>
-            <span class="search-history-text">${item}</span>
-          </button>
-
-          <button
-            class="search-history-delete"
-            type="button"
-            data-history-delete="${encodeURIComponent(item)}"
-            aria-label="删除这条搜索历史"
-            title="删除"
-          >
-            ×
-          </button>
-        </div>
-      `
-    )
-    .join('') +
-  `
-    <div class="search-history-footer">
-      <button
-        class="search-history-clear"
-        type="button"
-        data-history-action="clear"
-      >
-        清空搜索历史
-      </button>
-    </div>
-  `;
-
-  /*
-  box.innerHTML =
-    history
+    filteredHistory
       .map(
-        item =>
-          `<button class="search-history-item" type="button" data-query="${encodeURIComponent(item)}">${item}</button>`
+        item => `
+          <div class="search-history-row">
+            <button
+              class="search-history-item"
+              type="button"
+              data-query="${encodeURIComponent(item)}"
+            >
+              <span class="search-history-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="8"></circle>
+                  <path d="M12 7v5l3 2"></path>
+                </svg>
+              </span>
+
+              <span class="search-history-text">${item}</span>
+            </button>
+
+            <button
+              class="search-history-delete"
+              type="button"
+              data-history-delete="${encodeURIComponent(item)}"
+              aria-label="删除这条搜索历史"
+              title="删除"
+            >
+              ×
+            </button>
+          </div>
+        `
       )
       .join('') +
     `
@@ -139,11 +129,9 @@ function renderSearchHistory() {
         </button>
       </div>
     `;
-*/
-  
+
   box.classList.remove('hidden');
 }
-
 
 function showSearchHistory() {
   const box =
