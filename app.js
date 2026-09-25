@@ -1320,7 +1320,27 @@ document
 
 
 /*日期显示为中文并显示农历*/
+function tick(){
+  const now=new Date();
 
+  document.querySelector('#clock').textContent=
+    now.toLocaleTimeString('zh-CN',{
+      hour:'2-digit',
+      minute:'2-digit',
+      second:'2-digit',
+      hour12:false
+    });
+
+  document.querySelector('#date').textContent=
+    now.toLocaleDateString('zh-CN',{
+      year:'numeric',
+      month:'long',
+      day:'numeric',
+      weekday:'long'
+    });
+}
+
+/*
 function tick() {
   const d =
     new Date();
@@ -1350,7 +1370,7 @@ function tick() {
       }
     );
 }
-
+*/
 
 function toast(t) {
   const x =
