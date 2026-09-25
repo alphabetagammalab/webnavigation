@@ -1280,6 +1280,12 @@ searchInput.addEventListener(
   }
 );
 
+/*搜索框添加搜索按钮*/
+document.querySelector('#searchBtn').addEventListener('click', () => {
+  search(searchInput.value);
+});
+/*搜索框添加搜索按钮*/
+
 function engineIconUrl(key) {
   const domains = {
     google: 'google.com',
