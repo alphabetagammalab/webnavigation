@@ -12,7 +12,14 @@
   <main class="app">
     <header class="hero">
       <div id="clock" class="clock">00:00</div>
-      <div id="date" class="date">Thursday, September 25</div>
+      <!-- <div id="date" class="date">Thursday, September 25</div> -->
+      <div id="date" class="date">
+        <span id="dateSolar"></span>
+        <span class="date-gap"></span>
+        <span id="dateWeekday"></span>
+        <span class="date-gap-wide"></span>
+        <span id="dateLunar"></span>
+      </div>
       <div class="search-wrap">
         <div class="search-box">
           <button id="engineBtn" class="engine-btn" type="button" title="切换搜索引擎" aria-label="切换搜索引擎"><img id="engineIcon" alt=""></button>
