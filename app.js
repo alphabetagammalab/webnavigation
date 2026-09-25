@@ -405,6 +405,7 @@ function initSortable(root) {
       animation: 150,
       forceFallback: true,
       fallbackOnBody: true,
+      filter: '.add-site-card',
       swapThreshold: .65,
       ghostClass: 'sortable-ghost',
       chosenClass: 'sortable-chosen',
