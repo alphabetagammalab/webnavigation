@@ -773,6 +773,15 @@ label select:focus {
   border-color: rgba(75, 120, 209, 0.5);
 }
 
+.dark label select {
+  color-scheme: dark;
+}
+
+.dark label select option {
+  background: var(--card2);
+  color: var(--text);
+}
+
 .dialog-actions {
   display: grid;
   grid-template-columns: auto 1fr auto auto;
