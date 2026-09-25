@@ -328,8 +328,10 @@ button {
   background:transparent;
   color:var(--text);
   text-align:left;
-  font:inherit;
+  font-family:inherit;
   font-size:13px;
+  font-weight: 500;
+  line-height: 1.25;
   cursor:pointer;
 }
 
@@ -1360,8 +1362,10 @@ label select:focus {
   background: transparent;
   color: var(--text);
 
-  font: inherit;
+  font-family: inherit;
   font-size: 13px;
+  font-weight: 500;
+  line-height: 1.25;
   text-align: left;
 
   cursor: pointer;
