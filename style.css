@@ -927,3 +927,47 @@ label select:focus {
   gap: 20px;
 }
 /*调整时间格式*/
+
+/*给添加按钮做成和网站图标一致的样式*/
+.add-site-card{
+  cursor:pointer;
+}
+
+.add-site-icon{
+  width:56px;
+  height:56px;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  background:rgba(255,255,255,.45);
+  border:1px dashed rgba(120,130,145,.35);
+  color:var(--muted);
+  font-size:28px;
+  line-height:1;
+  transition:transform .16s,background .16s,border-color .16s;
+}
+
+.add-site-card:hover .add-site-icon{
+  transform:translateY(-2px);
+  background:rgba(255,255,255,.65);
+  border-color:rgba(120,130,145,.55);
+}
+
+.dark .add-site-icon{
+  background:rgba(38,44,55,.55);
+  border-color:rgba(255,255,255,.14);
+}
+
+.dark .add-site-card:hover .add-site-icon{
+  background:rgba(38,44,55,.8);
+}
+/*给添加按钮做成和网站图标一致的样式*/
+/*移动端再补*/
+@media(max-width:650px){
+  .add-site-icon{
+    width:52px;
+    height:52px;
+    border-radius:14px;
+  }
+}
+/*移动端再补*/
