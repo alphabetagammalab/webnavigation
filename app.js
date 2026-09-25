@@ -54,6 +54,113 @@ function addSearchHistory(query) {
   saveSearchHistory(history);
 }
 
+function renderSearchHistory() {
+  const box =
+    document.querySelector(
+      '#searchHistory'
+    );
+
+  if (!box) {
+    return;
+  }
+
+  const history =
+    loadSearchHistory();
+
+  if (!history.length) {
+    box.innerHTML =
+      '<div class="search-history-empty">暂无搜索历史</div>';
+
+    return;
+  }
+
+  box.innerHTML =
+    history
+      .map(
+        item =>
+          `<button class="search-history-item" type="button" data-query="${encodeURIComponent(item)}">${item}</button>`
+      )
+      .join('') +
+    `
+      <div class="search-history-footer">
+        <button
+          class="search-history-clear"
+          type="button"
+          data-history-action="clear"
+        >
+          清空搜索历史
+        </button>
+      </div>
+    `;
+}
+
+
+function showSearchHistory() {
+  const box =
+    document.querySelector(
+      '#searchHistory'
+    );
+
+  if (!box) {
+    return;
+  }
+
+  renderSearchHistory();
+
+  box.classList.remove(
+    'hidden'
+  );
+}
+
+function hideSearchHistory() {
+  document.querySelector(
+    '#searchHistory'
+  )?.classList.add(
+    'hidden'
+  );
+}
+
+document.querySelector(
+  '#searchHistory'
+).addEventListener(
+  'click',
+  e => {
+    const clear =
+      e.target.closest(
+        '[data-history-action="clear"]'
+      );
+
+    if (clear) {
+      localStorage.removeItem(
+        SEARCH_HISTORY_STORAGE
+      );
+
+      renderSearchHistory();
+      return;
+    }
+
+    const item =
+      e.target.closest(
+        '.search-history-item'
+      );
+
+    if (!item) {
+      return;
+    }
+
+    const query =
+      decodeURIComponent(
+        item.dataset.query
+      );
+
+    searchInput.value = query;
+
+    hideSearchHistory();
+
+    search(query);
+  }
+);
+/* 搜索历史显示相关 */
 
 
 const ENGINES = {
