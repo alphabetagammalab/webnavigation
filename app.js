@@ -122,7 +122,7 @@ function hideSearchHistory() {
 
 document
   .querySelector('#suggestions')
-  .addEventListener(
+  ?.addEventListener(
     'click',
     e => {
       const clear =
