@@ -279,6 +279,34 @@ document.addEventListener(
         '#suggestions'
       );
 
+    if (!suggestions) {
+      return;
+    }
+
+    if (
+      e.target.closest(
+        '.search-wrap'
+      )
+    ) {
+      return;
+    }
+
+    suggestions.classList.add(
+      'hidden'
+    );
+  }
+);
+
+
+/*
+document.addEventListener(
+  'click',
+  e => {
+    const suggestions =
+      document.querySelector(
+        '#suggestions'
+      );
+
     const searchWrap =
       e.target.closest(
         '.search-wrap'
@@ -294,6 +322,7 @@ document.addEventListener(
     }
   }
 );
+*/
 
 /*
 searchInput.addEventListener(
