@@ -1052,7 +1052,8 @@ document
 
       const url = normalizeUrl(
         document.querySelector(
-          '#editUrl').value
+          '#urlInput'
+        ).value.trim()
       );
 
       const icon =
