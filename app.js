@@ -611,6 +611,7 @@ function createCard(i) {
   card.className = 'site-card';
   card.dataset.id = i.id;
 
+  /*
   if (i.type === 'folder') {
     const icons =
       (i.children || [])
@@ -634,7 +635,75 @@ function createCard(i) {
       'click',
       () => openCollection(i)
     );
-  } else {
+  } 
+  */
+
+  if (i.type === 'folder') {
+  const children =
+    (i.children || [])
+      .filter(
+        ch => ch.type === 'site'
+      )
+      .slice(0, 4);
+
+  const icons =
+    children
+      .map(ch => {
+        let src = ch.icon || '';
+
+        if (!src) {
+          try {
+            const u =
+              new URL(ch.url);
+
+            src =
+              'https://www.google.com/s2/favicons?sz=64&domain=' +
+              encodeURIComponent(
+                u.hostname
+              );
+          } catch {
+            src = '';
+          }
+        }
+
+        return `
+          <img
+            class="favicon"
+            alt=""
+            src="${src}"
+            data-url="${ch.url}"
+          >
+        `;
+      })
+      .join('');
+
+  card.innerHTML = `
+    <div class="folder-icon">
+      ${icons || '<span>＋</span>'}
+    </div>
+    <div class="site-name"></div>
+  `;
+
+  card
+    .querySelectorAll(
+      '.folder-icon .favicon'
+    )
+    .forEach(img => {
+      img.onerror = () => {
+        img.style.visibility =
+          'hidden';
+      };
+    });
+
+  card.querySelector(
+    '.site-name'
+  ).textContent = i.name;
+
+  card.addEventListener(
+    'click',
+    () => openCollection(i)
+  );
+} else {
     card.innerHTML =
       `${siteIconHtml(i)}<div class="site-name"></div>`;
 
