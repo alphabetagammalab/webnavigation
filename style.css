@@ -1065,6 +1065,11 @@ label select:focus {
   transform: translateX(4px);
 }
 /*调整时间格式*/
+/*让农历这一段稍微淡一些*/
+#dateLunar {
+  opacity: .75;
+}
+/*让农历这一段稍微淡一些*/
 
 /*给添加按钮做成和网站图标一致的样式*/
 .add-site-card{
