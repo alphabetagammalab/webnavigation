@@ -1320,6 +1320,50 @@ document
 
 
 /*日期显示为中文并显示农历*/
+
+function tick(){
+  const now=new Date();
+
+  document.querySelector('#clock').textContent=
+    now.toLocaleTimeString('zh-CN',{
+      hour:'2-digit',
+      minute:'2-digit',
+      second:'2-digit'
+    });
+
+  const solar=Solar.fromYmd(
+    now.getFullYear(),
+    now.getMonth()+1,
+    now.getDate()
+  );
+
+  const lunar=solar.getLunar();
+
+  const lunarText=
+    lunar.getMonthInChinese()+
+    '月'+
+    lunar.getDayInChinese();
+
+  document.querySelector('#dateSolar').textContent=
+    now.toLocaleDateString('zh-CN',{
+      year:'numeric',
+      month:'long',
+      day:'numeric'
+    });
+
+  document.querySelector('#dateWeekday').textContent=
+    now.toLocaleDateString('zh-CN',{
+      weekday:'long'
+    });
+
+  document.querySelector('#dateLunar').textContent=
+    '农历'+
+    lunar.getYearInGanZhi()+
+    '年'+
+    lunarText;
+}
+
+/*
 function tick(){
   const now=new Date();
 
@@ -1355,7 +1399,7 @@ function tick(){
     '年'+
     lunarText;
 }
-
+*/
 /*
 function tick(){
   const now=new Date();
