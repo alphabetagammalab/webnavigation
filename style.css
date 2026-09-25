@@ -1075,11 +1075,11 @@ label select:focus {
 }
 
 .folder-icon .favicon {
-  width: 20px !important;
-  height: 20px !important;
-  padding: 1px !important;
+  width: 15px !important;
+  height: 15px !important;
+  padding: 0 !important;
   border: 0 !important;
-  border-radius: 5px !important;
+  border-radius: 4px !important;
   background: transparent !important;
   box-shadow: none !important;
   object-fit: contain !important;
