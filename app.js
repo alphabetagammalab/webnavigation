@@ -1320,47 +1320,57 @@ document
 
 
 /*日期显示为中文并显示农历*/
-function tick() {
-  const d = new Date();
+function tick(){
+  const now=new Date();
+  $("#clock").textContent=now.toLocaleTimeString("zh-CN",{
+    hour:"2-digit",
+    minute:"2-digit",
+    second:"2-digit"
+  });
+  const solar = Solar.fromYmd(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    now.getDate()
+  );
+  const lunar = solar.getLunar();
+  const lunarText = lunar.getMonthInChinese() + "月" + lunar.getDayInChinese();
+  /*
+  $("#date").textContent =
+    now.toLocaleDateString("zh-CN",{
+      year:"numeric",
+      month:"long",
+      day:"numeric",
+      weekday:"long"
+    }) + " " + lunarText;
+  */
+  /*
+  $("#date").textContent =
+    now.toLocaleDateString("zh-CN",{
+      year:"numeric",
+      month:"long",
+      day:"numeric"
+    }) + " " +
+    now.toLocaleDateString("zh-CN",{
+      weekday:"long"
+    }) + " " + "农历" + lunarText;
+    */
 
-  document.querySelector(
-    '#clock'
-  ).textContent =
-    d.toLocaleTimeString(
-      'zh-CN',
-      {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      }
-    );
+  $("#dateSolar").textContent =
+  now.toLocaleDateString("zh-CN",{
+    year:"numeric",
+    month:"long",
+    day:"numeric"
+  });
 
-  const solarDate =
-    d.toLocaleDateString(
-      'zh-CN',
-      {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        weekday: 'long'
-      }
-    );
+  $("#dateWeekday").textContent =
+    now.toLocaleDateString("zh-CN",{
+      weekday:"long"
+    });
 
-  const lunarDate =
-    d.toLocaleDateString(
-      'zh-CN-u-ca-chinese',
-      {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      }
-    );
-
-  document.querySelector(
-    '#date'
-  ).textContent =
-    `${solarDate} · 农历${lunarDate}`;
+  $("#dateLunar").textContent = "农历" + lunarText;
+  
 }
+setInterval(tick,1000);tick();
 
 
 /*
