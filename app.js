@@ -1,4 +1,3 @@
-```javascript
 const STORAGE = 'minimal_nav_local_v2';
 
 const ENGINES = {
@@ -1758,4 +1757,3 @@ setInterval(
 );
 
 render();
-```
