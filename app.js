@@ -984,7 +984,11 @@ function initSortable(root) {
           related
         );
 
+        /*
         return true;
+        */
+        return !mergeTriggered;
+        
       },
 
       onEnd: e => {
