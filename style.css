@@ -558,6 +558,7 @@ button {
   min-height: 30px;
 }
 
+
 .site-card {
   position: relative;
   display: flex;
@@ -574,7 +575,9 @@ button {
   box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  transition: transform 0.16s, opacity 0.16s;
+  transition:
+    transform 0.16s ease,
+    opacity 0.16s ease;
 }
 
 .site-card:hover {
@@ -597,18 +600,16 @@ button {
   object-fit: contain;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
- /*让图标本身轻微放大*/
   transition:
-    transform .16s ease,
-    box-shadow .16s ease;
-  /*让图标本身轻微放大*/
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
 }
-/*让图标本身轻微放大*/
-.site-card:hover .favicon{
-  transform:translateY(-2px) scale(1.04);
-  box-shadow:0 10px 26px rgba(40,52,70,.14);
+
+.site-card:hover .favicon {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 10px 26px rgba(40, 52, 70, 0.14);
 }
-/*让图标本身轻微放大*/
+
 
 
 .site-name {
