@@ -4,22 +4,26 @@ const ENGINES = {
   google: {
     name: 'Google',
     short: 'G',
-    url: 'https://www.google.com/search?q='
+    url: 'https://www.google.com/search?q=',
+    placeholder:'Search with Google or '
   },
   bing: {
     name: 'Bing',
     short: 'B',
-    url: 'https://www.bing.com/search?q='
+    url: 'https://www.bing.com/search?q=',
+    placeholder:'搜索或输入网址'
   },
   duck: {
     name: 'DuckDuckGo',
     short: 'D',
-    url: 'https://duckduckgo.com/?q='
+    url: 'https://duckduckgo.com/?q=',
+    placeholder:'搜索或输入网址'
   },
   baidu: {
     name: 'Baidu',
     short: '百',
-    url: 'https://www.baidu.com/s?wd='
+    url: 'https://www.baidu.com/s?wd=',
+    placeholder:'搜索或输入网址'
   }
 };
 
