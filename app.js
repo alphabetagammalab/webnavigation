@@ -162,7 +162,7 @@ document
   );
 
 document.querySelector(
-  '#searchHistory'
+  '#suggestions'
 ).addEventListener(
   'click',
   e => {
