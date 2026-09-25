@@ -1476,8 +1476,11 @@ label select:focus {
 /*设置底部按钮尺寸*/
 #settingsDialog .dialog-actions .secondary,
 #settingsDialog .dialog-actions .primary {
-  min-width: 72px;
-  height: 34px;
-  padding: 0 15px;
-  font-size: 14px;
+  width: 68px;
+  min-width: 68px;
+  height: 32px;
+  padding: 0;
+  border-radius: 9px;
+  font-size: 13px;
+  box-sizing: border-box;
 }
