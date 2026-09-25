@@ -37,6 +37,19 @@ const site = (name, url, icon = '') => ({
   icon
 });
 
+
+/*处理添加网址时的https*/
+function normalizeUrl(url){
+  url=url.trim();
+  if(!url)return '';
+  
+  if(!/^https?:\/\//i.test(url)){
+    url='https://'+url;
+  }
+  
+  return url;
+}
+
 const defaultSites = [
   site('Google', 'https://www.google.com'),
   site('YouTube', 'https://www.youtube.com'),
@@ -1030,10 +1043,17 @@ document
           '#nameInput'
         ).value.trim();
 
+      /*
       const url =
         document.querySelector(
           '#urlInput'
         ).value.trim();
+      */
+
+      const url = normalizeUrl(
+        document.querySelector(
+          '#editUrl').value
+      );
 
       const icon =
         document.querySelector(
