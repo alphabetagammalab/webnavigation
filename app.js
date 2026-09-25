@@ -208,10 +208,6 @@ document
         return;
       }
 
-
-
-      
-
       const item =
         e.target.closest(
           '.search-history-item'
@@ -272,6 +268,30 @@ document.querySelector(
     hideSearchHistory();
 
     search(query);
+  }
+);
+
+document.addEventListener(
+  'click',
+  e => {
+    const suggestions =
+      document.querySelector(
+        '#suggestions'
+      );
+
+    const searchWrap =
+      e.target.closest(
+        '.search-wrap'
+      );
+
+    if (
+      suggestions &&
+      !searchWrap
+    ) {
+      suggestions.classList.add(
+        'hidden'
+      );
+    }
   }
 );
 
