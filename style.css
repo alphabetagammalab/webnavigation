@@ -1012,6 +1012,7 @@ label select:focus {
 
 
 /*调整日期时间间距*/
+/*
 .clock {
   width: 100%;
   text-align: center;
@@ -1022,6 +1023,7 @@ label select:focus {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
+*/
 
 .date {
   width: 100%;
