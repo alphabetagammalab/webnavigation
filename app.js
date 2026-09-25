@@ -120,6 +120,47 @@ function hideSearchHistory() {
   );
 }
 
+document
+  .querySelector('#suggestions')
+  .addEventListener(
+    'click',
+    e => {
+      const clear =
+        e.target.closest(
+          '[data-history-action="clear"]'
+        );
+
+      if (clear) {
+        localStorage.removeItem(
+          SEARCH_HISTORY_STORAGE
+        );
+
+        renderSearchHistory();
+        return;
+      }
+
+      const item =
+        e.target.closest(
+          '.search-history-item'
+        );
+
+      if (!item) {
+        return;
+      }
+
+      const query =
+        decodeURIComponent(
+          item.dataset.query
+        );
+
+      searchInput.value = query;
+
+      hideSearchHistory();
+
+      search(query);
+    }
+  );
+
 document.querySelector(
   '#searchHistory'
 ).addEventListener(
