@@ -1220,6 +1220,45 @@ function showContext(
     'hidden'
   );
 
+  const rect =
+    m.getBoundingClientRect();
+
+  const left =
+    Math.min(
+      x,
+      innerWidth - rect.width - 8
+    );
+
+  const top =
+    Math.min(
+      y,
+      innerHeight - rect.height - 8
+    );
+
+  m.style.left =
+    Math.max(8, left) + 'px';
+
+  m.style.top =
+    Math.max(8, top) + 'px';
+}
+
+/*
+function showContext(
+  x,
+  y,
+  id
+) {
+  contextId = id;
+
+  const m =
+    document.querySelector(
+      '#contextMenu'
+    );
+
+  m.classList.remove(
+    'hidden'
+  );
+
   m.style.left =
     Math.min(
       x,
@@ -1232,6 +1271,7 @@ function showContext(
       innerHeight - 100
     ) + 'px';
 }
+*/
 
 function hideContext() {
   document.querySelector(
