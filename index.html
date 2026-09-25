@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>My Navigation</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background"></div>
+  <main class="app">
+    <header class="hero">
+      <div id="clock" class="clock">00:00</div>
+      <div id="date" class="date">Thursday, September 25</div>
+      <div class="search-wrap">
+        <div class="search-box">
+          <span class="search-icon">⌕</span>
+          <input id="search" autocomplete="off" spellcheck="false" placeholder="搜索或输入网址">
+          <select id="engineSelect" class="engine-select" title="选择搜索引擎" aria-label="选择搜索引擎"></select>
+        </div>
+        <div id="suggestions" class="suggestions hidden"></div>
+      </div>
+    </header>
+
+    <section id="sites" class="site-grid site-grid-home"></section>
+
+    <div class="bottom-bar">
+      <button id="addBtn" class="round-btn" title="添加">＋</button>
+      <div class="bottom-actions">
+        <button id="calendarBtn" class="tool-btn">日历</button>
+        <button id="settingsBtn" class="tool-btn">设置</button>
+      </div>
+    </div>
+  </main>
+
+  <dialog id="editorDialog" class="dialog">
+    <form id="editorForm" method="dialog">
+      <div class="dialog-head">
+        <h2 id="editorTitle">添加网站</h2>
+        <button type="button" class="close" data-close="editorDialog">×</button>
+      </div>
+      <label>名称<input id="nameInput" required></label>
+      <label id="urlRow">网址<input id="urlInput" type="url" placeholder="https://example.com"></label>
+      <label id="iconRow">图标 URL <input id="iconInput" placeholder="留空自动使用 favicon"></label>
+      <div class="dialog-actions">
+        <button type="button" id="deleteBtn" class="danger hidden">删除</button>
+        <span></span>
+        <button type="button" class="secondary" data-close="editorDialog">取消</button>
+        <button class="primary">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="settingsDialog" class="dialog">
+    <form id="settingsForm" method="dialog">
+      <div class="dialog-head"><h2>设置</h2><button type="button" class="close" data-close="settingsDialog">×</button></div>
+      <label>搜索引擎<select id="settingsEngine"></select></label>
+      <label>主题<select id="themeSelect"><option value="auto">跟随系统</option><option value="dark">深色</option><option value="light">浅色</option></select></label>
+      <label class="check"><input type="checkbox" id="showDate"> 显示日期</label>
+      <div class="data-actions">
+        <button type="button" id="exportBtn" class="secondary">导出 JSON</button>
+        <button type="button" id="importBtn" class="secondary">导入 JSON</button>
+        <input id="importFile" type="file" accept="application/json" hidden>
+      </div>
+      <p class="hint">所有导航数据只保存在当前浏览器的 localStorage，不使用 Cloudflare、账号或服务器同步。</p>
+      <div class="dialog-actions"><span></span><button type="button" class="secondary" data-close="settingsDialog">关闭</button><button class="primary">保存</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="calendarDialog" class="dialog calendar-dialog">
+    <div class="dialog-head"><h2>日历</h2><button class="close" data-close="calendarDialog">×</button></div>
+    <div class="calendar-nav"><button id="prevMonth">‹</button><strong id="calendarTitle"></strong><button id="nextMonth">›</button></div>
+    <div id="calendar" class="calendar"></div>
+  </dialog>
+
+  <div id="contextMenu" class="context-menu hidden">
+    <button data-action="edit">编辑</button>
+    <button data-action="delete">删除</button>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
