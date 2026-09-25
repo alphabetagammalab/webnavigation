@@ -760,8 +760,14 @@ label select:focus {
   object-fit: contain;
 }
 
+/*
 .dark .engine-btn {
   background: rgba(255, 255, 255, 0.07);
+}
+*/
+
+.dark .engine-btn {
+  background: transparent;
 }
 
 /* Aggregation / collection */
