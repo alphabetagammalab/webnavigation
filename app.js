@@ -1,5 +1,61 @@
 const STORAGE = 'minimal_nav_local_v2';
 
+/* 搜索历史显示相关 */
+const SEARCH_HISTORY_STORAGE = 'minimal_nav_search_history_v1';
+const MAX_SEARCH_HISTORY = 10;
+
+function loadSearchHistory() {
+  try {
+    const data =
+      JSON.parse(
+        localStorage.getItem(
+          SEARCH_HISTORY_STORAGE
+        )
+      );
+
+    return Array.isArray(data)
+      ? data
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveSearchHistory(history) {
+  localStorage.setItem(
+    SEARCH_HISTORY_STORAGE,
+    JSON.stringify(history)
+  );
+}
+
+function addSearchHistory(query) {
+  query = query.trim();
+
+  if (!query) {
+    return;
+  }
+
+  let history =
+    loadSearchHistory();
+
+  history =
+    history.filter(
+      item => item !== query
+    );
+
+  history.unshift(query);
+
+  history =
+    history.slice(
+      0,
+      MAX_SEARCH_HISTORY
+    );
+
+  saveSearchHistory(history);
+}
+
+
+
 const ENGINES = {
   google: {
     name: 'Google',
@@ -49,7 +105,7 @@ function normalizeUrl(url){
 
   return url;
 }
-
+/* 搜索历史显示相关 */
 
 const defaultSites = [
   site('Google', 'https://www.google.com'),
