@@ -74,6 +74,8 @@
       <label>搜索引擎<select id="settingsEngine"></select></label>
       <label>主题<select id="themeSelect"><option value="auto">跟随系统</option><option value="dark">深色</option><option value="light">浅色</option></select></label>
       <label class="check"><input type="checkbox" id="showDate"> 显示日期</label>
+      
+      <!--
       <div class="data-actions">
         <button type="button" id="exportBtn" class="secondary">导出 JSON</button>
         <button type="button" id="importBtn" class="secondary">导入 JSON</button>
@@ -89,6 +91,39 @@
           恢复默认网站
         </button>
       </div>
+      -->
+
+      
+      <div class="settings-section">
+      <div class="settings-section-title">数据管理</div>
+
+      <div class="data-actions">
+    <button
+      type="button"
+      id="exportBtn"
+      class="secondary"
+    >
+      导出 JSON
+    </button>
+
+    <button
+      type="button"
+      id="importBtn"
+      class="secondary"
+    >
+      导入 JSON
+    </button>
+  </div>
+
+  <button
+    type="button"
+    id="resetSitesBtn"
+    class="secondary reset-sites-btn"
+  >
+    恢复默认网站
+  </button>
+  </div>
+
       
       <p class="hint">所有导航数据只保存在当前浏览器的 localStorage，不使用 Cloudflare、账号或服务器同步。</p>
       <div class="dialog-actions"><span></span><button type="button" class="secondary" data-close="settingsDialog">关闭</button><button class="primary">保存</button></div>
