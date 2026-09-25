@@ -422,11 +422,25 @@ button {
   stroke-linejoin:round;
 }
 
+/*
 .search-history-text{
   min-width:0;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
+}
+*/
+
+.search-history-text{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+
+  font-family:inherit;
+  font-size:14px;
+  font-weight:500;
+  line-height:1.25;
 }
 
 .search-history-delete{
