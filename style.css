@@ -372,6 +372,104 @@ button {
   color:var(--text);
 }
 
+
+.search-history-row{
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+.search-history-item{
+  flex:1;
+  min-width:0;
+
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  padding:10px 12px;
+  border:0;
+  border-radius:12px;
+
+  background:transparent;
+  color:var(--text);
+
+  text-align:left;
+  font:inherit;
+  font-size:13px;
+
+  cursor:pointer;
+}
+
+.search-history-icon{
+  flex:0 0 auto;
+  width:18px;
+  height:18px;
+  display:grid;
+  place-items:center;
+  color:var(--muted);
+}
+
+.search-history-icon svg{
+  width:16px;
+  height:16px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.search-history-text{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.search-history-delete{
+  flex:0 0 auto;
+
+  width:30px;
+  height:30px;
+
+  display:grid;
+  place-items:center;
+
+  padding:0;
+  border:0;
+  border-radius:9px;
+
+  background:transparent;
+  color:var(--muted);
+
+  font-size:20px;
+  font-weight:300;
+  line-height:1;
+
+  cursor:pointer;
+  opacity:0;
+  transition:
+    opacity .15s,
+    background .15s,
+    color .15s;
+}
+
+.search-history-row:hover .search-history-delete{
+  opacity:1;
+}
+
+.search-history-delete:hover{
+  background:rgba(100,120,150,.1);
+  color:var(--text);
+}
+
+.search-history-delete:active{
+  background:rgba(100,120,150,.16);
+}
+
+
+
 .search-engines {
   display: flex;
   justify-content: center;
