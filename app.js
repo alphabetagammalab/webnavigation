@@ -1858,6 +1858,15 @@ searchInput.addEventListener(
 );
 
 searchInput.addEventListener(
+  'input',
+  () => {
+    renderSearchHistory(
+      searchInput.value
+    );
+  }
+);
+
+searchInput.addEventListener(
   'keydown',
   e => {
     if (e.key === 'Enter') {
