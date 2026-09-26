@@ -3081,20 +3081,129 @@ function renderCalendar() {
   const m =
     calendarDate.getMonth();
 
+  const today =
+    new Date();
+
+  const selected =
+    calendarDate;
+
+  /*
+   * 左侧大日期
+   */
+
+  document.querySelector(
+    '#calendarYearMonth'
+  ).textContent =
+    `${y}年${m + 1}月`;
+
+  document.querySelector(
+    '#calendarDay'
+  ).textContent =
+    today.getDate();
+
+  /*
+   * 一年中的第几天
+   */
+
+  const startOfYear =
+    new Date(
+      today.getFullYear(),
+      0,
+      1
+    );
+
+  const startOfToday =
+    new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+
+  const dayOfYear =
+    Math.floor(
+      (
+        startOfToday -
+        startOfYear
+      ) / 86400000
+    ) + 1;
+
+  /*
+   * 周数
+   *
+   * 按周日作为一周开始，
+   * 与参考日历的显示方式保持一致。
+   */
+
+  const firstSunday =
+    new Date(
+      today.getFullYear(),
+      0,
+      1
+    );
+
+  firstSunday.setDate(
+    firstSunday.getDate() +
+    (
+      7 -
+      firstSunday.getDay()
+    ) % 7
+  );
+
+  let weekNumber;
+
+  if (
+    startOfToday <
+    firstSunday
+  ) {
+    weekNumber = 1;
+  } else {
+    weekNumber =
+      Math.floor(
+        (
+          startOfToday -
+          firstSunday
+        ) /
+        (7 * 86400000)
+      ) + 2;
+  }
+
+  document.querySelector(
+    '#calendarWeekInfo'
+  ).textContent =
+    `第${dayOfYear}天 第${weekNumber}周`;
+
+  /*
+   * 农历
+   */
+
+  const lunar =
+    getLunarText(today);
+
+  const weekday =
+    today.toLocaleDateString(
+      'zh-CN',
+      {
+        weekday: 'long'
+      }
+    );
+
+  document.querySelector(
+    '#calendarLunar'
+  ).textContent =
+    `${lunar} ${weekday}`;
+
+  /*
+   * 右侧月份标题
+   */
+
   document.querySelector(
     '#calendarTitle'
   ).textContent =
-    new Date(
-      y,
-      m,
-      1
-    ).toLocaleDateString(
-      'zh-CN',
-      {
-        year: 'numeric',
-        month: 'long'
-      }
-    );
+    `${y}年${m + 1}月`;
+
+  /*
+   * 日历主体
+   */
 
   const box =
     document.querySelector(
@@ -3124,11 +3233,24 @@ function renderCalendar() {
       d.textContent =
         x;
 
-      box.appendChild(
-        d
-      );
+      box.appendChild(d);
     }
   );
+
+  /*
+   * 当月第一天是星期几
+   *
+   * JS:
+   * 0 = 日
+   * 1 = 一
+   * ...
+   * 6 = 六
+   *
+   * 转换成：
+   * 0 = 一
+   * ...
+   * 6 = 日
+   */
 
   const first =
     (
@@ -3153,6 +3275,10 @@ function renderCalendar() {
       0
     ).getDate();
 
+  /*
+   * 上个月末尾日期
+   */
+
   for (
     let i = 0;
     i < first;
@@ -3169,10 +3295,12 @@ function renderCalendar() {
     d.textContent =
       prev - first + i + 1;
 
-    box.appendChild(
-      d
-    );
+    box.appendChild(d);
   }
+
+  /*
+   * 当前月份
+   */
 
   for (
     let day = 1;
@@ -3190,24 +3318,123 @@ function renderCalendar() {
     d.textContent =
       day;
 
-    const now =
-      new Date();
-
     if (
-      day === now.getDate() &&
-      m === now.getMonth() &&
-      y === now.getFullYear()
+      day === today.getDate() &&
+      m === today.getMonth() &&
+      y === today.getFullYear()
     ) {
       d.classList.add(
         'today'
       );
     }
 
-    box.appendChild(
-      d
-    );
+    box.appendChild(d);
+  }
+
+  /*
+   * 下个月开头日期
+   */
+
+  const totalCells =
+    box.children.length;
+
+  const remaining =
+    (
+      7 -
+      (
+        totalCells % 7
+      )
+    ) % 7;
+
+  for (
+    let day = 1;
+    day <= remaining;
+    day++
+  ) {
+    const d =
+      document.createElement(
+        'div'
+      );
+
+    d.className =
+      'day other';
+
+    d.textContent =
+      day;
+
+    box.appendChild(d);
   }
 }
+
+function getLunarText(date) {
+  try {
+    const formatter =
+      new Intl.DateTimeFormat(
+        'zh-CN-u-ca-chinese',
+        {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }
+      );
+
+    const parts =
+      formatter.formatToParts(date);
+
+    const month =
+      parts.find(
+        p => p.type === 'month'
+      )?.value || '';
+
+    const day =
+      parts.find(
+        p => p.type === 'day'
+      )?.value || '';
+
+    const lunarDays = {
+      '1': '初一',
+      '2': '初二',
+      '3': '初三',
+      '4': '初四',
+      '5': '初五',
+      '6': '初六',
+      '7': '初七',
+      '8': '初八',
+      '9': '初九',
+      '10': '初十',
+      '11': '十一',
+      '12': '十二',
+      '13': '十三',
+      '14': '十四',
+      '15': '十五',
+      '16': '十六',
+      '17': '十七',
+      '18': '十八',
+      '19': '十九',
+      '20': '二十',
+      '21': '廿一',
+      '22': '廿二',
+      '23': '廿三',
+      '24': '廿四',
+      '25': '廿五',
+      '26': '廿六',
+      '27': '廿七',
+      '28': '廿八',
+      '29': '廿九',
+      '30': '三十'
+    };
+
+    const lunarDay =
+      lunarDays[day] || day;
+
+    return `${month}${lunarDay}`;
+  } catch {
+    return '';
+  }
+}
+
+
+
 
 document.querySelector(
   '#calendarBtn'
