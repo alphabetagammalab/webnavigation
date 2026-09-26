@@ -142,12 +142,68 @@
     <div id="collectionItems" class="collection-items"></div>
   </dialog>
 
+  <!--
   <dialog id="calendarDialog" class="dialog calendar-dialog">
     <div class="dialog-head"><h2>日历</h2><button class="close" data-close="calendarDialog">×</button></div>
     <div class="calendar-nav"><button id="prevMonth">‹</button><strong id="calendarTitle"></strong><button id="nextMonth">›</button></div>
     <div id="calendar" class="calendar"></div>
   </dialog>
+  -->
+  <dialog id="calendarDialog" class="dialog calendar-dialog">
 
+  <button
+    class="calendar-close"
+    data-close="calendarDialog"
+    aria-label="关闭"
+  >×</button>
+
+  <div class="calendar-main">
+
+    <div class="calendar-info">
+      <div
+        id="calendarYearMonth"
+        class="calendar-year-month"
+      ></div>
+
+      <div
+        id="calendarDay"
+        class="calendar-big-day"
+      ></div>
+
+      <div
+        id="calendarWeekInfo"
+        class="calendar-week-info"
+      ></div>
+
+      <div
+        id="calendarLunar"
+        class="calendar-lunar"
+      ></div>
+    </div>
+
+    <div class="calendar-right">
+
+      <div class="calendar-nav">
+        <button id="prevMonth">‹</button>
+
+        <strong
+          id="calendarTitle"
+          class="calendar-nav-title"
+        ></strong>
+
+        <button id="nextMonth">›</button>
+      </div>
+
+      <div
+        id="calendar"
+        class="calendar"
+      ></div>
+
+    </div>
+
+  </div>
+
+</dialog>
   <!--
   <div id="contextMenu" class="context-menu hidden">
     <button data-action="edit">编辑</button>
