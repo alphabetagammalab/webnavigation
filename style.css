@@ -1036,7 +1036,7 @@ label select:focus {
 }
 
 .calendar-year-month {
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   color: var(--text);
   font-size: 27px;
   font-weight: 450;
@@ -1053,7 +1053,7 @@ label select:focus {
 }
 
 .calendar-week-info {
-  margin-top: 17px;
+  margin-top: 13px;
   color: var(--muted);
   font-size: 18px;
   font-weight: 400;
@@ -1061,7 +1061,7 @@ label select:focus {
 }
 
 .calendar-lunar {
-  margin-top: 8px;
+  margin-top: 5px;
   color: var(--muted);
   font-size: 18px;
   line-height: 1.3;
