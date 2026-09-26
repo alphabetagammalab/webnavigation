@@ -1076,7 +1076,7 @@ label select:focus {
 
 .calendar-nav {
   display: grid;
-  grid-template-columns: 30px 1fr 30px;
+  grid-template-columns: 30px 1fr 30px auto;
   align-items: center;
   height: 34px;
   margin-bottom: 8px;
