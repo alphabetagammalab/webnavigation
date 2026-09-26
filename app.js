@@ -1103,10 +1103,6 @@ function initSortable(root) {
           const targetId =
             related?.dataset?.id;
 
-          /*
-           * 没有有效目标：
-           * 正常拖拽排序。
-           */
           if (
             !related ||
             !targetId ||
@@ -1119,54 +1115,119 @@ function initSortable(root) {
             return true;
           }
 
-          /*
-           * 第一次碰到目标卡片：
-           * 立即冻结目标位置。
-           *
-           * 不等 600ms，
-           * 防止目标卡片先跳走。
-           */
+          const oe =
+            e.originalEvent;
+
           if (
-            mergeSourceId !== sourceId ||
-            mergeTargetId !== targetId
+            !oe ||
+            typeof oe.clientX !== 'number' ||
+            typeof oe.clientY !== 'number'
           ) {
             clearMergePreview(root);
+            return true;
+          }
 
-            mergeSourceId =
-              sourceId;
+          const rect =
+            related.getBoundingClientRect();
 
-            mergeTargetId =
-              targetId;
+          const centerX =
+            rect.left +
+            rect.width / 2;
 
-            mergeTimer =
-              setTimeout(
-                () => {
-                  /*
-                   * 600ms 后进入真正的
-                   * 聚合预览状态。
-                   */
-                  showMergePreview(
-                    root,
-                    sourceId,
-                    targetId,
-                    related
-                  );
-                },
-                600
-              );
+          const centerY =
+            rect.top +
+            rect.height / 2;
+
+          /*
+           * 判断鼠标是否进入目标卡片中央区域。
+           */
+          const mergeLeft =
+            rect.left +
+            rect.width * 0.25;
+
+          const mergeRight =
+            rect.right -
+            rect.width * 0.25;
+
+          const mergeTop =
+            rect.top +
+            rect.height * 0.25;
+
+          const mergeBottom =
+            rect.bottom -
+            rect.height * 0.25;
+
+          const insideMergeArea =
+            oe.clientX >= mergeLeft &&
+            oe.clientX <= mergeRight &&
+            oe.clientY >= mergeTop &&
+            oe.clientY <= mergeBottom;
+
+          /*
+           * 进入中央区域：
+           * 开始聚合等待。
+           */
+          if (insideMergeArea) {
+            if (
+              mergeSourceId !== sourceId ||
+              mergeTargetId !== targetId
+            ) {
+              clearMergePreview(root);
+
+              mergeSourceId =
+                sourceId;
+
+              mergeTargetId =
+                targetId;
+
+              mergeTimer =
+                setTimeout(
+                  () => {
+                    showMergePreview(
+                      root,
+                      sourceId,
+                      targetId,
+                      related
+                    );
+                  },
+                  600
+                );
+            }
+
+            /*
+             * 只有真正出现聚合预览后，
+             * 才冻结 Sortable。
+             */
+            if (
+              pendingMerge &&
+              mergeSourceId === sourceId &&
+              mergeTargetId === targetId
+            ) {
+              return false;
+            }
+
+            /*
+             * 600ms 等待期间暂时允许移动。
+             */
+            return true;
           }
 
           /*
-           * 在目标卡片上时，
-           * 始终阻止 Sortable 改变位置。
+           * 鼠标离开中央区域，
+           * 取消聚合候选。
            */
-          return false;
+          clearMergePreview(root);
+
+          /*
+           * 目标卡片外围继续允许正常排序。
+           */
+          return true;
         },
 
         onEnd: e => {
           /*
-           * 如果已经出现聚合预览，
-           * 松手时执行聚合。
+           * 已经出现聚合预览：
+           * 松手后执行聚合。
            */
           if (pendingMerge) {
             const {
@@ -1204,7 +1265,7 @@ function initSortable(root) {
 
           /*
            * 没有聚合：
-           * 保存 Sortable 最终的 DOM 顺序。
+           * 按照 Sortable 最终 DOM 顺序保存。
            */
           clearMergePreview(root);
 
