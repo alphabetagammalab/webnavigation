@@ -3454,14 +3454,14 @@ function getLunarText(date) {
   }
 }
 
-
-
-
 document.querySelector(
   '#calendarBtn'
 ).onclick = () => {
   calendarDate =
     new Date();
+
+  calendarHasNavigated =
+    false;
 
   renderCalendar();
 
