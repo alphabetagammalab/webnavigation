@@ -1291,6 +1291,12 @@ function renderCollectionItems(folder) {
 
   box.appendChild(back);
 
+
+  if (box._sortable) {
+    box._sortable.destroy();
+    box._sortable = null;
+  }
+
   if (!box._sortable) {
     box._sortable =
       new Sortable(
