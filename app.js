@@ -3306,23 +3306,48 @@ const weekNumber =
    */
 
   for (
-    let i = 0;
-    i < first;
-    i++
-  ) {
-    const d =
-      document.createElement(
-        'div'
+  let i = 0;
+  i < first;
+  i++
+) {
+  const d =
+    document.createElement(
+      'div'
+    );
+
+  d.className =
+    'day other';
+
+  const day =
+    prev - first + i + 1;
+
+  d.textContent =
+    day;
+
+  /*
+   * 点击上个月日期
+   */
+
+  d.onclick = () => {
+    calendarDate.setMonth(
+      calendarDate.getMonth() - 1
+    );
+
+    selectedDate =
+      new Date(
+        calendarDate.getFullYear(),
+        calendarDate.getMonth(),
+        day
       );
 
-    d.className =
-      'day other';
+    calendarHasNavigated =
+      true;
 
-    d.textContent =
-      prev - first + i + 1;
+    renderCalendar();
+  };
 
-    box.appendChild(d);
-  }
+  box.appendChild(d);
+}
 
   /*
    * 当前月份
@@ -3414,23 +3439,47 @@ if (
     ) % 7;
 
   for (
-    let day = 1;
-    day <= remaining;
-    day++
-  ) {
-    const d =
-      document.createElement(
-        'div'
+  let day = 1;
+  day <= remaining;
+  day++
+) {
+  const d =
+    document.createElement(
+      'div'
+    );
+
+  d.className =
+    'day other';
+
+  d.textContent =
+    day;
+
+  /*
+   * 点击下个月日期
+   */
+
+  d.onclick = () => {
+    calendarDate.setMonth(
+      calendarDate.getMonth() + 1
+    );
+
+    selectedDate =
+      new Date(
+        calendarDate.getFullYear(),
+        calendarDate.getMonth(),
+        day
       );
 
-    d.className =
-      'day other';
+    calendarHasNavigated =
+      true;
 
-    d.textContent =
-      day;
+    renderCalendar();
+  };
 
-    box.appendChild(d);
-  }
+  box.appendChild(d);
+}
+
+  
 }
 
 function getLunarText(date) {
