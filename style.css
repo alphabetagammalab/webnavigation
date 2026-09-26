@@ -1816,3 +1816,19 @@ label select:focus {
     opacity: 0;
   }
 }
+
+
+/* 聚合打开 关闭效果*/
+.site-card.collection-source {
+  z-index: 6;
+}
+
+.site-card.collection-source .folder-icon {
+  transform: scale(0.94);
+  opacity: 0.82;
+
+  transition:
+    transform 0.16s
+      cubic-bezier(.2, .8, .2, 1),
+    opacity 0.16s ease;
+}
