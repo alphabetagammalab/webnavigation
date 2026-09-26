@@ -1507,3 +1507,16 @@ label select:focus {
   font-size: 13px;
   font-weight: 400;
 }
+
+/* 聚合预览 */
+.site-card.merge-target {
+  transform: translateY(-3px) scale(1.08);
+}
+
+.site-card.merge-target .favicon,
+.site-card.merge-target .folder-icon {
+  box-shadow:
+    0 0 0 3px rgba(90, 110, 145, 0.16),
+    0 12px 28px rgba(40, 52, 70, 0.18);
+}
+/* 聚合预览 */
