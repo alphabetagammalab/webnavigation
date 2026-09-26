@@ -1314,6 +1314,12 @@ function renderCollectionItems(folder) {
             const oe =
               e.originalEvent;
 
+            console.log(
+              '拆分拖拽:',
+              e.originalEvent?.clientX,
+              e.originalEvent?.clientY
+            );
+
             const dlg =
               document.querySelector(
                 '#collectionDialog'
