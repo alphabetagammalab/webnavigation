@@ -610,6 +610,30 @@ button {
   box-shadow: 0 10px 26px rgba(40, 52, 70, 0.14);
 }
 
+/* 聚合目标提示 */
+.site-card.merge-target .favicon {
+  transform: translateY(-3px) scale(1.10);
+  box-shadow:
+    0 0 0 4px rgba(90, 110, 140, 0.12),
+    0 10px 30px rgba(40, 52, 70, 0.20);
+  animation: mergePulse 0.9s ease-in-out infinite alternate;
+}
+
+.site-card.merge-target .site-name {
+  font-weight: 550;
+}
+
+@keyframes mergePulse {
+  from {
+    transform: translateY(-3px) scale(1.08);
+  }
+
+  to {
+    transform: translateY(-3px) scale(1.13);
+  }
+}
+
+
 
 
 .site-name {
