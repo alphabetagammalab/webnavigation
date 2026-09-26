@@ -1088,7 +1088,7 @@ function initSortable(root) {
         },
 
 
-onMove: e => {
+        onMove: e => {
   const sourceId =
     e.dragged?.dataset?.id;
 
@@ -1109,7 +1109,8 @@ onMove: e => {
 
   /*
    * 已经进入聚合预览后，
-   * 不再让 Sortable 改变目标。
+   * 只要鼠标仍在目标卡片内，
+   * 就继续保持聚合状态。
    */
   if (pendingMerge) {
     const targetEl =
@@ -1132,11 +1133,15 @@ onMove: e => {
       oe.clientY <= rect.bottom;
 
     if (inside) {
+      /*
+       * 保持目标位置不变。
+       */
       return false;
     }
 
     /*
-     * 离开目标，取消聚合预览。
+     * 离开目标卡片，
+     * 取消聚合预览。
      */
     clearMergePreview(root);
 
@@ -1144,7 +1149,8 @@ onMove: e => {
   }
 
   /*
-   * 使用 Sortable 当前事件中的 related 元素。
+   * 使用 Sortable 当前事件中的 related 元素
+   * 作为普通排序 / 聚合候选目标。
    */
   const targetEl =
     e.related?.closest?.(
@@ -1162,12 +1168,13 @@ onMove: e => {
       'add-site-card'
     )
   ) {
+    clearMergePreview(root);
     return true;
   }
 
   /*
    * 优先使用 Sortable 提供的 relatedRect，
-   * 避免 DOM 已经发生交换后再重新计算位置。
+   * 避免 DOM 交换造成目标位置变化。
    */
   const rect =
     e.relatedRect ||
@@ -1199,8 +1206,8 @@ onMove: e => {
     oe.clientY <= mergeBottom;
 
   /*
-   * 不在中央区域：
-   * 保持正常拖拽排序。
+   * 没进入中央区域：
+   * 继续正常拖拽排序。
    */
   if (!insideMergeArea) {
     clearMergePreview(root);
@@ -1208,52 +1215,26 @@ onMove: e => {
   }
 
   /*
-   * 已经针对同一个目标启动聚合计时。
+   * 进入中央区域后，
+   * 立即显示聚合预览。
    *
-   * 这里立即阻止 Sortable 交换，
-   * 防止 Google 被挤到第二个位置。
+   * 不再等待 350ms。
    */
-  if (
-    mergeSourceId === sourceId &&
-    mergeTargetId === targetId &&
-    mergeTimer
-  ) {
-    return false;
-  }
+  showMergePreview(
+    root,
+    sourceId,
+    targetId,
+    targetEl
+  );
 
   /*
-   * 新的聚合候选。
-   */
-  clearMergePreview(root);
-
-  mergeSourceId =
-    sourceId;
-
-  mergeTargetId =
-    targetId;
-
-  /*
-   * 600ms 后显示聚合预览。
-   */
-  mergeTimer =
-    setTimeout(
-      () => {
-        showMergePreview(
-          root,
-          sourceId,
-          targetId,
-          targetEl
-        );
-      },
-      350
-    );
-
-  /*
-   * 关键：
-   * 一进入中央区域就立即冻结 Sortable。
+   * 立即阻止 Sortable 交换位置，
+   * 防止目标卡片跳走。
    */
   return false;
 },
+
+
 
 
         onEnd: e => {
