@@ -1044,12 +1044,14 @@ label select:focus {
 }
 
 .calendar-big-day {
-  margin-left: 16px;
+  width: 150px;
+  margin-left: 0;
   color: var(--text);
   font-size: 86px;
   font-weight: 500;
   line-height: 0.92;
   letter-spacing: -4px;
+  text-align: center;
 }
 
 .calendar-week-info {
