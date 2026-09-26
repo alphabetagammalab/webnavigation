@@ -1664,18 +1664,18 @@ label select:focus {
 /* 聚合完成瞬间的动画 */
 .merge-complete {
   animation:
-    mergeComplete 0.34s
-    cubic-bezier(.2, .8, .2, 1);
+    mergeComplete 0.30s
+    cubic-bezier(.25, .8, .25, 1);
 }
 
 @keyframes mergeComplete {
   0% {
-    transform: scale(0.92);
-    opacity: 0.7;
+    transform: scale(0.96);
+    opacity: 0.82;
   }
 
   55% {
-    transform: scale(1.06);
+    transform: scale(1.025);
     opacity: 1;
   }
 
@@ -1684,3 +1684,4 @@ label select:focus {
     opacity: 1;
   }
 }
+
