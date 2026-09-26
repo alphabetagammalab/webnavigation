@@ -1660,3 +1660,27 @@ label select:focus {
     0 14px 32px rgba(40, 52, 70, 0.22);
 }
 /* 聚合预览 */
+
+/* 聚合完成瞬间的动画 */
+.merge-complete {
+  animation:
+    mergeComplete 0.34s
+    cubic-bezier(.2, .8, .2, 1);
+}
+
+@keyframes mergeComplete {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.7;
+  }
+
+  55% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
