@@ -1685,3 +1685,57 @@ label select:focus {
   }
 }
 
+.merge-complete .folder-icon .favicon {
+  animation:
+    mergeFolderIcon 0.34s
+    cubic-bezier(.25, .8, .25, 1);
+}
+
+.merge-complete .folder-icon .favicon:nth-child(1) {
+  --merge-x: 3px;
+  --merge-y: 3px;
+}
+
+.merge-complete .folder-icon .favicon:nth-child(2) {
+  --merge-x: -3px;
+  --merge-y: 3px;
+}
+
+.merge-complete .folder-icon .favicon:nth-child(3) {
+  --merge-x: 3px;
+  --merge-y: -3px;
+}
+
+.merge-complete .folder-icon .favicon:nth-child(4) {
+  --merge-x: -3px;
+  --merge-y: -3px;
+}
+
+@keyframes mergeFolderIcon {
+  0% {
+    opacity: 0;
+    transform:
+      translate(
+        var(--merge-x),
+        var(--merge-y)
+      )
+      scale(0.72);
+  }
+
+  55% {
+    opacity: 1;
+    transform:
+      translate(
+        calc(var(--merge-x) * -0.35),
+        calc(var(--merge-y) * -0.35)
+      )
+      scale(1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform:
+      translate(0, 0)
+      scale(1);
+  }
+}
