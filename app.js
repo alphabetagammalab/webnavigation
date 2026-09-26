@@ -1207,19 +1207,19 @@ onMove: e => {
    */
   const mergeLeft =
     rect.left +
-    rect.width * 0.03;
+    rect.width * 0.10;
 
   const mergeRight =
     rect.right -
-    rect.width * 0.03;
+    rect.width * 0.10;
 
   const mergeTop =
     rect.top +
-    rect.height * 0.03;
+    rect.height * 0.10;
 
   const mergeBottom =
     rect.bottom -
-    rect.height * 0.03;
+    rect.height * 0.10;
 
   const insideMergeArea =
     oe.clientX >= mergeLeft &&
