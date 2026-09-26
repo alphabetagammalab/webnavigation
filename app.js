@@ -403,6 +403,7 @@ let editingId = null;
 let contextId = null;
 let calendarDate = new Date();
 let currentCollectionId = null;
+let currentCollectionCard = null;
 
 function loadState() {
   try {
@@ -700,9 +701,9 @@ function createCard(i) {
   ).textContent = i.name;
 
   card.addEventListener(
-    'click',
-    () => openCollection(i)
-  );
+  'click',
+  () => openCollection(i, card)
+);
 } else {
     card.innerHTML =
       `${siteIconHtml(i)}<div class="site-name"></div>`;
@@ -1645,8 +1646,16 @@ function mergeItems(
   toast('已聚合');
 }
 
-function openCollection(folder) {
+function openCollection(
+  folder,
+  card = null
+) {
   currentCollectionId = folder.id;
+  currentCollectionCard = card;
+
+  currentCollectionCard?.classList.add(
+    'collection-source'
+  );
 
   document.querySelector(
     '#collectionTitle'
