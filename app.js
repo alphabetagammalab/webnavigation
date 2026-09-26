@@ -1017,6 +1017,11 @@ function initSortable(root) {
           clearMergePreview(root);
         },
 
+
+        
+
+        
+        /*
         onMove: e => {
           const sourceId =
             e.dragged?.dataset?.id;
@@ -1158,6 +1163,7 @@ function initSortable(root) {
           save();
           render();
         }
+        */
       }
     );
 }
