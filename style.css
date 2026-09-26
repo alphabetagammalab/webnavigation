@@ -1081,7 +1081,7 @@ label select:focus {
   grid-template-columns: 28px auto 28px auto;
   align-items: center;
   justify-content: center;
-  column-gap: 8px;
+  column-gap: 9px;
   height: 34px;
   margin-bottom: 8px;
   text-align: center;
