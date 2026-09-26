@@ -1739,3 +1739,80 @@ label select:focus {
       scale(1);
   }
 }
+
+/* 聚合窗口打开/关闭动画 */
+#collectionDialog[open] {
+  animation:
+    collectionOpen 0.20s
+    cubic-bezier(.2, .8, .2, 1);
+}
+
+#collectionDialog[open]::backdrop {
+  animation:
+    collectionBackdropOpen 0.20s ease;
+}
+
+#collectionDialog.closing {
+  animation:
+    collectionClose 0.16s
+    cubic-bezier(.4, 0, .8, .2)
+    forwards;
+}
+
+#collectionDialog.closing::backdrop {
+  animation:
+    collectionBackdropClose 0.16s ease
+    forwards;
+}
+
+@keyframes collectionOpen {
+  from {
+    opacity: 0;
+    transform:
+      translateY(5px)
+      scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+@keyframes collectionClose {
+  from {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform:
+      translateY(3px)
+      scale(0.98);
+  }
+}
+
+@keyframes collectionBackdropOpen {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes collectionBackdropClose {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
