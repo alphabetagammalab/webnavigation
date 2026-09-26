@@ -1044,7 +1044,7 @@ label select:focus {
 }
 
 .calendar-big-day {
-  margin-left: -2px;
+  margin-left: 4px;
   color: var(--text);
   font-size: 92px;
   font-weight: 500;
