@@ -2842,26 +2842,48 @@ function dclose(id) {
   }
 
   if (
-    id === 'collectionDialog' &&
-    dialog.open
-  ) {
-    dialog.classList.add(
+  id === 'collectionDialog' &&
+  dialog.open
+) {
+  dialog.classList.add(
+    'closing'
+  );
+
+  setTimeout(() => {
+    dialog.classList.remove(
       'closing'
     );
 
-    setTimeout(() => {
-      dialog.classList.remove(
-        'closing'
-      );
+    dialog.close();
 
-      dialog.close();
-    }, 160);
+    currentCollectionCard?.classList.remove(
+      'collection-source'
+    );
 
-    return;
-  }
+    currentCollectionCard = null;
+    currentCollectionId = null;
+  }, 160);
+
+  return;
+}
 
   dialog.close();
 }
+
+document
+  .querySelector('#collectionDialog')
+  ?.addEventListener(
+    'close',
+    () => {
+      currentCollectionCard?.classList.remove(
+        'collection-source'
+      );
+
+      currentCollectionCard = null;
+      currentCollectionId = null;
+    }
+  );
+
 
 /*
 document.querySelector(
