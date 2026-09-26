@@ -1165,6 +1165,16 @@ label select:focus {
   background: #ff5b62;
 }
 
+.calendar .selected {
+  background: rgba(100, 120, 150, 0.14);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.calendar .selected:hover {
+  background: rgba(100, 120, 150, 0.20);
+}
+
 .calendar .other {
   color: #aab1ba !important;
 }
