@@ -3127,45 +3127,45 @@ function renderCalendar() {
       ) / 86400000
     ) + 1;
 
-  /*
-   * 周数
-   *
-   * 按周日作为一周开始，
-   * 与参考日历的显示方式保持一致。
-   */
-
-  const firstSunday =
-    new Date(
+  const isoDate =
+  new Date(
+    Date.UTC(
       today.getFullYear(),
-      0,
-      1
-    );
-
-  firstSunday.setDate(
-    firstSunday.getDate() +
-    (
-      7 -
-      firstSunday.getDay()
-    ) % 7
+      today.getMonth(),
+      today.getDate()
+    )
   );
 
-  let weekNumber;
+const isoDay =
+  isoDate.getUTCDay() || 7;
 
-  if (
-    startOfToday <
-    firstSunday
-  ) {
-    weekNumber = 1;
-  } else {
-    weekNumber =
-      Math.floor(
-        (
-          startOfToday -
-          firstSunday
-        ) /
-        (7 * 86400000)
-      ) + 2;
-  }
+isoDate.setUTCDate(
+  isoDate.getUTCDate() +
+  4 -
+  isoDay
+);
+
+const isoYear =
+  isoDate.getUTCFullYear();
+
+const yearStart =
+  new Date(
+    Date.UTC(
+      isoYear,
+      0,
+      1
+    )
+  );
+
+const weekNumber =
+  Math.ceil(
+    (
+      (
+        isoDate -
+        yearStart
+      ) / 86400000 + 1
+    ) / 7
+  );
 
   document.querySelector(
     '#calendarWeekInfo'
@@ -3372,7 +3372,6 @@ function getLunarText(date) {
       new Intl.DateTimeFormat(
         'zh-CN-u-ca-chinese',
         {
-          year: 'numeric',
           month: 'long',
           day: 'numeric'
         }
@@ -3391,43 +3390,46 @@ function getLunarText(date) {
         p => p.type === 'day'
       )?.value || '';
 
-    const lunarDays = {
-      '1': '初一',
-      '2': '初二',
-      '3': '初三',
-      '4': '初四',
-      '5': '初五',
-      '6': '初六',
-      '7': '初七',
-      '8': '初八',
-      '9': '初九',
-      '10': '初十',
-      '11': '十一',
-      '12': '十二',
-      '13': '十三',
-      '14': '十四',
-      '15': '十五',
-      '16': '十六',
-      '17': '十七',
-      '18': '十八',
-      '19': '十九',
-      '20': '二十',
-      '21': '廿一',
-      '22': '廿二',
-      '23': '廿三',
-      '24': '廿四',
-      '25': '廿五',
-      '26': '廿六',
-      '27': '廿七',
-      '28': '廿八',
-      '29': '廿九',
-      '30': '三十'
-    };
+    const lunarDays = [
+      '',
+      '初一',
+      '初二',
+      '初三',
+      '初四',
+      '初五',
+      '初六',
+      '初七',
+      '初八',
+      '初九',
+      '初十',
+      '十一',
+      '十二',
+      '十三',
+      '十四',
+      '十五',
+      '十六',
+      '十七',
+      '十八',
+      '十九',
+      '二十',
+      '廿一',
+      '廿二',
+      '廿三',
+      '廿四',
+      '廿五',
+      '廿六',
+      '廿七',
+      '廿八',
+      '廿九',
+      '三十'
+    ];
 
-    const lunarDay =
-      lunarDays[day] || day;
+    const dayText =
+      lunarDays[
+        Number(day)
+      ] || day;
 
-    return `${month}${lunarDay}`;
+    return `${month}${dayText}`;
   } catch {
     return '';
   }
