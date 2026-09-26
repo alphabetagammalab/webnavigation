@@ -611,28 +611,90 @@ button {
 }
 
 /* 聚合目标提示 */
-.site-card.merge-target .favicon {
-  transform: translateY(-3px) scale(1.10);
+/* macOS 风格聚合吸附效果 */
+
+.site-card.merge-target {
+  z-index: 5;
+}
+
+.site-card.merge-target::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  width: 56px;
+  height: 56px;
+  border-radius: 15px;
+  transform:
+    translateX(-50%)
+    scale(1.08);
+
+  background:
+    rgba(255, 255, 255, 0.18);
+
+  border:
+    1px solid rgba(255, 255, 255, 0.85);
+
   box-shadow:
-    0 0 0 4px rgba(90, 110, 140, 0.12),
-    0 10px 30px rgba(40, 52, 70, 0.20);
-  animation: mergePulse 0.9s ease-in-out infinite alternate;
+    0 0 0 4px rgba(90, 110, 140, 0.08),
+    0 0 22px rgba(90, 110, 140, 0.18);
+
+  pointer-events: none;
+
+  animation:
+    mergeHalo 0.85s
+    cubic-bezier(.4, 0, .2, 1)
+    infinite alternate;
+}
+
+.site-card.merge-target .favicon {
+  position: relative;
+  z-index: 1;
+
+  transform:
+    translateY(-4px)
+    scale(1.10);
+
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.72),
+    0 8px 22px rgba(40, 52, 70, 0.18),
+    0 0 18px rgba(90, 110, 140, 0.16);
+
+  transition:
+    transform 0.18s
+      cubic-bezier(.2, .8, .2, 1),
+    box-shadow 0.18s ease;
 }
 
 .site-card.merge-target .site-name {
   font-weight: 550;
+  transform: translateY(-1px);
+  transition:
+    transform 0.18s ease,
+    font-weight 0.18s ease;
 }
 
-@keyframes mergePulse {
+@keyframes mergeHalo {
   from {
-    transform: translateY(-3px) scale(1.08);
+    opacity: 0.55;
+    transform:
+      translateX(-50%)
+      scale(1.04);
+    box-shadow:
+      0 0 0 3px rgba(90, 110, 140, 0.07),
+      0 0 16px rgba(90, 110, 140, 0.12);
   }
 
   to {
-    transform: translateY(-3px) scale(1.13);
+    opacity: 1;
+    transform:
+      translateX(-50%)
+      scale(1.13);
+    box-shadow:
+      0 0 0 5px rgba(90, 110, 140, 0.11),
+      0 0 26px rgba(90, 110, 140, 0.22);
   }
 }
-
 
 
 
