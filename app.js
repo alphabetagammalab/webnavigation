@@ -3608,6 +3608,23 @@ document.querySelector(
   renderCalendar();
 };
 
+/* 今天 */
+
+document.querySelector(
+  '#calendarToday'
+).onclick = () => {
+  calendarDate =
+    new Date();
+
+  calendarHasNavigated =
+    false;
+
+  selectedDate =
+    new Date();
+
+  renderCalendar();
+};
+
 document
   .querySelectorAll(
     '[data-close]'
