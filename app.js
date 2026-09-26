@@ -1095,26 +1095,6 @@ function initSortable(root) {
             return true;
           }
 
-          const related =
-            e.related?.closest?.(
-              '.site-card'
-            );
-
-          const targetId =
-            related?.dataset?.id;
-
-          if (
-            !related ||
-            !targetId ||
-            targetId === sourceId ||
-            related.classList.contains(
-              'add-site-card'
-            )
-          ) {
-            clearMergePreview(root);
-            return true;
-          }
-
           const oe =
             e.originalEvent;
 
@@ -1123,39 +1103,104 @@ function initSortable(root) {
             typeof oe.clientX !== 'number' ||
             typeof oe.clientY !== 'number'
           ) {
+            return true;
+          }
+
+          /*
+           * 已经进入聚合预览后，
+           * 不再让 Sortable 改变目标。
+           */
+          if (pendingMerge) {
+            const targetEl =
+              root.querySelector(
+                `[data-id="${mergeTargetId}"]`
+              );
+
+            if (!targetEl) {
+              clearMergePreview(root);
+              return true;
+            }
+
+            const rect =
+              targetEl.getBoundingClientRect();
+
+            const inside =
+              oe.clientX >= rect.left &&
+              oe.clientX <= rect.right &&
+              oe.clientY >= rect.top &&
+              oe.clientY <= rect.bottom;
+
+            if (inside) {
+              return false;
+            }
+
+            /*
+             * 离开目标，取消聚合预览。
+             */
             clearMergePreview(root);
+
+            return true;
+          }
+
+          /*
+           * 使用鼠标实际所在的元素，
+           * 而不是完全依赖 e.related。
+           */
+          const targetEl =
+            document
+              .elementFromPoint(
+                oe.clientX,
+                oe.clientY
+              )
+              ?.closest(
+                '.site-card'
+              );
+
+          const targetId =
+            targetEl?.dataset?.id;
+
+          if (
+            !targetEl ||
+            !targetId ||
+            targetId === sourceId ||
+            targetEl.classList.contains(
+              'add-site-card'
+            )
+          ) {
+            /*
+             * 如果当前没有聚合候选，
+             * 正常排序。
+             */
+            if (!pendingMerge) {
+              return true;
+            }
+
+            clearMergePreview(root);
+
             return true;
           }
 
           const rect =
-            related.getBoundingClientRect();
-
-          const centerX =
-            rect.left +
-            rect.width / 2;
-
-          const centerY =
-            rect.top +
-            rect.height / 2;
+            targetEl.getBoundingClientRect();
 
           /*
-           * 判断鼠标是否进入目标卡片中央区域。
+           * 聚合区域扩大到目标卡片中央 80%。
            */
           const mergeLeft =
             rect.left +
-            rect.width * 0.25;
+            rect.width * 0.10;
 
           const mergeRight =
             rect.right -
-            rect.width * 0.25;
+            rect.width * 0.10;
 
           const mergeTop =
             rect.top +
-            rect.height * 0.25;
+            rect.height * 0.10;
 
           const mergeBottom =
             rect.bottom -
-            rect.height * 0.25;
+            rect.height * 0.10;
 
           const insideMergeArea =
             oe.clientX >= mergeLeft &&
@@ -1164,69 +1209,63 @@ function initSortable(root) {
             oe.clientY <= mergeBottom;
 
           /*
-           * 进入中央区域：
-           * 开始聚合等待。
+           * 不在中央区域：
+           * 取消聚合候选，继续普通排序。
            */
-          if (insideMergeArea) {
-            if (
-              mergeSourceId !== sourceId ||
-              mergeTargetId !== targetId
-            ) {
-              clearMergePreview(root);
-
-              mergeSourceId =
-                sourceId;
-
-              mergeTargetId =
-                targetId;
-
-              mergeTimer =
-                setTimeout(
-                  () => {
-                    showMergePreview(
-                      root,
-                      sourceId,
-                      targetId,
-                      related
-                    );
-                  },
-                  600
-                );
-            }
-
-            /*
-             * 只有真正出现聚合预览后，
-             * 才冻结 Sortable。
-             */
-            if (
-              pendingMerge &&
-              mergeSourceId === sourceId &&
-              mergeTargetId === targetId
-            ) {
-              return false;
-            }
-
-            /*
-             * 600ms 等待期间暂时允许移动。
-             */
+          if (!insideMergeArea) {
+            clearMergePreview(root);
             return true;
           }
 
           /*
-           * 鼠标离开中央区域，
-           * 取消聚合候选。
+           * 已经针对同一个目标启动计时，
+           * 不要因为 Sortable 的 related 变化
+           * 而重新计时。
+           */
+          if (
+            mergeSourceId === sourceId &&
+            mergeTargetId === targetId &&
+            mergeTimer
+          ) {
+            return true;
+          }
+
+          /*
+           * 新的聚合候选。
            */
           clearMergePreview(root);
 
+          mergeSourceId =
+            sourceId;
+
+          mergeTargetId =
+            targetId;
+
+          mergeTimer =
+            setTimeout(
+              () => {
+                /*
+                 * 600ms 后显示聚合预览。
+                 */
+                showMergePreview(
+                  root,
+                  sourceId,
+                  targetId,
+                  targetEl
+                );
+              },
+              600
+            );
+
           /*
-           * 目标卡片外围继续允许正常排序。
+           * 候选阶段继续允许普通排序。
            */
           return true;
         },
 
         onEnd: e => {
           /*
-           * 已经出现聚合预览：
+           * 已经出现聚合预览，
            * 松手后执行聚合。
            */
           if (pendingMerge) {
@@ -1265,7 +1304,7 @@ function initSortable(root) {
 
           /*
            * 没有聚合：
-           * 按照 Sortable 最终 DOM 顺序保存。
+           * 保存普通排序结果。
            */
           clearMergePreview(root);
 
