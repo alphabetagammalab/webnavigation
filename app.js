@@ -1095,40 +1095,23 @@ function initSortable(root) {
             return true;
           }
 
-          const oe =
-            e.originalEvent;
-
-          if (
-            !oe ||
-            typeof oe.clientX !== 'number' ||
-            typeof oe.clientY !== 'number'
-          ) {
-            clearMergePreview(root);
-            return true;
-          }
-
-          /*
-           * 不使用 e.related。
-           * 直接寻找鼠标当前真正位于的卡片。
-           */
-          const targetEl =
-            document
-              .elementFromPoint(
-                oe.clientX,
-                oe.clientY
-              )
-              ?.closest(
-                '.site-card'
-              );
+          const related =
+            e.related?.closest?.(
+              '.site-card'
+            );
 
           const targetId =
-            targetEl?.dataset?.id;
+            related?.dataset?.id;
 
+          /*
+           * 没有有效目标：
+           * 正常拖拽排序。
+           */
           if (
-            !targetEl ||
+            !related ||
             !targetId ||
             targetId === sourceId ||
-            targetEl.classList.contains(
+            related.classList.contains(
               'add-site-card'
             )
           ) {
@@ -1136,94 +1119,54 @@ function initSortable(root) {
             return true;
           }
 
-          const rect =
-            targetEl.getBoundingClientRect();
-
           /*
-           * 目标卡片中央 50% × 50%
-           * 才是聚合候选区域。
+           * 第一次碰到目标卡片：
+           * 立即冻结目标位置。
+           *
+           * 不等 600ms，
+           * 防止目标卡片先跳走。
            */
-          const mergeLeft =
-            rect.left +
-            rect.width * 0.25;
-
-          const mergeRight =
-            rect.right -
-            rect.width * 0.25;
-
-          const mergeTop =
-            rect.top +
-            rect.height * 0.25;
-
-          const mergeBottom =
-            rect.bottom -
-            rect.height * 0.25;
-
-          const insideMergeArea =
-            oe.clientX >= mergeLeft &&
-            oe.clientX <= mergeRight &&
-            oe.clientY >= mergeTop &&
-            oe.clientY <= mergeBottom;
-
-          /*
-           * 如果鼠标在目标卡片外围，
-           * 就完全按照普通排序处理。
-           */
-          if (!insideMergeArea) {
+          if (
+            mergeSourceId !== sourceId ||
+            mergeTargetId !== targetId
+          ) {
             clearMergePreview(root);
-            return true;
+
+            mergeSourceId =
+              sourceId;
+
+            mergeTargetId =
+              targetId;
+
+            mergeTimer =
+              setTimeout(
+                () => {
+                  /*
+                   * 600ms 后进入真正的
+                   * 聚合预览状态。
+                   */
+                  showMergePreview(
+                    root,
+                    sourceId,
+                    targetId,
+                    related
+                  );
+                },
+                600
+              );
           }
 
-
           /*
- * 第一次进入中央区域：
- * 开始 600ms 聚合预览计时。
- */
-if (
-  mergeSourceId !== sourceId ||
-  mergeTargetId !== targetId
-) {
-  clearMergePreview(root);
-
-  mergeSourceId =
-    sourceId;
-
-  mergeTargetId =
-    targetId;
-
-  mergeTimer =
-    setTimeout(
-      () => {
-        /*
-         * 600ms 后显示聚合预览，
-         * 不自动聚合。
-         */
-        showMergePreview(
-          root,
-          sourceId,
-          targetId,
-          targetEl
-        );
-      },
-      600
-    );
-}
-
-/*
- * 只要进入中央聚合区域，
- * 就立即阻止 Sortable 改变位置。
- *
- * 这样目标卡片不会先跳走。
- */
-return false;
-
-          
+           * 在目标卡片上时，
+           * 始终阻止 Sortable 改变位置。
+           */
+          return false;
         },
 
         onEnd: e => {
           /*
            * 如果已经出现聚合预览，
-           * 松手时才真正执行聚合。
+           * 松手时执行聚合。
            */
           if (pendingMerge) {
             const {
@@ -1243,55 +1186,9 @@ return false;
                   x.id === targetId
               );
 
-            const oe =
-              e.originalEvent;
-
-            let shouldMerge = false;
-
-            if (
-              source &&
-              target &&
-              oe &&
-              typeof oe.clientX === 'number' &&
-              typeof oe.clientY === 'number'
-            ) {
-              const targetEl =
-                root.querySelector(
-                  `[data-id="${targetId}"]`
-                );
-
-              if (targetEl) {
-                const rect =
-                  targetEl.getBoundingClientRect();
-
-                const mergeLeft =
-                  rect.left +
-                  rect.width * 0.25;
-
-                const mergeRight =
-                  rect.right -
-                  rect.width * 0.25;
-
-                const mergeTop =
-                  rect.top +
-                  rect.height * 0.25;
-
-                const mergeBottom =
-                  rect.bottom -
-                  rect.height * 0.25;
-
-                shouldMerge =
-                  oe.clientX >= mergeLeft &&
-                  oe.clientX <= mergeRight &&
-                  oe.clientY >= mergeTop &&
-                  oe.clientY <= mergeBottom;
-              }
-            }
-
             clearMergePreview(root);
 
             if (
-              shouldMerge &&
               source &&
               target &&
               source.id !== target.id
@@ -1307,7 +1204,7 @@ return false;
 
           /*
            * 没有聚合：
-           * 按照 Sortable 最终 DOM 顺序保存排序结果。
+           * 保存 Sortable 最终的 DOM 顺序。
            */
           clearMergePreview(root);
 
