@@ -1071,7 +1071,7 @@ label select:focus {
 
 .calendar-right {
   position: relative;
-  padding: 24px 28px 25px 8px;
+  padding: 22px 28px 25px 8px;
 }
 
 .calendar-nav {
@@ -1140,13 +1140,14 @@ label select:focus {
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px 3px;
+  gap: 3px 3px;
   padding: 0;
   text-align: center;
+  align-content: start;
 }
 
 .calendar .weekday {
-  padding: 5px 0 9px;
+  padding: 4px 0 6px;
   color: var(--muted);
   font-size: 13px;
   font-weight: 500;
