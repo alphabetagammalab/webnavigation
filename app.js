@@ -845,10 +845,16 @@ function createCard(i) {
   return card;
 }
 
+let mergeTimer = null;
 let mergeSourceId = null;
 let mergeTargetId = null;
 let pendingMerge = null;
 
+/*
+let mergeSourceId = null;
+let mergeTargetId = null;
+let pendingMerge = null;
+*/
 /*
 let mergeTimer = null;
 let mergeSourceId = null;
@@ -942,6 +948,29 @@ function startMergeTimer(
 */
 
 function clearMergePreview(root) {
+  if (mergeTimer) {
+    clearTimeout(mergeTimer);
+    mergeTimer = null;
+  }
+
+  mergeSourceId = null;
+  mergeTargetId = null;
+  pendingMerge = null;
+
+  root
+    ?.querySelectorAll(
+      '.merge-target'
+    )
+    .forEach(
+      el =>
+        el.classList.remove(
+          'merge-target'
+        )
+    );
+}
+
+/*
+function clearMergePreview(root) {
   mergeSourceId = null;
   mergeTargetId = null;
   pendingMerge = null;
@@ -955,8 +984,48 @@ function clearMergePreview(root) {
         )
     );
 }
+*/
+
+function showMergePreview(
+  root,
+  sourceId,
+  targetId,
+  targetEl
+) {
+  if (
+    !sourceId ||
+    !targetId ||
+    sourceId === targetId
+  ) {
+    clearMergePreview(root);
+    return;
+  }
+
+  if (
+    mergeSourceId === sourceId &&
+    mergeTargetId === targetId &&
+    pendingMerge
+  ) {
+    return;
+  }
+
+  clearMergePreview(root);
+
+  mergeSourceId = sourceId;
+  mergeTargetId = targetId;
+
+  targetEl?.classList.add(
+    'merge-target'
+  );
+
+  pendingMerge = {
+    sourceId,
+    targetId
+  };
+}
 
 
+/*
 function showMergePreview(
   root,
   sourceId,
@@ -993,6 +1062,7 @@ function showMergePreview(
     targetId
   };
 }
+*/
 
 function initSortable(root) {
   if (root._sortable) {
@@ -1018,198 +1088,269 @@ function initSortable(root) {
         },
 
         onMove: e => {
-  const sourceId =
-    e.dragged?.dataset?.id;
+          const sourceId =
+            e.dragged?.dataset?.id;
 
-  const related =
-    e.related?.closest?.(
-      '.site-card'
-    );
+          if (!sourceId) {
+            return true;
+          }
 
-  const targetId =
-    related?.dataset?.id;
+          const oe =
+            e.originalEvent;
 
-  if (
-    !sourceId ||
-    !targetId ||
-    sourceId === targetId ||
-    related?.classList.contains(
-      'add-site-card'
-    )
-  ) {
-    clearMergePreview(root);
-    return true;
-  }
+          if (
+            !oe ||
+            typeof oe.clientX !== 'number' ||
+            typeof oe.clientY !== 'number'
+          ) {
+            clearMergePreview(root);
+            return true;
+          }
 
-  const oe =
-    e.originalEvent;
+          /*
+           * 不使用 e.related。
+           * 直接寻找鼠标当前真正位于的卡片。
+           */
+          const targetEl =
+            document
+              .elementFromPoint(
+                oe.clientX,
+                oe.clientY
+              )
+              ?.closest(
+                '.site-card'
+              );
 
-  if (
-    !oe ||
-    typeof oe.clientX !== 'number' ||
-    typeof oe.clientY !== 'number'
-  ) {
-    clearMergePreview(root);
-    return true;
-  }
+          const targetId =
+            targetEl?.dataset?.id;
 
-  const rect =
-    related.getBoundingClientRect();
+          if (
+            !targetEl ||
+            !targetId ||
+            targetId === sourceId ||
+            targetEl.classList.contains(
+              'add-site-card'
+            )
+          ) {
+            clearMergePreview(root);
+            return true;
+          }
 
-  const inside =
-    oe.clientX >= rect.left &&
-    oe.clientX <= rect.right &&
-    oe.clientY >= rect.top &&
-    oe.clientY <= rect.bottom;
+          const rect =
+            targetEl.getBoundingClientRect();
 
-  /*
-  if (inside) {
-    showMergePreview(
-      root,
-      sourceId,
-      targetId,
-      related
-    );
-  } else {
-    clearMergePreview(root);
-  }
+          /*
+           * 目标卡片中央 50% × 50%
+           * 才是聚合候选区域。
+           */
+          const mergeLeft =
+            rect.left +
+            rect.width * 0.25;
 
-  // 始终允许 Sortable 正常移动
-  return true;
-  */
+          const mergeRight =
+            rect.right -
+            rect.width * 0.25;
 
-  if (inside) {
-  showMergePreview(
-    root,
-    sourceId,
-    targetId,
-    related
-  );
+          const mergeTop =
+            rect.top +
+            rect.height * 0.25;
 
-  // 进入聚合区域后，禁止 Sortable 改变位置
-  return false;
-}
+          const mergeBottom =
+            rect.bottom -
+            rect.height * 0.25;
 
-clearMergePreview(root);
+          const insideMergeArea =
+            oe.clientX >= mergeLeft &&
+            oe.clientX <= mergeRight &&
+            oe.clientY >= mergeTop &&
+            oe.clientY <= mergeBottom;
 
-// 离开聚合区域，恢复正常排序
-return true;
-          
-},
+          /*
+           * 如果鼠标在目标卡片外围，
+           * 就完全按照普通排序处理。
+           */
+          if (!insideMergeArea) {
+            clearMergePreview(root);
+            return true;
+          }
 
-onEnd: e => {
-  const oe =
-    e.originalEvent;
+          /*
+           * 第一次进入中央区域：
+           * 开始 600ms 聚合预览计时。
+           */
+          if (
+            mergeSourceId !== sourceId ||
+            mergeTargetId !== targetId
+          ) {
+            clearMergePreview(root);
 
-  let shouldMerge = false;
+            mergeSourceId =
+              sourceId;
 
-  if (
-    pendingMerge &&
-    oe &&
-    typeof oe.clientX === 'number' &&
-    typeof oe.clientY === 'number'
-  ) {
-    const {
-      sourceId,
-      targetId
-    } = pendingMerge;
+            mergeTargetId =
+              targetId;
 
-    const targetEl =
-      root.querySelector(
-        `[data-id="${targetId}"]`
-      );
+            mergeTimer =
+              setTimeout(
+                () => {
+                  /*
+                   * 600ms 后只显示预览，
+                   * 不自动聚合。
+                   */
+                  showMergePreview(
+                    root,
+                    sourceId,
+                    targetId,
+                    targetEl
+                  );
+                },
+                600
+              );
+          }
 
-    if (targetEl) {
-      const rect =
-        targetEl.getBoundingClientRect();
+          /*
+           * 如果已经出现聚合预览，
+           * 暂时阻止 Sortable 改变目标位置。
+           */
+          if (
+            pendingMerge &&
+            mergeSourceId === sourceId &&
+            mergeTargetId === targetId
+          ) {
+            return false;
+          }
 
-      const insetX =
-        Math.min(
-          12,
-          rect.width * 0.12
-        );
+          /*
+           * 尚未达到 600ms：
+           * 仍然允许正常排序。
+           */
+          return true;
+        },
 
-      const insetY =
-        Math.min(
-          12,
-          rect.height * 0.12
-        );
+        onEnd: e => {
+          /*
+           * 如果已经出现聚合预览，
+           * 松手时才真正执行聚合。
+           */
+          if (pendingMerge) {
+            const {
+              sourceId,
+              targetId
+            } = pendingMerge;
 
-      shouldMerge =
-        oe.clientX >=
-          rect.left + insetX &&
-        oe.clientX <=
-          rect.right - insetX &&
-        oe.clientY >=
-          rect.top + insetY &&
-        oe.clientY <=
-          rect.bottom - insetY;
-    }
+            const source =
+              state.sites.find(
+                x =>
+                  x.id === sourceId
+              );
 
-    const source =
-      state.sites.find(
-        x => x.id === sourceId
-      );
+            const target =
+              state.sites.find(
+                x =>
+                  x.id === targetId
+              );
 
-    const target =
-      state.sites.find(
-        x => x.id === targetId
-      );
+            const oe =
+              e.originalEvent;
 
-    clearMergePreview(root);
+            let shouldMerge = false;
 
-    if (
-      shouldMerge &&
-      source &&
-      target &&
-      source.id !== target.id
-    ) {
-      mergeItems(
-        source,
-        target
-      );
+            if (
+              source &&
+              target &&
+              oe &&
+              typeof oe.clientX === 'number' &&
+              typeof oe.clientY === 'number'
+            ) {
+              const targetEl =
+                root.querySelector(
+                  `[data-id="${targetId}"]`
+                );
 
-      return;
-    }
-  }
+              if (targetEl) {
+                const rect =
+                  targetEl.getBoundingClientRect();
 
-  clearMergePreview(root);
+                const mergeLeft =
+                  rect.left +
+                  rect.width * 0.25;
 
-  const ids = [
-    ...root.children
-  ]
-    .filter(
-      x => x.dataset.id
-    )
-    .map(
-      x => x.dataset.id
-    );
+                const mergeRight =
+                  rect.right -
+                  rect.width * 0.25;
 
-  const byId =
-    new Map(
-      state.sites.map(
-        x => [
-          x.id,
-          x
-        ]
-      )
-    );
+                const mergeTop =
+                  rect.top +
+                  rect.height * 0.25;
 
-  state.sites =
-    ids
-      .map(
-        id => byId.get(id)
-      )
-      .filter(Boolean);
+                const mergeBottom =
+                  rect.bottom -
+                  rect.height * 0.25;
 
-  save();
-  render();
-}
+                shouldMerge =
+                  oe.clientX >= mergeLeft &&
+                  oe.clientX <= mergeRight &&
+                  oe.clientY >= mergeTop &&
+                  oe.clientY <= mergeBottom;
+              }
+            }
 
-        
+            clearMergePreview(root);
 
-        
-        
+            if (
+              shouldMerge &&
+              source &&
+              target &&
+              source.id !== target.id
+            ) {
+              mergeItems(
+                source,
+                target
+              );
+
+              return;
+            }
+          }
+
+          /*
+           * 没有聚合：
+           * 按照 Sortable 最终 DOM 顺序保存排序结果。
+           */
+          clearMergePreview(root);
+
+          const ids = [
+            ...root.children
+          ]
+            .filter(
+              x =>
+                x.dataset.id
+            )
+            .map(
+              x =>
+                x.dataset.id
+            );
+
+          const byId =
+            new Map(
+              state.sites.map(
+                x => [
+                  x.id,
+                  x
+                ]
+              )
+            );
+
+          state.sites =
+            ids
+              .map(
+                id =>
+                  byId.get(id)
+              )
+              .filter(Boolean);
+
+          save();
+          render();
+        }
       }
     );
 }
