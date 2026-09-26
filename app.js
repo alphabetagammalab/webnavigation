@@ -3089,10 +3089,15 @@ const m =
 const today =
   new Date();
 
+  const displayDate =
+  selectedDate;
+
+  /*
 const displayDate =
   calendarHasNavigated
     ? new Date(y, m, 1)
     : today;
+  */
 
   /*
   const y =
@@ -3508,6 +3513,13 @@ document.querySelector(
     calendarDate.getMonth() - 1
   );
 
+  selectedDate =
+    new Date(
+      calendarDate.getFullYear(),
+      calendarDate.getMonth(),
+      1
+    );
+
   renderCalendar();
 };
 
@@ -3519,6 +3531,13 @@ document.querySelector(
   calendarDate.setMonth(
     calendarDate.getMonth() + 1
   );
+
+  selectedDate =
+    new Date(
+      calendarDate.getFullYear(),
+      calendarDate.getMonth(),
+      1
+    );
 
   renderCalendar();
 };
