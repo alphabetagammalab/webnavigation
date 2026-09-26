@@ -1495,6 +1495,7 @@ function dropTargetFromEvent(e) {
   return el || null;
 }
 
+
 function mergeItems(
   source,
   target
@@ -1502,6 +1503,8 @@ function mergeItems(
   if (source.id === target.id) {
     return;
   }
+
+  let animationId = null;
 
   if (
     source.type === 'folder' &&
@@ -1511,6 +1514,9 @@ function mergeItems(
       ...(target.children || []),
       ...(source.children || [])
     ];
+
+    animationId = target.id;
+
   } else if (
     source.type === 'site' &&
     target.type === 'folder'
@@ -1519,6 +1525,9 @@ function mergeItems(
       ...(target.children || []),
       source
     ];
+
+    animationId = target.id;
+
   } else if (
     source.type === 'folder' &&
     target.type === 'site'
@@ -1551,10 +1560,23 @@ function mergeItems(
       folder
     );
 
+    animationId = folder.id;
+
     save();
     render();
 
+    requestAnimationFrame(() => {
+      document
+        .querySelector(
+          `.site-card[data-id="${animationId}"]`
+        )
+        ?.classList.add(
+          'merge-complete'
+        );
+    });
+
     return;
+
   } else {
     const folder = {
       id: uid(),
@@ -1584,8 +1606,20 @@ function mergeItems(
       folder
     );
 
+    animationId = folder.id;
+
     save();
     render();
+
+    requestAnimationFrame(() => {
+      document
+        .querySelector(
+          `.site-card[data-id="${animationId}"]`
+        )
+        ?.classList.add(
+          'merge-complete'
+        );
+    });
 
     return;
   }
@@ -1597,6 +1631,17 @@ function mergeItems(
 
   save();
   render();
+
+  requestAnimationFrame(() => {
+    document
+      .querySelector(
+        `.site-card[data-id="${animationId}"]`
+      )
+      ?.classList.add(
+        'merge-complete'
+      );
+  });
+
   toast('已聚合');
 }
 
