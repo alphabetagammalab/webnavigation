@@ -401,11 +401,13 @@ let state = loadState();
 
 let editingId = null;
 let contextId = null;
-let calendarDate = new Date();
+
 let currentCollectionId = null;
 let currentCollectionCard = null;
 
+let calendarDate = new Date();
 let calendarHasNavigated = false;
+let selectedDate = new Date();
 
 function loadState() {
   try {
@@ -3462,6 +3464,9 @@ document.querySelector(
 
   calendarHasNavigated =
     false;
+
+  selectedDate =
+    new Date();
 
   renderCalendar();
 
