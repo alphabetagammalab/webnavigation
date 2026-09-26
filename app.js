@@ -3125,33 +3125,33 @@ const displayDate =
    */
 
   const startOfYear =
-    new Date(
-      today.getFullYear(),
-      0,
-      1
-    );
+  new Date(
+    displayDate.getFullYear(),
+    0,
+    1
+  );
 
-  const startOfToday =
-    new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    );
+const startOfDisplayDate =
+  new Date(
+    displayDate.getFullYear(),
+    displayDate.getMonth(),
+    displayDate.getDate()
+  );
 
-  const dayOfYear =
-    Math.floor(
-      (
-        startOfToday -
-        startOfYear
-      ) / 86400000
-    ) + 1;
+const dayOfYear =
+  Math.floor(
+    (
+      startOfDisplayDate -
+      startOfYear
+    ) / 86400000
+  ) + 1;
 
   const isoDate =
   new Date(
     Date.UTC(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
+      displayDate.getFullYear(),
+      displayDate.getMonth(),
+      displayDate.getDate()
     )
   );
 
