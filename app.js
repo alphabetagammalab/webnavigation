@@ -1017,153 +1017,179 @@ function initSortable(root) {
           clearMergePreview(root);
         },
 
-
-        
-
-        
-        /*
         onMove: e => {
-          const sourceId =
-            e.dragged?.dataset?.id;
+  const sourceId =
+    e.dragged?.dataset?.id;
 
-          const related =
-            e.related?.closest?.(
-              '.site-card'
-            );
+  const related =
+    e.related?.closest?.(
+      '.site-card'
+    );
 
-          const targetId =
-            related?.dataset?.id;
+  const targetId =
+    related?.dataset?.id;
 
-          if (
-            !sourceId ||
-            !targetId ||
-            sourceId === targetId ||
-            related?.classList.contains(
-              'add-site-card'
-            )
-          ) {
-            clearMergePreview(root);
-            return true;
-          }
+  if (
+    !sourceId ||
+    !targetId ||
+    sourceId === targetId ||
+    related?.classList.contains(
+      'add-site-card'
+    )
+  ) {
+    clearMergePreview(root);
+    return true;
+  }
 
-          const oe =
-            e.originalEvent;
+  const oe =
+    e.originalEvent;
 
-          if (
-            !oe ||
-            typeof oe.clientX !== 'number' ||
-            typeof oe.clientY !== 'number'
-          ) {
-            clearMergePreview(root);
-            return true;
-          }
+  if (
+    !oe ||
+    typeof oe.clientX !== 'number' ||
+    typeof oe.clientY !== 'number'
+  ) {
+    clearMergePreview(root);
+    return true;
+  }
 
-          const rect =
-            related.getBoundingClientRect();
+  const rect =
+    related.getBoundingClientRect();
 
-          const insetX =
-            rect.width * 0.2;
+  const inside =
+    oe.clientX >= rect.left &&
+    oe.clientX <= rect.right &&
+    oe.clientY >= rect.top &&
+    oe.clientY <= rect.bottom;
 
-          const insetY =
-            rect.height * 0.2;
+  if (inside) {
+    showMergePreview(
+      root,
+      sourceId,
+      targetId,
+      related
+    );
+  } else {
+    clearMergePreview(root);
+  }
 
-          const insideMergeArea =
-            oe.clientX >=
-              rect.left + insetX &&
-            oe.clientX <=
-              rect.right - insetX &&
-            oe.clientY >=
-              rect.top + insetY &&
-            oe.clientY <=
-              rect.bottom - insetY;
+  // 始终允许 Sortable 正常移动
+  return true;
+},
 
-          if (insideMergeArea) {
-            showMergePreview(
-              root,
-              sourceId,
-              targetId,
-              related
-            );
+onEnd: e => {
+  const oe =
+    e.originalEvent;
 
-            return false;
-          }
+  let shouldMerge = false;
 
-          clearMergePreview(root);
+  if (
+    pendingMerge &&
+    oe &&
+    typeof oe.clientX === 'number' &&
+    typeof oe.clientY === 'number'
+  ) {
+    const {
+      sourceId,
+      targetId
+    } = pendingMerge;
 
-          return true;
-        },
+    const targetEl =
+      root.querySelector(
+        `[data-id="${targetId}"]`
+      );
 
-        onEnd: e => {
-          if (pendingMerge) {
-            const {
-              sourceId,
-              targetId
-            } = pendingMerge;
+    if (targetEl) {
+      const rect =
+        targetEl.getBoundingClientRect();
 
-            const source =
-              state.sites.find(
-                x =>
-                  x.id === sourceId
-              );
+      const insetX =
+        Math.min(
+          12,
+          rect.width * 0.12
+        );
 
-            const target =
-              state.sites.find(
-                x =>
-                  x.id === targetId
-              );
+      const insetY =
+        Math.min(
+          12,
+          rect.height * 0.12
+        );
 
-            clearMergePreview(root);
+      shouldMerge =
+        oe.clientX >=
+          rect.left + insetX &&
+        oe.clientX <=
+          rect.right - insetX &&
+        oe.clientY >=
+          rect.top + insetY &&
+        oe.clientY <=
+          rect.bottom - insetY;
+    }
 
-            if (
-              source &&
-              target &&
-              source.id !== target.id
-            ) {
-              mergeItems(
-                source,
-                target
-              );
+    const source =
+      state.sites.find(
+        x => x.id === sourceId
+      );
 
-              return;
-            }
-          }
+    const target =
+      state.sites.find(
+        x => x.id === targetId
+      );
 
-          clearMergePreview(root);
+    clearMergePreview(root);
 
-          const ids = [
-            ...root.children
-          ]
-            .filter(
-              x =>
-                x.dataset.id
-            )
-            .map(
-              x =>
-                x.dataset.id
-            );
+    if (
+      shouldMerge &&
+      source &&
+      target &&
+      source.id !== target.id
+    ) {
+      mergeItems(
+        source,
+        target
+      );
 
-          const byId =
-            new Map(
-              state.sites.map(
-                x => [
-                  x.id,
-                  x
-                ]
-              )
-            );
+      return;
+    }
+  }
 
-          state.sites =
-            ids
-              .map(
-                id =>
-                  byId.get(id)
-              )
-              .filter(Boolean);
+  clearMergePreview(root);
 
-          save();
-          render();
-        }
-        */
+  const ids = [
+    ...root.children
+  ]
+    .filter(
+      x => x.dataset.id
+    )
+    .map(
+      x => x.dataset.id
+    );
+
+  const byId =
+    new Map(
+      state.sites.map(
+        x => [
+          x.id,
+          x
+        ]
+      )
+    );
+
+  state.sites =
+    ids
+      .map(
+        id => byId.get(id)
+      )
+      .filter(Boolean);
+
+  save();
+  render();
+}
+
+        
+
+        
+        
       }
     );
 }
