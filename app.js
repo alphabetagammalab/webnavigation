@@ -2823,10 +2823,37 @@ function toast(t) {
 }
 
 function dclose(id) {
-  document.querySelector(
-    '#' + id
-  )?.close();
+  const dialog =
+    document.querySelector(
+      '#' + id
+    );
+
+  if (!dialog) {
+    return;
+  }
+
+  if (
+    id === 'collectionDialog' &&
+    dialog.open
+  ) {
+    dialog.classList.add(
+      'closing'
+    );
+
+    setTimeout(() => {
+      dialog.classList.remove(
+        'closing'
+      );
+
+      dialog.close();
+    }, 160);
+
+    return;
+  }
+
+  dialog.close();
 }
+
 /*
 document.querySelector(
   '#addBtn'
