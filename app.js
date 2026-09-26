@@ -1062,6 +1062,7 @@ function initSortable(root) {
     oe.clientY >= rect.top &&
     oe.clientY <= rect.bottom;
 
+  /*
   if (inside) {
     showMergePreview(
       root,
@@ -1075,6 +1076,25 @@ function initSortable(root) {
 
   // 始终允许 Sortable 正常移动
   return true;
+  */
+
+  if (inside) {
+  showMergePreview(
+    root,
+    sourceId,
+    targetId,
+    related
+  );
+
+  // 进入聚合区域后，禁止 Sortable 改变位置
+  return false;
+}
+
+clearMergePreview(root);
+
+// 离开聚合区域，恢复正常排序
+return true;
+          
 },
 
 onEnd: e => {
