@@ -1076,7 +1076,7 @@ label select:focus {
 
 .calendar-nav {
   display: grid;
-  grid-template-columns: 30px 1fr 30px auto;
+  grid-template-columns: 30px minmax(0, 1fr) 30px auto;
   align-items: center;
   height: 34px;
   margin-bottom: 8px;
@@ -1097,6 +1097,8 @@ label select:focus {
   background: transparent;
   color: var(--muted);
   font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
 }
 
