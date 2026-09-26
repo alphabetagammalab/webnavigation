@@ -3351,6 +3351,23 @@ const weekNumber =
       day
     );
 
+    /*
+ * 当前选中的日期
+ */
+
+if (
+  thisDate.getFullYear() ===
+    selectedDate.getFullYear() &&
+  thisDate.getMonth() ===
+    selectedDate.getMonth() &&
+  thisDate.getDate() ===
+    selectedDate.getDate()
+) {
+  d.classList.add(
+    'selected'
+  );
+}
+
   /*
    * 点击日期
    */
