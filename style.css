@@ -1084,7 +1084,20 @@ label select:focus {
 }
 
 .calendar-nav-title {
-  display: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.calendar-today {
+  padding: 3px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
 }
 
 .calendar-nav button {
