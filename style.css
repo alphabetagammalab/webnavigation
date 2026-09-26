@@ -1155,6 +1155,18 @@ label select:focus {
   color: #ff5555;
 }
 
+/* 把.today放到.selected后面，让.today优先覆盖.selected,否则日历显示的当天的图标颜色设置依据.selected,而非.today */
+.calendar .selected {
+  background: rgba(100, 120, 150, 0.14);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.calendar .selected:hover {
+  background: rgba(100, 120, 150, 0.20);
+}
+/* 把.today放到.selected后面，让.today优先覆盖.selected,否则日历显示的当天的图标颜色设置依据.selected,而非.today */
+
 .calendar .today {
   background: #ff5b62;
   color: #fff !important;
@@ -1165,15 +1177,7 @@ label select:focus {
   background: #ff5b62;
 }
 
-.calendar .selected {
-  background: rgba(100, 120, 150, 0.14);
-  color: var(--text);
-  font-weight: 600;
-}
 
-.calendar .selected:hover {
-  background: rgba(100, 120, 150, 0.20);
-}
 
 .calendar .other {
   color: #aab1ba !important;
