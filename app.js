@@ -405,6 +405,8 @@ let calendarDate = new Date();
 let currentCollectionId = null;
 let currentCollectionCard = null;
 
+let calendarHasNavigated = false;
+
 function loadState() {
   try {
     const raw = JSON.parse(
@@ -3075,6 +3077,22 @@ document.querySelector(
 
 
 function renderCalendar() {
+
+  const y =
+  calendarDate.getFullYear();
+
+const m =
+  calendarDate.getMonth();
+
+const today =
+  new Date();
+
+const displayDate =
+  calendarHasNavigated
+    ? new Date(y, m, 1)
+    : today;
+
+  /*
   const y =
     calendarDate.getFullYear();
 
@@ -3086,6 +3104,7 @@ function renderCalendar() {
 
   const selected =
     calendarDate;
+  */
 
   /*
    * 左侧大日期
@@ -3099,7 +3118,7 @@ function renderCalendar() {
   document.querySelector(
     '#calendarDay'
   ).textContent =
-    today.getDate();
+    displayDate.getDate();
 
   /*
    * 一年中的第几天
@@ -3177,15 +3196,15 @@ const weekNumber =
    */
 
   const lunar =
-    getLunarText(today);
+  getLunarText(displayDate);
 
   const weekday =
-    today.toLocaleDateString(
-      'zh-CN',
-      {
-        weekday: 'long'
-      }
-    );
+  displayDate.toLocaleDateString(
+    'zh-CN',
+    {
+      weekday: 'long'
+    }
+  );
 
   document.querySelector(
     '#calendarLunar'
@@ -3454,6 +3473,8 @@ document.querySelector(
 document.querySelector(
   '#prevMonth'
 ).onclick = () => {
+  calendarHasNavigated = true;
+
   calendarDate.setMonth(
     calendarDate.getMonth() - 1
   );
@@ -3464,6 +3485,8 @@ document.querySelector(
 document.querySelector(
   '#nextMonth'
 ).onclick = () => {
+  calendarHasNavigated = true;
+
   calendarDate.setMonth(
     calendarDate.getMonth() + 1
   );
