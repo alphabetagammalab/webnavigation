@@ -845,12 +845,19 @@ function createCard(i) {
   return card;
 }
 
+let mergeSourceId = null;
+let mergeTargetId = null;
+let pendingMerge = null;
+
+/*
 let mergeTimer = null;
 let mergeSourceId = null;
 let mergeTargetId = null;
 let mergeTriggered = false;
 let pendingMerge = null;
+*/
 
+/*
 function clearMergeTimer(root) {
   if (mergeTimer) {
     clearTimeout(mergeTimer);
@@ -868,7 +875,8 @@ function clearMergeTimer(root) {
     )
   );
 }
-
+*/
+/*
 function startMergeTimer(
   root,
   sourceId,
@@ -931,7 +939,230 @@ function startMergeTimer(
     600
   );
 }
+*/
 
+function clearMergePreview(root) {
+  mergeSourceId = null;
+  mergeTargetId = null;
+  pendingMerge = null;
+
+  root
+    ?.querySelectorAll('.merge-target')
+    .forEach(
+      el =>
+        el.classList.remove(
+          'merge-target'
+        )
+    );
+}
+
+
+function showMergePreview(
+  root,
+  sourceId,
+  targetId,
+  targetEl
+) {
+  if (
+    !sourceId ||
+    !targetId ||
+    sourceId === targetId
+  ) {
+    clearMergePreview(root);
+    return;
+  }
+
+  if (
+    mergeSourceId === sourceId &&
+    mergeTargetId === targetId
+  ) {
+    return;
+  }
+
+  clearMergePreview(root);
+
+  mergeSourceId = sourceId;
+  mergeTargetId = targetId;
+
+  targetEl?.classList.add(
+    'merge-target'
+  );
+
+  pendingMerge = {
+    sourceId,
+    targetId
+  };
+}
+
+function initSortable(root) {
+  if (root._sortable) {
+    root._sortable.destroy();
+  }
+
+  clearMergePreview(root);
+
+  root._sortable =
+    new Sortable(
+      root,
+      {
+        animation: 150,
+        forceFallback: true,
+        fallbackOnBody: true,
+        swapThreshold: .65,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        filter: '.add-site-card',
+
+        onStart: e => {
+          clearMergePreview(root);
+        },
+
+        onMove: e => {
+          const sourceId =
+            e.dragged?.dataset?.id;
+
+          const related =
+            e.related?.closest?.(
+              '.site-card'
+            );
+
+          const targetId =
+            related?.dataset?.id;
+
+          if (
+            !sourceId ||
+            !targetId ||
+            sourceId === targetId ||
+            related?.classList.contains(
+              'add-site-card'
+            )
+          ) {
+            clearMergePreview(root);
+            return true;
+          }
+
+          const oe =
+            e.originalEvent;
+
+          if (
+            !oe ||
+            typeof oe.clientX !== 'number' ||
+            typeof oe.clientY !== 'number'
+          ) {
+            clearMergePreview(root);
+            return true;
+          }
+
+          const rect =
+            related.getBoundingClientRect();
+
+          const insetX =
+            rect.width * 0.2;
+
+          const insetY =
+            rect.height * 0.2;
+
+          const insideMergeArea =
+            oe.clientX >=
+              rect.left + insetX &&
+            oe.clientX <=
+              rect.right - insetX &&
+            oe.clientY >=
+              rect.top + insetY &&
+            oe.clientY <=
+              rect.bottom - insetY;
+
+          if (insideMergeArea) {
+            showMergePreview(
+              root,
+              sourceId,
+              targetId,
+              related
+            );
+
+            return false;
+          }
+
+          clearMergePreview(root);
+
+          return true;
+        },
+
+        onEnd: e => {
+          if (pendingMerge) {
+            const {
+              sourceId,
+              targetId
+            } = pendingMerge;
+
+            const source =
+              state.sites.find(
+                x =>
+                  x.id === sourceId
+              );
+
+            const target =
+              state.sites.find(
+                x =>
+                  x.id === targetId
+              );
+
+            clearMergePreview(root);
+
+            if (
+              source &&
+              target &&
+              source.id !== target.id
+            ) {
+              mergeItems(
+                source,
+                target
+              );
+
+              return;
+            }
+          }
+
+          clearMergePreview(root);
+
+          const ids = [
+            ...root.children
+          ]
+            .filter(
+              x =>
+                x.dataset.id
+            )
+            .map(
+              x =>
+                x.dataset.id
+            );
+
+          const byId =
+            new Map(
+              state.sites.map(
+                x => [
+                  x.id,
+                  x
+                ]
+              )
+            );
+
+          state.sites =
+            ids
+              .map(
+                id =>
+                  byId.get(id)
+              )
+              .filter(Boolean);
+
+          save();
+          render();
+        }
+      }
+    );
+}
+
+/*
 function initSortable(root) {
   if (root._sortable) {
     root._sortable.destroy();
@@ -1063,6 +1294,7 @@ function initSortable(root) {
     }
   );
 }
+*/
 
 function dropTargetFromEvent(e) {
   const oe =
