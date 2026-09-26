@@ -1119,6 +1119,19 @@ label select:focus {
     color 0.15s ease;
 }
 
+.calendar-nav .calendar-today {
+  width: auto;
+  height: auto;
+  padding: 3px 6px;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .calendar-nav button:hover {
   background: rgba(100, 120, 150, 0.09);
   color: var(--text);
