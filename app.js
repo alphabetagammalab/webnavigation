@@ -3324,33 +3324,57 @@ const weekNumber =
    */
 
   for (
-    let day = 1;
-    day <= days;
-    day++
+  let day = 1;
+  day <= days;
+  day++
+) {
+  const d =
+    document.createElement(
+      'div'
+    );
+
+  d.className =
+    'day';
+
+  d.textContent =
+    day;
+
+  const thisDate =
+    new Date(
+      y,
+      m,
+      day
+    );
+
+  /*
+   * 点击日期
+   */
+
+  d.onclick = () => {
+    selectedDate =
+      new Date(
+        thisDate
+      );
+
+    renderCalendar();
+  };
+
+  /*
+   * 今天
+   */
+
+  if (
+    day === today.getDate() &&
+    m === today.getMonth() &&
+    y === today.getFullYear()
   ) {
-    const d =
-      document.createElement(
-        'div'
-      );
-
-    d.className =
-      'day';
-
-    d.textContent =
-      day;
-
-    if (
-      day === today.getDate() &&
-      m === today.getMonth() &&
-      y === today.getFullYear()
-    ) {
-      d.classList.add(
-        'today'
-      );
-    }
-
-    box.appendChild(d);
+    d.classList.add(
+      'today'
+    );
   }
+
+  box.appendChild(d);
+}
 
   /*
    * 下个月开头日期
