@@ -1087,181 +1087,174 @@ function initSortable(root) {
           clearMergePreview(root);
         },
 
-        onMove: e => {
-          const sourceId =
-            e.dragged?.dataset?.id;
 
-          if (!sourceId) {
-            return true;
-          }
+onMove: e => {
+  const sourceId =
+    e.dragged?.dataset?.id;
 
-          const oe =
-            e.originalEvent;
+  if (!sourceId) {
+    return true;
+  }
 
-          if (
-            !oe ||
-            typeof oe.clientX !== 'number' ||
-            typeof oe.clientY !== 'number'
-          ) {
-            return true;
-          }
+  const oe =
+    e.originalEvent;
 
-          /*
-           * 已经进入聚合预览后，
-           * 不再让 Sortable 改变目标。
-           */
-          if (pendingMerge) {
-            const targetEl =
-              root.querySelector(
-                `[data-id="${mergeTargetId}"]`
-              );
+  if (
+    !oe ||
+    typeof oe.clientX !== 'number' ||
+    typeof oe.clientY !== 'number'
+  ) {
+    return true;
+  }
 
-            if (!targetEl) {
-              clearMergePreview(root);
-              return true;
-            }
+  /*
+   * 已经进入聚合预览后，
+   * 不再让 Sortable 改变目标。
+   */
+  if (pendingMerge) {
+    const targetEl =
+      root.querySelector(
+        `[data-id="${mergeTargetId}"]`
+      );
 
-            const rect =
-              targetEl.getBoundingClientRect();
+    if (!targetEl) {
+      clearMergePreview(root);
+      return true;
+    }
 
-            const inside =
-              oe.clientX >= rect.left &&
-              oe.clientX <= rect.right &&
-              oe.clientY >= rect.top &&
-              oe.clientY <= rect.bottom;
+    const rect =
+      targetEl.getBoundingClientRect();
 
-            if (inside) {
-              return false;
-            }
+    const inside =
+      oe.clientX >= rect.left &&
+      oe.clientX <= rect.right &&
+      oe.clientY >= rect.top &&
+      oe.clientY <= rect.bottom;
 
-            /*
-             * 离开目标，取消聚合预览。
-             */
-            clearMergePreview(root);
+    if (inside) {
+      return false;
+    }
 
-            return true;
-          }
+    /*
+     * 离开目标，取消聚合预览。
+     */
+    clearMergePreview(root);
 
-          /*
-           * 使用鼠标实际所在的元素，
-           * 而不是完全依赖 e.related。
-           */
-          const targetEl =
-            document
-              .elementFromPoint(
-                oe.clientX,
-                oe.clientY
-              )
-              ?.closest(
-                '.site-card'
-              );
+    return true;
+  }
 
-          const targetId =
-            targetEl?.dataset?.id;
+  /*
+   * 使用 Sortable 当前事件中的 related 元素。
+   */
+  const targetEl =
+    e.related?.closest?.(
+      '.site-card'
+    );
 
-          if (
-            !targetEl ||
-            !targetId ||
-            targetId === sourceId ||
-            targetEl.classList.contains(
-              'add-site-card'
-            )
-          ) {
-            /*
-             * 如果当前没有聚合候选，
-             * 正常排序。
-             */
-            if (!pendingMerge) {
-              return true;
-            }
+  const targetId =
+    targetEl?.dataset?.id;
 
-            clearMergePreview(root);
+  if (
+    !targetEl ||
+    !targetId ||
+    targetId === sourceId ||
+    targetEl.classList.contains(
+      'add-site-card'
+    )
+  ) {
+    return true;
+  }
 
-            return true;
-          }
+  /*
+   * 优先使用 Sortable 提供的 relatedRect，
+   * 避免 DOM 已经发生交换后再重新计算位置。
+   */
+  const rect =
+    e.relatedRect ||
+    targetEl.getBoundingClientRect();
 
-          const rect =
-            targetEl.getBoundingClientRect();
+  /*
+   * 目标卡片中央 80% 作为聚合区域。
+   */
+  const mergeLeft =
+    rect.left +
+    rect.width * 0.10;
 
-          /*
-           * 聚合区域扩大到目标卡片中央 80%。
-           */
-          const mergeLeft =
-            rect.left +
-            rect.width * 0.10;
+  const mergeRight =
+    rect.right -
+    rect.width * 0.10;
 
-          const mergeRight =
-            rect.right -
-            rect.width * 0.10;
+  const mergeTop =
+    rect.top +
+    rect.height * 0.10;
 
-          const mergeTop =
-            rect.top +
-            rect.height * 0.10;
+  const mergeBottom =
+    rect.bottom -
+    rect.height * 0.10;
 
-          const mergeBottom =
-            rect.bottom -
-            rect.height * 0.10;
+  const insideMergeArea =
+    oe.clientX >= mergeLeft &&
+    oe.clientX <= mergeRight &&
+    oe.clientY >= mergeTop &&
+    oe.clientY <= mergeBottom;
 
-          const insideMergeArea =
-            oe.clientX >= mergeLeft &&
-            oe.clientX <= mergeRight &&
-            oe.clientY >= mergeTop &&
-            oe.clientY <= mergeBottom;
+  /*
+   * 不在中央区域：
+   * 保持正常拖拽排序。
+   */
+  if (!insideMergeArea) {
+    clearMergePreview(root);
+    return true;
+  }
 
-          /*
-           * 不在中央区域：
-           * 取消聚合候选，继续普通排序。
-           */
-          if (!insideMergeArea) {
-            clearMergePreview(root);
-            return true;
-          }
+  /*
+   * 已经针对同一个目标启动聚合计时。
+   *
+   * 这里立即阻止 Sortable 交换，
+   * 防止 Google 被挤到第二个位置。
+   */
+  if (
+    mergeSourceId === sourceId &&
+    mergeTargetId === targetId &&
+    mergeTimer
+  ) {
+    return false;
+  }
 
-          /*
-           * 已经针对同一个目标启动计时，
-           * 不要因为 Sortable 的 related 变化
-           * 而重新计时。
-           */
-          if (
-            mergeSourceId === sourceId &&
-            mergeTargetId === targetId &&
-            mergeTimer
-          ) {
-            return true;
-          }
+  /*
+   * 新的聚合候选。
+   */
+  clearMergePreview(root);
 
-          /*
-           * 新的聚合候选。
-           */
-          clearMergePreview(root);
+  mergeSourceId =
+    sourceId;
 
-          mergeSourceId =
-            sourceId;
+  mergeTargetId =
+    targetId;
 
-          mergeTargetId =
-            targetId;
+  /*
+   * 600ms 后显示聚合预览。
+   */
+  mergeTimer =
+    setTimeout(
+      () => {
+        showMergePreview(
+          root,
+          sourceId,
+          targetId,
+          targetEl
+        );
+      },
+      600
+    );
 
-          mergeTimer =
-            setTimeout(
-              () => {
-                /*
-                 * 600ms 后显示聚合预览。
-                 */
-                showMergePreview(
-                  root,
-                  sourceId,
-                  targetId,
-                  targetEl
-                );
-              },
-              600
-            );
+  /*
+   * 关键：
+   * 一进入中央区域就立即冻结 Sortable。
+   */
+  return false;
+},
 
-          /*
-           * 候选阶段继续允许普通排序。
-           */
-          return true;
-        },
 
         onEnd: e => {
           /*
