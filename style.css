@@ -1091,12 +1091,12 @@ label select:focus {
 }
 
 .calendar-today {
-  padding: 3px 8px;
+  padding: 3px 6px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 7px;
   background: transparent;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 400;
   line-height: 1;
   white-space: nowrap;
