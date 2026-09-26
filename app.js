@@ -1174,57 +1174,50 @@ function initSortable(root) {
             return true;
           }
 
-          /*
-           * 第一次进入中央区域：
-           * 开始 600ms 聚合预览计时。
-           */
-          if (
-            mergeSourceId !== sourceId ||
-            mergeTargetId !== targetId
-          ) {
-            clearMergePreview(root);
-
-            mergeSourceId =
-              sourceId;
-
-            mergeTargetId =
-              targetId;
-
-            mergeTimer =
-              setTimeout(
-                () => {
-                  /*
-                   * 600ms 后只显示预览，
-                   * 不自动聚合。
-                   */
-                  showMergePreview(
-                    root,
-                    sourceId,
-                    targetId,
-                    targetEl
-                  );
-                },
-                600
-              );
-          }
 
           /*
-           * 如果已经出现聚合预览，
-           * 暂时阻止 Sortable 改变目标位置。
-           */
-          if (
-            pendingMerge &&
-            mergeSourceId === sourceId &&
-            mergeTargetId === targetId
-          ) {
-            return false;
-          }
+ * 第一次进入中央区域：
+ * 开始 600ms 聚合预览计时。
+ */
+if (
+  mergeSourceId !== sourceId ||
+  mergeTargetId !== targetId
+) {
+  clearMergePreview(root);
 
-          /*
-           * 尚未达到 600ms：
-           * 仍然允许正常排序。
-           */
-          return true;
+  mergeSourceId =
+    sourceId;
+
+  mergeTargetId =
+    targetId;
+
+  mergeTimer =
+    setTimeout(
+      () => {
+        /*
+         * 600ms 后显示聚合预览，
+         * 不自动聚合。
+         */
+        showMergePreview(
+          root,
+          sourceId,
+          targetId,
+          targetEl
+        );
+      },
+      600
+    );
+}
+
+/*
+ * 只要进入中央聚合区域，
+ * 就立即阻止 Sortable 改变位置。
+ *
+ * 这样目标卡片不会先跳走。
+ */
+return false;
+
+          
         },
 
         onEnd: e => {
