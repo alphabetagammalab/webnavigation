@@ -1088,7 +1088,8 @@ function initSortable(root) {
         },
 
 
-        onMove: e => {
+        
+onMove: e => {
   const sourceId =
     e.dragged?.dataset?.id;
 
@@ -1109,8 +1110,8 @@ function initSortable(root) {
 
   /*
    * 已经进入聚合预览后，
-   * 只要鼠标仍在目标卡片内，
-   * 就继续保持聚合状态。
+   * 只要鼠标仍然位于目标卡片附近，
+   * 就保持聚合状态。
    */
   if (pendingMerge) {
     const targetEl =
@@ -1126,21 +1127,35 @@ function initSortable(root) {
     const rect =
       targetEl.getBoundingClientRect();
 
+    /*
+     * 给目标卡片增加一点有效范围，
+     * 让拖拽不需要特别精准。
+     */
+    const padding =
+      Math.max(
+        8,
+        Math.min(
+          rect.width,
+          rect.height
+        ) * 0.18
+      );
+
     const inside =
-      oe.clientX >= rect.left &&
-      oe.clientX <= rect.right &&
-      oe.clientY >= rect.top &&
-      oe.clientY <= rect.bottom;
+      oe.clientX >= rect.left - padding &&
+      oe.clientX <= rect.right + padding &&
+      oe.clientY >= rect.top - padding &&
+      oe.clientY <= rect.bottom + padding;
 
     if (inside) {
       /*
-       * 保持目标位置不变。
+       * 保持目标位置，
+       * 不让 Sortable 继续交换。
        */
       return false;
     }
 
     /*
-     * 离开目标卡片，
+     * 离开目标区域，
      * 取消聚合预览。
      */
     clearMergePreview(root);
@@ -1149,17 +1164,26 @@ function initSortable(root) {
   }
 
   /*
-   * 使用 Sortable 当前事件中的 related 元素
-   * 作为普通排序 / 聚合候选目标。
+   * 不依赖 e.related，
+   * 直接寻找鼠标当前位置下面的 site-card。
    */
   const targetEl =
-    e.related?.closest?.(
-      '.site-card'
-    );
+    document
+      .elementFromPoint(
+        oe.clientX,
+        oe.clientY
+      )
+      ?.closest(
+        '.site-card'
+      );
 
   const targetId =
     targetEl?.dataset?.id;
 
+  /*
+   * 没有目标，或者目标就是自己，
+   * 保持普通排序。
+   */
   if (
     !targetEl ||
     !targetId ||
@@ -1172,32 +1196,30 @@ function initSortable(root) {
     return true;
   }
 
-  /*
-   * 优先使用 Sortable 提供的 relatedRect，
-   * 避免 DOM 交换造成目标位置变化。
-   */
   const rect =
-    e.relatedRect ||
     targetEl.getBoundingClientRect();
 
   /*
-   * 目标卡片中央 80% 作为聚合区域。
+   * 聚合有效区域扩大。
+   *
+   * 不再要求进入中央 80%，
+   * 目标卡片大部分区域都可以触发聚合。
    */
   const mergeLeft =
     rect.left +
-    rect.width * 0.10;
+    rect.width * 0.03;
 
   const mergeRight =
     rect.right -
-    rect.width * 0.10;
+    rect.width * 0.03;
 
   const mergeTop =
     rect.top +
-    rect.height * 0.10;
+    rect.height * 0.03;
 
   const mergeBottom =
     rect.bottom -
-    rect.height * 0.10;
+    rect.height * 0.03;
 
   const insideMergeArea =
     oe.clientX >= mergeLeft &&
@@ -1206,8 +1228,8 @@ function initSortable(root) {
     oe.clientY <= mergeBottom;
 
   /*
-   * 没进入中央区域：
-   * 继续正常拖拽排序。
+   * 鼠标没有进入目标区域：
+   * 正常拖拽排序。
    */
   if (!insideMergeArea) {
     clearMergePreview(root);
@@ -1215,10 +1237,8 @@ function initSortable(root) {
   }
 
   /*
-   * 进入中央区域后，
+   * 进入目标区域后，
    * 立即显示聚合预览。
-   *
-   * 不再等待 350ms。
    */
   showMergePreview(
     root,
@@ -1228,11 +1248,11 @@ function initSortable(root) {
   );
 
   /*
-   * 立即阻止 Sortable 交换位置，
-   * 防止目标卡片跳走。
+   * 阻止 Sortable 交换目标位置。
    */
   return false;
 },
+
 
 
 
