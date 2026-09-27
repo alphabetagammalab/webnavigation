@@ -1024,6 +1024,7 @@ label select:focus {
   display: grid;
   grid-template-columns: 42% 58%;
   min-height: 300px;
+  padding: 0;
 }
 
 /* 左侧日期信息 */
