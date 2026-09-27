@@ -540,12 +540,31 @@ function siteInitial(name) {
   return first;
 }
 
+function localFavicon(url) {
+  try {
+    const u = new URL(url);
+
+    const name = u.hostname
+      .toLowerCase()
+      .replace(/^www\./, '');
+
+    return [
+      `./assets/${name}.ico`,
+      `./assets/${name}.png`,
+      `./assets/${name}.svg`
+    ];
+  } catch {
+    return [];
+  }
+}
 
 function favicon(url) {
   try {
     const u = new URL(url);
 
     return [
+      ...localFavicon(url),
+
       u.origin + '/favicon.ico',
       u.origin + '/favicon.png',
       u.origin + '/favicon.svg',
