@@ -844,6 +844,10 @@ button {
   font-size: 17px;
 }
 
+.dialog > .toast {
+  padding: 9px 13px;
+}
+
 .close {
   width: 32px;
   height: 32px;
