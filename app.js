@@ -522,6 +522,15 @@ function save() {
   );
 }
 
+function siteInitial(name) {
+  const text = String(name || '').trim();
+
+  return text
+    ? text.charAt(0).toUpperCase()
+    : '?';
+}
+
+
 function favicon(url) {
   try {
     const u = new URL(url);
@@ -583,16 +592,22 @@ function siteIconHtml(i) {
     icons[0] || '';
 
   return `
-    <img
-      class="favicon"
-      alt=""
-      src="${first}"
-      data-url="${i.url}"
-      data-icons="${encodeURIComponent(
-        JSON.stringify(icons)
-      )}"
-      data-icon-index="0"
-    >
+    <div class="favicon-wrap">
+      <span class="favicon-initial">
+        ${siteInitial(i.name)}
+      </span>
+
+      <img
+        class="favicon"
+        alt=""
+        src="${first}"
+        data-url="${i.url}"
+        data-icons="${encodeURIComponent(
+          JSON.stringify(icons)
+        )}"
+        data-icon-index="0"
+      >
+    </div>
   `;
 }
 
@@ -643,16 +658,22 @@ function createCard(i) {
             iconList[0] || '';
 
           return `
-            <img
-              class="favicon"
-              alt=""
-              src="${first}"
-              data-url="${ch.url}"
-              data-icons="${encodeURIComponent(
-                JSON.stringify(iconList)
-              )}"
-              data-icon-index="0"
-            >
+            <div class="favicon-wrap">
+              <span class="favicon-initial">
+                ${siteInitial(ch.name)}
+              </span>
+
+              <img
+                class="favicon"
+                alt=""
+                src="${first}"
+                data-url="${ch.url}"
+                data-icons="${encodeURIComponent(
+                  JSON.stringify(iconList)
+                )}"
+                data-icon-index="0"
+              >
+            </div>
           `;
         })
         .join('');
@@ -669,6 +690,22 @@ function createCard(i) {
         '.folder-icon .favicon'
       )
       .forEach(img => {
+
+        img.onload = () => {
+          const initial =
+            img.parentElement
+              ?.querySelector(
+                '.favicon-initial'
+              );
+
+          if (initial) {
+            initial.style.display =
+              'none';
+          }
+
+          img.style.display = '';
+        };
+
         img.onerror = () => {
           try {
             const icons =
@@ -696,8 +733,8 @@ function createCard(i) {
             }
           } catch {}
 
-          img.removeAttribute('src');
-          
+          img.style.display =
+            'none';
         };
       });
 
@@ -716,6 +753,21 @@ function createCard(i) {
 
     const img =
       card.querySelector('.favicon');
+
+    img.onload = () => {
+      const initial =
+        img.parentElement
+          ?.querySelector(
+            '.favicon-initial'
+          );
+
+      if (initial) {
+        initial.style.display =
+          'none';
+      }
+
+      img.style.display = '';
+    };
 
     img.onerror = () => {
       try {
@@ -744,8 +796,8 @@ function createCard(i) {
         }
       } catch {}
 
-      img.removeAttribute('src');
-      
+      img.style.display =
+        'none';
     };
 
     card.querySelector(
