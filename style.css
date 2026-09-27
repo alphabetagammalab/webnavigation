@@ -1542,8 +1542,14 @@ label select:focus {
     gap: 15px 8px;
   }
 
+.calendar-dialog {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
 .calendar-main {
-    min-height: 0;
+    height: auto !important;
+    min-height: 0 !important;
   }
 
   /* 手机端日历适配 */
