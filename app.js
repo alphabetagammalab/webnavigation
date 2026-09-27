@@ -525,9 +525,19 @@ function save() {
 function siteInitial(name) {
   const text = String(name || '').trim();
 
-  return text
-    ? text.charAt(0).toUpperCase()
-    : '?';
+  if (!text) {
+    return '?';
+  }
+
+  // 优先取第一个非空字符
+  const first = [...text][0];
+
+  // 拉丁字母统一大写
+  if (/^[a-z]$/i.test(first)) {
+    return first.toUpperCase();
+  }
+
+  return first;
 }
 
 
