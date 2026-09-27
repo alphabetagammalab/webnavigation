@@ -1567,7 +1567,7 @@ label select:focus {
   /* 手机端日历左侧日期信息 */
   .calendar-info {
     padding: 20px 10px 20px 8px;
-    transform: translateX(-10px);
+    transform: translateX(-12px);
   }
 
   .calendar-year-month {
