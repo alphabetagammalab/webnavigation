@@ -628,26 +628,16 @@ button {
   box-sizing: border-box;
   padding: 12px;
 
-  border: 1px solid rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 15px;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.82),
-      rgba(235, 240, 247, 0.62)
-    );
-
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.9),
-    inset 0 -1px 2px rgba(120, 135, 155, 0.08),
-    0 7px 20px rgba(40, 52, 70, 0.12);
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow: 0 7px 20px rgba(40, 52, 70, 0.1);
 
   font-size: 26px;
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1;
-
   color: var(--text);
 
   font-family:
@@ -656,9 +646,6 @@ button {
     "SF Pro Display",
     "Segoe UI",
     sans-serif;
-
-  text-shadow:
-    0 1px 1px rgba(255, 255, 255, 0.8);
 
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
