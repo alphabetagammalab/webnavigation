@@ -1563,6 +1563,40 @@ label select:focus {
   font-size: 14px;
 }
 
+
+  /* 手机端日历左侧日期信息 */
+  .calendar-info {
+    padding: 20px 10px 20px 14px;
+  }
+
+  .calendar-year-month {
+    margin-bottom: 8px;
+    font-size: 20px;
+    white-space: nowrap;
+  }
+
+  .calendar-big-day {
+    width: 100px;
+    margin-left: -5px;
+    font-size: 64px;
+    letter-spacing: -3px;
+  }
+
+  .calendar-week-info {
+    margin-top: 9px;
+    font-size: 13px;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+
+  .calendar-lunar {
+    margin-top: 4px;
+    font-size: 13px;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+  
+
 /* 手机端顶部导航 */
 .calendar-nav {
   grid-template-columns: 24px auto 24px auto;
