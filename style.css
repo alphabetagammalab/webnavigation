@@ -1544,8 +1544,9 @@ label select:focus {
 
   /* 手机端日历适配 */
 .calendar-right {
-  padding-left: 4px;
-  padding-right: 4px;
+  padding-left: 0;
+  padding-right: 0;
+  transform: translateX(-8px);
 }
 
 .calendar {
@@ -1563,10 +1564,10 @@ label select:focus {
   font-size: 14px;
 }
 
-
   /* 手机端日历左侧日期信息 */
   .calendar-info {
-    padding: 20px 10px 20px 14px;
+    padding: 20px 10px 20px 8px;
+    transform: translateX(-6px);
   }
 
   .calendar-year-month {
