@@ -1546,7 +1546,7 @@ label select:focus {
 .calendar-right {
   padding-left: 0;
   padding-right: 0;
-  transform: translateX(-12px);
+  transform: translateX(-16px);
 }
 
 .calendar {
