@@ -659,6 +659,65 @@ function render(){
 }
 
 
+function setupFavicon(img) {
+  const showIcon = () => {
+    const initial =
+      img.parentElement
+        ?.querySelector('.favicon-initial');
+
+    if (initial) {
+      initial.style.display = 'none';
+    }
+
+    img.style.display = '';
+  };
+
+  const tryNextIcon = () => {
+    try {
+      const icons =
+        JSON.parse(
+          decodeURIComponent(
+            img.dataset.icons || '[]'
+          )
+        );
+
+      let index =
+        Number(
+          img.dataset.iconIndex || 0
+        );
+
+      index++;
+
+      if (index < icons.length) {
+        img.dataset.iconIndex =
+          String(index);
+
+        img.src =
+          icons[index];
+
+        return;
+      }
+    } catch {}
+
+    img.style.display = 'none';
+  };
+
+  img.onload = showIcon;
+  img.onerror = tryNextIcon;
+
+  /*
+   * 移动端 / 浏览器缓存情况下，
+   * 图片可能已经加载完成但没有触发新的 onload。
+   */
+  if (
+    img.complete &&
+    img.naturalWidth > 0
+  ) {
+    showIcon();
+  }
+}
+
+
 function createCard(i) {
   const card =
     document.createElement('article');
@@ -700,7 +759,7 @@ function createCard(i) {
                   JSON.stringify(iconList)
                 )}"
                 data-icon-index="0"
-              >
+              />
             </div>
           `;
         })
@@ -717,54 +776,7 @@ function createCard(i) {
       .querySelectorAll(
         '.folder-icon .favicon'
       )
-      .forEach(img => {
-
-        img.onload = () => {
-          const initial =
-            img.parentElement
-              ?.querySelector(
-                '.favicon-initial'
-              );
-
-          if (initial) {
-            initial.style.display =
-              'none';
-          }
-
-          img.style.display = '';
-        };
-
-        img.onerror = () => {
-          try {
-            const icons =
-              JSON.parse(
-                decodeURIComponent(
-                  img.dataset.icons || '[]'
-                )
-              );
-
-            let index =
-              Number(
-                img.dataset.iconIndex || 0
-              );
-
-            index++;
-
-            if (index < icons.length) {
-              img.dataset.iconIndex =
-                String(index);
-
-              img.src =
-                icons[index];
-
-              return;
-            }
-          } catch {}
-
-          img.style.display =
-            'none';
-        };
-      });
+      .forEach(setupFavicon);
 
     card.querySelector(
       '.site-name'
@@ -782,51 +794,9 @@ function createCard(i) {
     const img =
       card.querySelector('.favicon');
 
-    img.onload = () => {
-      const initial =
-        img.parentElement
-          ?.querySelector(
-            '.favicon-initial'
-          );
-
-      if (initial) {
-        initial.style.display =
-          'none';
-      }
-
-      img.style.display = '';
-    };
-
-    img.onerror = () => {
-      try {
-        const icons =
-          JSON.parse(
-            decodeURIComponent(
-              img.dataset.icons || '[]'
-            )
-          );
-
-        let index =
-          Number(
-            img.dataset.iconIndex || 0
-          );
-
-        index++;
-
-        if (index < icons.length) {
-          img.dataset.iconIndex =
-            String(index);
-
-          img.src =
-            icons[index];
-
-          return;
-        }
-      } catch {}
-
-      img.style.display =
-        'none';
-    };
+    if (img) {
+      setupFavicon(img);
+    }
 
     card.querySelector(
       '.site-name'
@@ -853,6 +823,9 @@ function createCard(i) {
 
   return card;
 }
+
+
+
 
 
 
