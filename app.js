@@ -2810,7 +2810,6 @@ function tick() {
 
 function toast(t) {
   const x = document.querySelector('#toast');
-
   const openDialog = document.querySelector('dialog[open]');
 
   if (openDialog && x.parentElement !== openDialog) {
@@ -2818,13 +2817,16 @@ function toast(t) {
   }
 
   x.textContent = t;
-
   x.classList.add('show');
 
   clearTimeout(window.__toast);
 
   window.__toast = setTimeout(() => {
     x.classList.remove('show');
+
+    if (x.parentElement !== document.body) {
+      document.body.appendChild(x);
+    }
   }, 1800);
 }
 
