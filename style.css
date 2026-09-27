@@ -1542,44 +1542,50 @@ label select:focus {
   }
 
 
-    /* 手机端日历适配 */
-  .calendar-right {
-    padding-left: 6px;
-    padding-right: 6px;
-  }
+  /* 手机端日历适配 */
+.calendar-right {
+  padding-left: 4px;
+  padding-right: 4px;
+}
 
-  .calendar {
-    gap: 2px;
-  }
+.calendar {
+  gap: 1px;
+}
 
-  .calendar .weekday {
-    padding: 3px 0 5px;
-    font-size: 12px;
-  }
+.calendar .weekday {
+  padding: 3px 0 5px;
+  font-size: 11px;
+}
 
-  .calendar .day {
-    width: 30px;
-    height: 30px;
-    font-size: 14px;
-  }
+.calendar .day {
+  width: 27px;
+  height: 27px;
+  font-size: 14px;
+}
 
-  .calendar-nav {
-    grid-template-columns: 30px auto 30px auto;
-    column-gap: 6px;
-  }
+/* 手机端顶部导航 */
+.calendar-nav {
+  grid-template-columns: 24px auto 24px auto;
+  column-gap: 4px;
+}
 
-  .calendar-nav button {
-    width: 30px;
-    height: 30px;
-    font-size: 23px;
-    line-height: 30px;
-  }
+.calendar-nav-title {
+  white-space: nowrap;
+  font-size: 15px;
+}
 
-  .calendar-today,
-  .calendar-nav .calendar-today {
-    padding: 3px 5px;
-    font-size: 10px;
-  }
+.calendar-nav button {
+  width: 24px;
+  height: 28px;
+  font-size: 21px;
+  line-height: 28px;
+}
+
+.calendar-today,
+.calendar-nav .calendar-today {
+  padding: 3px 4px;
+  font-size: 10px;
+}
 
   
 }
