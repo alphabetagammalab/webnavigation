@@ -394,6 +394,7 @@ const defaultSites = [
     'PNAS',
     'https://www.pnas.org',
     'https://www.pnas.org/favicon.ico'
+    './assets/favicon.ico'
   ),
 
   site('Cloudflare', 'https://www.cloudflare.com'),
