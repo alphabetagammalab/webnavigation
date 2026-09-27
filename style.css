@@ -1540,6 +1540,48 @@ label select:focus {
     grid-template-columns: repeat(3, 1fr);
     gap: 15px 8px;
   }
+
+
+    /* 手机端日历适配 */
+  .calendar-right {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .calendar {
+    gap: 2px;
+  }
+
+  .calendar .weekday {
+    padding: 3px 0 5px;
+    font-size: 12px;
+  }
+
+  .calendar .day {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+
+  .calendar-nav {
+    grid-template-columns: 30px auto 30px auto;
+    column-gap: 6px;
+  }
+
+  .calendar-nav button {
+    width: 30px;
+    height: 30px;
+    font-size: 23px;
+    line-height: 30px;
+  }
+
+  .calendar-today,
+  .calendar-nav .calendar-today {
+    padding: 3px 5px;
+    font-size: 10px;
+  }
+
+  
 }
 
 
