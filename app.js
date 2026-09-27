@@ -535,7 +535,8 @@ function localFavicon(url) {
 
     const name = u.hostname
       .toLowerCase()
-      .replace(/^www\./, '');
+      .replace(/^www\./, '')
+      .split('.')[0];
 
     return [
       `./assets/${name}.ico`,
