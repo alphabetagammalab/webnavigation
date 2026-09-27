@@ -383,19 +383,8 @@ const defaultSites = [
   site('GitHub', 'https://github.com'),
   site('ChatGPT', 'https://chatgpt.com'),
   site('Google Scholar', 'https://scholar.google.com'),
-
-  site(
-    'Nature',
-    'https://www.nature.com',
-    'https://www.nature.com/static/images/favicons/nature/favicon-48x48-b52890008c.png'
-  ),
-
-  site(
-    'PNAS',
-    'https://www.pnas.org',
-    './assets/pnas.ico'
-  ),
-
+  site('Nature', 'https://www.nature.com'),
+  site('PNAS', 'https://www.pnas.org'),
   site('Cloudflare', 'https://www.cloudflare.com'),
   site('Wikipedia', 'https://www.wikipedia.org')
 ];
