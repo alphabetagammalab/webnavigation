@@ -393,7 +393,7 @@ const defaultSites = [
   site(
     'PNAS',
     'https://www.pnas.org',
-    'https://www.pnas.org/pb-assets/images/Logos/header-logo/logo-1624644560537.svg'
+    'https://www.pnas.org/favicon.ico'
   ),
 
   site('Cloudflare', 'https://www.cloudflare.com'),
