@@ -2809,30 +2809,23 @@ function tick() {
 */
 
 function toast(t) {
-  const x =
-    document.querySelector(
-      '#toast'
-    );
+  const x = document.querySelector('#toast');
 
-  x.textContent =
-    t;
+  const openDialog = document.querySelector('dialog[open]');
 
-  x.classList.add(
-    'show'
-  );
+  if (openDialog && x.parentElement !== openDialog) {
+    openDialog.appendChild(x);
+  }
 
-  clearTimeout(
-    window.__toast
-  );
+  x.textContent = t;
 
-  window.__toast =
-    setTimeout(
-      () =>
-        x.classList.remove(
-          'show'
-        ),
-      1800
-    );
+  x.classList.add('show');
+
+  clearTimeout(window.__toast);
+
+  window.__toast = setTimeout(() => {
+    x.classList.remove('show');
+  }, 1800);
 }
 
 function dclose(id) {
