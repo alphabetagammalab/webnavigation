@@ -383,8 +383,19 @@ const defaultSites = [
   site('GitHub', 'https://github.com'),
   site('ChatGPT', 'https://chatgpt.com'),
   site('Google Scholar', 'https://scholar.google.com'),
-  site('Nature', 'https://www.nature.com'),
-  site('PNAS', 'https://www.pnas.org'),
+
+  site(
+    'Nature',
+    'https://www.nature.com',
+    'https://www.nature.com/static/images/favicons/nature/favicon-48x48-b52890008c.png'
+  ),
+
+  site(
+    'PNAS',
+    'https://www.pnas.org',
+    'https://www.pnas.org/favicon.ico'
+  ),
+
   site('Cloudflare', 'https://www.cloudflare.com'),
   site('Wikipedia', 'https://www.wikipedia.org')
 ];
@@ -604,6 +615,7 @@ function render(){
   initSortable(root);
 }
 
+
 function createCard(i) {
   const card =
     document.createElement('article');
@@ -622,16 +634,24 @@ function createCard(i) {
     const icons =
       children
         .map(ch => {
-          const src =
-            ch.icon ||
-            favicon(ch.url);
+          const iconList =
+            ch.icon
+              ? [ch.icon]
+              : favicon(ch.url);
+
+          const first =
+            iconList[0] || '';
 
           return `
             <img
               class="favicon"
               alt=""
-              src="${src}"
+              src="${first}"
               data-url="${ch.url}"
+              data-icons="${encodeURIComponent(
+                JSON.stringify(iconList)
+              )}"
+              data-icon-index="0"
             >
           `;
         })
@@ -650,6 +670,32 @@ function createCard(i) {
       )
       .forEach(img => {
         img.onerror = () => {
+          try {
+            const icons =
+              JSON.parse(
+                decodeURIComponent(
+                  img.dataset.icons || '[]'
+                )
+              );
+
+            let index =
+              Number(
+                img.dataset.iconIndex || 0
+              );
+
+            index++;
+
+            if (index < icons.length) {
+              img.dataset.iconIndex =
+                String(index);
+
+              img.src =
+                icons[index];
+
+              return;
+            }
+          } catch {}
+
           img.style.visibility =
             'hidden';
         };
@@ -669,38 +715,38 @@ function createCard(i) {
       `${siteIconHtml(i)}<div class="site-name"></div>`;
 
     const img =
-  card.querySelector('.favicon');
+      card.querySelector('.favicon');
 
-img.onerror = () => {
-  try {
-    const icons =
-      JSON.parse(
-        decodeURIComponent(
-          img.dataset.icons || '[]'
-        )
-      );
+    img.onerror = () => {
+      try {
+        const icons =
+          JSON.parse(
+            decodeURIComponent(
+              img.dataset.icons || '[]'
+            )
+          );
 
-    let index =
-      Number(
-        img.dataset.iconIndex || 0
-      );
+        let index =
+          Number(
+            img.dataset.iconIndex || 0
+          );
 
-    index++;
+        index++;
 
-    if (index < icons.length) {
-      img.dataset.iconIndex =
-        String(index);
+        if (index < icons.length) {
+          img.dataset.iconIndex =
+            String(index);
 
-      img.src =
-        icons[index];
+          img.src =
+            icons[index];
 
-      return;
-    }
-  } catch {}
+          return;
+        }
+      } catch {}
 
-  img.style.visibility =
-    'hidden';
-};
+      img.style.visibility =
+        'hidden';
+    };
 
     card.querySelector(
       '.site-name'
