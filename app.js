@@ -511,12 +511,19 @@ function save() {
   );
 }
 
-function favicon(url){
-  try{
+function favicon(url) {
+  try {
     const u = new URL(url);
-    return u.origin + '/favicon.ico';
-  }catch{
-    return '';
+
+    return [
+      u.origin + '/favicon.ico',
+      u.origin + '/favicon.png',
+      u.origin + '/favicon.svg',
+      u.origin + '/apple-touch-icon.png',
+      u.origin + '/apple-touch-icon-precomposed.png'
+    ];
+  } catch {
+    return [];
   }
 }
 
@@ -557,14 +564,23 @@ function siteIconHtml(i) {
 */
 
 function siteIconHtml(i) {
-  const src = i.icon || favicon(i.url);
+  const icons = i.icon
+    ? [i.icon]
+    : favicon(i.url);
+
+  const first =
+    icons[0] || '';
 
   return `
     <img
       class="favicon"
       alt=""
-      src="${src}"
+      src="${first}"
       data-url="${i.url}"
+      data-icons="${encodeURIComponent(
+        JSON.stringify(icons)
+      )}"
+      data-icon-index="0"
     >
   `;
 }
@@ -653,12 +669,38 @@ function createCard(i) {
       `${siteIconHtml(i)}<div class="site-name"></div>`;
 
     const img =
-      card.querySelector('.favicon');
+  card.querySelector('.favicon');
 
-    img.onerror = () => {
-      img.style.visibility =
-        'hidden';
-    };
+img.onerror = () => {
+  try {
+    const icons =
+      JSON.parse(
+        decodeURIComponent(
+          img.dataset.icons || '[]'
+        )
+      );
+
+    let index =
+      Number(
+        img.dataset.iconIndex || 0
+      );
+
+    index++;
+
+    if (index < icons.length) {
+      img.dataset.iconIndex =
+        String(index);
+
+      img.src =
+        icons[index];
+
+      return;
+    }
+  } catch {}
+
+  img.style.visibility =
+    'hidden';
+};
 
     card.querySelector(
       '.site-name'
