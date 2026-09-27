@@ -610,6 +610,50 @@ button {
   box-shadow: 0 10px 26px rgba(40, 52, 70, 0.14);
 }
 
+.favicon-wrap {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 auto;
+}
+
+.favicon-wrap .favicon-initial {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+  padding: 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 15px;
+
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow: 0 7px 20px rgba(40, 52, 70, 0.1);
+
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  pointer-events: none;
+
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.site-card:hover .favicon-wrap .favicon-initial {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 10px 26px rgba(40, 52, 70, 0.14);
+}
+
 /* 聚合目标提示 */
 /* macOS 风格聚合吸附效果 */
 
