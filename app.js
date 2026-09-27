@@ -539,8 +539,7 @@ function favicon(url) {
       u.origin + '/favicon.ico',
       u.origin + '/favicon.png',
       u.origin + '/favicon.svg',
-      u.origin + '/apple-touch-icon.png',
-      u.origin + '/apple-touch-icon-precomposed.png'
+      u.origin + '/apple-touch-icon.png'
     ];
   } catch {
     return [];
