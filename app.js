@@ -393,7 +393,7 @@ const defaultSites = [
   site(
     'PNAS',
     'https://www.pnas.org',
-    'https://www.pnas.org/favicon.ico'
+    'https://www.pnas.org/pb-assets/images/Logos/header-logo/logo-1624644560537.svg'
   ),
 
   site('Cloudflare', 'https://www.cloudflare.com'),
@@ -696,8 +696,8 @@ function createCard(i) {
             }
           } catch {}
 
-          img.style.visibility =
-            'hidden';
+          img.removeAttribute('src');
+          
         };
       });
 
@@ -744,8 +744,8 @@ function createCard(i) {
         }
       } catch {}
 
-      img.style.visibility =
-        'hidden';
+      img.removeAttribute('src');
+      
     };
 
     card.querySelector(
