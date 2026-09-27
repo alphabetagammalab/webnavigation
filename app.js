@@ -393,7 +393,6 @@ const defaultSites = [
   site(
     'PNAS',
     'https://www.pnas.org',
-    'https://www.pnas.org/favicon.ico'
     './assets/favicon.ico'
   ),
 
