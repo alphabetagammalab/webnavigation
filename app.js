@@ -552,17 +552,32 @@ function localFavicon(url) {
   }
 }
 
+const LOCAL_FAVICONS = {
+  'nature.com': './assets/nature.ico',
+  'chatgpt.com': './assets/chatgpt.ico',
+  'pnas.org': './assets/pnas.ico'
+};
+
 function favicon(url) {
   try {
     const u = new URL(url);
+
+    const domain = u.hostname
+      .toLowerCase()
+      .replace(/^www\./, '');
+
+    const local =
+      LOCAL_FAVICONS[domain];
+
+    if (local) {
+      return [local];
+    }
 
     return [
       u.origin + '/favicon.ico',
       u.origin + '/favicon.png',
       u.origin + '/favicon.svg',
-      u.origin + '/apple-touch-icon.png',
-
-      ...localFavicon(url)
+      u.origin + '/apple-touch-icon.png'
     ];
   } catch {
     return [];
