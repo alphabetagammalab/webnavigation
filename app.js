@@ -533,24 +533,6 @@ function siteInitial(name) {
   return first;
 }
 
-function localFavicon(url) {
-  try {
-    const u = new URL(url);
-
-    const name = u.hostname
-      .toLowerCase()
-      .replace(/^www\./, '')
-      .split('.')[0];
-
-    return [
-      `./assets/${name}.ico`,
-      `./assets/${name}.png`,
-      `./assets/${name}.svg`
-    ];
-  } catch {
-    return [];
-  }
-}
 
 const LOCAL_FAVICONS = {
   'nature.com': './assets/nature.ico',
