@@ -330,24 +330,28 @@ const ENGINES = {
   google: {
     name: 'Google',
     short: 'G',
+    icon: './icons/google.svg',
     url: 'https://www.google.com/search?q=',
     placeholder:'Search with Google or enter address'
   },
   bing: {
     name: 'Bing',
     short: 'B',
+    icon: './icons/bing.svg',
     url: 'https://www.bing.com/search?q=',
     placeholder:'Search with Bing or enter address'
   },
   baidu: {
     name: 'Baidu',
     short: '百',
+    icon: './icons/baidu.svg',
     url: 'https://www.baidu.com/s?wd=',
     placeholder:'使用百度搜索或输入网址'
   },
   duck: {
     name: 'DuckDuckGo',
     short: 'D',
+    icon: './icons/duckduckgo.svg',
     url: 'https://duckduckgo.com/?q=',
     placeholder:'Search with DuckDuckGo or enter address'
   }
@@ -2568,6 +2572,7 @@ document.querySelector('#searchBtn').addEventListener('click', () => {
 });
 /*搜索框添加搜索按钮*/
 
+/*
 function engineIconUrl(key) {
   const domains = {
     google: 'google.com',
@@ -2578,13 +2583,14 @@ function engineIconUrl(key) {
 
   return `https://www.google.com/s2/favicons?sz=64&domain=${domains[key] || 'google.com'}`;
 }
+*/
 
 function renderEngines(){
   const icon=document.querySelector('#engineIcon');
   const input=document.querySelector('#search');
   const current=ENGINES[state.engine]||ENGINES.google;
 
-  icon.src=engineIconUrl(state.engine);
+  icon.src=current.icon;
   icon.alt=current.name;
   icon.title=current.name;
 
