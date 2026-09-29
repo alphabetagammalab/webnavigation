@@ -2120,9 +2120,11 @@ document
       }
       */
       const icon =
-        document.querySelector(
-          '#iconInput'
-        ).value.trim();
+        normalizeUrl(
+          document.querySelector(
+            '#iconInput'
+          ).value
+        );
 
       if (!name) {
         return;
