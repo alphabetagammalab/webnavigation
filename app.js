@@ -1676,17 +1676,11 @@ function renderCollectionItems(folder) {
           el.querySelector(
             '.favicon'
           );
-
-        img.onerror = () => {
-          if (ch.icon) {
-            img.src =
-              favicon(ch.url);
-          } else {
-            img.style.visibility =
-              'hidden';
-          }
-        };
-
+        
+        if (img) {
+          setupFavicon(img);
+        }
+        
         el.onclick =
           () => location.href = ch.url;
       } else {
