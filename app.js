@@ -1680,6 +1680,7 @@ function renderCollectionItems(folder) {
         if (img) {
           setupFavicon(img);
         }
+
         
         el.onclick =
           () => location.href = ch.url;
