@@ -77,16 +77,8 @@ button {
     );
 }
 
-.custom-background .background {
+.custom-background:not(.dark) .background {
   background: none;
-}
-
-.dark.custom-background .background {
-  background: none;
-}
-
-.dark.custom-background body {
-  background: var(--custom-bg);
 }
 
 .app {
