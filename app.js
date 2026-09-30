@@ -630,16 +630,23 @@ function applyTheme() {
     state.showDate ? '' : 'none';
 
   if (state.backgroundColor) {
-  document.documentElement.style.setProperty(
-    '--custom-bg',
-    state.backgroundColor
-  );
-} else {
-  document.documentElement.style.removeProperty(
-    '--custom-bg'
-  );
-}
-  
+    document.documentElement.style.setProperty(
+      '--custom-bg',
+      state.backgroundColor
+    );
+
+    document.documentElement.classList.add(
+      'custom-background'
+    );
+  } else {
+    document.documentElement.style.removeProperty(
+      '--custom-bg'
+    );
+
+    document.documentElement.classList.remove(
+      'custom-background'
+    );
+  }
 }
 
 /*
@@ -3110,6 +3117,10 @@ document.querySelector(
       '--custom-bg',
       e.target.value
     );
+
+    document.documentElement.classList.add(
+      'custom-background'
+    );
   }
 );
 
@@ -3122,6 +3133,10 @@ document.querySelector(
 
   document.documentElement.style.removeProperty(
     '--custom-bg'
+  );
+
+  document.documentElement.classList.remove(
+    'custom-background'
   );
 };
 
