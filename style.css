@@ -2170,3 +2170,47 @@ label select:focus {
       cubic-bezier(.2, .8, .2, 1),
     opacity 0.16s ease;
 }
+
+
+
+/* 背景颜色设置 */
+.color-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.color-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#backgroundColor {
+  width: 42px;
+  height: 30px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+#resetBackgroundColor {
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#resetBackgroundColor:hover {
+  background: var(--hover);
+}
