@@ -73,6 +73,20 @@
       <div class="dialog-head"><h2>设置</h2><button type="button" class="close" data-close="settingsDialog">×</button></div>
       <label>搜索引擎<select id="settingsEngine"></select></label>
       <label>主题<select id="themeSelect"><option value="auto">跟随系统</option><option value="dark">深色</option><option value="light">浅色</option></select></label>
+      <label class="color-setting">
+  <span>背景颜色</span>
+  <span class="color-control">
+    <input
+      type="color"
+      id="backgroundColor"
+      value="#ffffff"
+    >
+    <button
+      type="button"
+      id="resetBackgroundColor"
+    >恢复默认</button>
+  </span>
+</label>
       <label class="check"><input type="checkbox" id="showDate"> 显示日期</label>
       
       <!--
