@@ -81,6 +81,10 @@ button {
   background: none;
 }
 
+.dark.custom-background body {
+  background: var(--custom-bg);
+}
+
 .app {
   width: min(1180px, calc(100% - 42px));
   margin: auto;
