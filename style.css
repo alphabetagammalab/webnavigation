@@ -2191,24 +2191,30 @@ label select:focus {
   width: 42px;
   height: 30px;
   padding: 2px;
+  margin: 0;
   border: 1px solid var(--border);
   border-radius: 7px;
   background: transparent;
   cursor: pointer;
   box-sizing: border-box;
+  display: block;
 }
 
 #resetBackgroundColor {
+  width: auto;
   height: 30px;
   padding: 0 10px;
+  margin: 0;
   border: 1px solid var(--border);
   border-radius: 7px;
   background: var(--panel);
   color: var(--text);
   font-size: 12px;
-  line-height: 1;
+  line-height: 28px;
   cursor: pointer;
   white-space: nowrap;
+  box-sizing: border-box;
+  display: block;
 }
 
 #resetBackgroundColor:hover {
