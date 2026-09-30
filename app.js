@@ -398,8 +398,19 @@ const defaultState = () => ({
   engine: 'google',
   theme: 'auto',
   showDate: true,
+  backgroundColor: '',
   sites: defaultSites
 });
+
+/*
+const defaultState = () => ({
+  version: 3,
+  engine: 'google',
+  theme: 'auto',
+  showDate: true,
+  sites: defaultSites
+});
+*/
 
 let state = loadState();
 
@@ -491,6 +502,28 @@ function sanitize(x) {
       .filter(Boolean);
   }
 
+
+  return {
+  version: 3,
+  engine: ENGINES[x.engine]
+    ? x.engine
+    : 'google',
+  theme: ['auto', 'dark', 'light'].includes(x.theme)
+    ? x.theme
+    : 'auto',
+  showDate: x.showDate !== false,
+  backgroundColor:
+    typeof x.backgroundColor === 'string' &&
+    /^#[0-9a-fA-F]{6}$/.test(x.backgroundColor)
+      ? x.backgroundColor
+      : '',
+  sites: sites.filter(
+    i => i.type === 'folder'
+      ? i.children.length
+      : i.url
+  )
+};
+  /*
   return {
     version: 3,
     engine: ENGINES[x.engine]
@@ -506,6 +539,7 @@ function sanitize(x) {
         : i.url
     )
   };
+  */
 }
 
 function save() {
@@ -594,8 +628,34 @@ function applyTheme() {
     '#date'
   ).style.display =
     state.showDate ? '' : 'none';
+
+  document.documentElement.style.setProperty(
+    '--custom-bg',
+    state.backgroundColor || ''
+  );
 }
 
+/*
+function applyTheme() {
+  let dark = state.theme === 'dark';
+
+  if (state.theme === 'auto') {
+    dark = matchMedia(
+      '(prefers-color-scheme: dark)'
+    ).matches;
+  }
+
+  document.documentElement.classList.toggle(
+    'dark',
+    dark
+  );
+
+  document.querySelector(
+    '#date'
+  ).style.display =
+    state.showDate ? '' : 'none';
+}
+*/
 /*
 function siteIconHtml(i) {
   return `<img class="favicon" alt="" src="${i.icon || favicon(i.url)}">`;
