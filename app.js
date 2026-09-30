@@ -3074,10 +3074,22 @@ document
           '#showDate'
         ).checked;
 
-      state.backgroundColor =
+      const backgroundColor =
         document.querySelector(
           '#backgroundColor'
         ).value;
+
+      if (
+        document.documentElement.style.getPropertyValue(
+          '--custom-bg'
+        )
+      ) {
+        state.backgroundColor =
+          backgroundColor;
+      } else {
+        state.backgroundColor =
+          '';
+      }
 
       save();
 
@@ -3106,13 +3118,12 @@ document.querySelector(
 ).onclick = () => {
   document.querySelector(
     '#backgroundColor'
-  ).value = '';
+  ).value = '#ffffff';
 
   document.documentElement.style.removeProperty(
     '--custom-bg'
   );
 };
-
 
 
 document.querySelector(
