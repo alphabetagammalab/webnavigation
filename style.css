@@ -45,7 +45,8 @@ body {
 
 body {
   min-height: 100vh;
-  background: var(--bg);
+  /* background: var(--bg); */
+  background: var(--custom-bg, var(--bg));
   overflow-x: hidden;
 }
 
