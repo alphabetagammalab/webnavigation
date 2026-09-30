@@ -2229,9 +2229,8 @@ label select:focus {
 .background-presets {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 9px;
-  margin-left: auto;
+  gap: 7px;
+  margin: 0;
 }
 
 .background-preset {
