@@ -2920,6 +2920,8 @@ document.querySelector(
 ).onclick =
   () => openEditor();
 */
+
+/*
 document.querySelector(
   '#settingsBtn'
 ).onclick = () => {
@@ -2951,6 +2953,11 @@ document.querySelector(
     state.showDate;
 
   document.querySelector(
+  '#backgroundColor'
+).value =
+  state.backgroundColor || '#ffffff';
+
+  document.querySelector(
     '#settingsDialog'
   ).showModal();
 };
@@ -2979,6 +2986,11 @@ document
           '#showDate'
         ).checked;
 
+      state.backgroundColor =
+        document.querySelector(
+          '#backgroundColor'
+        ).value;
+
       save();
 
       document.querySelector(
@@ -2988,6 +3000,114 @@ document
       render();
     }
   );
+
+*/
+
+document.querySelector(
+  '#settingsBtn'
+).onclick = () => {
+  document.querySelector(
+    '#settingsEngine'
+  ).innerHTML =
+    Object.entries(
+      ENGINES
+    )
+      .map(
+        ([k, v]) =>
+          `<option value="${k}">${v.name}</option>`
+      )
+      .join('');
+
+  document.querySelector(
+    '#settingsEngine'
+  ).value =
+    state.engine;
+
+  document.querySelector(
+    '#themeSelect'
+  ).value =
+    state.theme;
+
+  document.querySelector(
+    '#showDate'
+  ).checked =
+    state.showDate;
+
+  document.querySelector(
+    '#backgroundColor'
+  ).value =
+    state.backgroundColor || '#ffffff';
+
+  document.querySelector(
+    '#settingsDialog'
+  ).showModal();
+};
+
+document
+  .querySelector(
+    '#settingsForm'
+  )
+  .addEventListener(
+    'submit',
+    e => {
+      e.preventDefault();
+
+      state.engine =
+        document.querySelector(
+          '#settingsEngine'
+        ).value;
+
+      state.theme =
+        document.querySelector(
+          '#themeSelect'
+        ).value;
+
+      state.showDate =
+        document.querySelector(
+          '#showDate'
+        ).checked;
+
+      state.backgroundColor =
+        document.querySelector(
+          '#backgroundColor'
+        ).value;
+
+      save();
+
+      document.querySelector(
+        '#settingsDialog'
+      ).close();
+
+      render();
+    }
+  );
+
+document.querySelector(
+  '#backgroundColor'
+).addEventListener(
+  'input',
+  e => {
+    document.documentElement.style.setProperty(
+      '--custom-bg',
+      e.target.value
+    );
+  }
+);
+
+document.querySelector(
+  '#resetBackgroundColor'
+).onclick = () => {
+  document.querySelector(
+    '#backgroundColor'
+  ).value = '';
+
+  document.documentElement.style.setProperty(
+    '--custom-bg',
+    ''
+  );
+};
+
+
 
 document.querySelector(
   '#exportBtn'
