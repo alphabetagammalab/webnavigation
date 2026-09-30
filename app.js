@@ -629,10 +629,17 @@ function applyTheme() {
   ).style.display =
     state.showDate ? '' : 'none';
 
+  if (state.backgroundColor) {
   document.documentElement.style.setProperty(
     '--custom-bg',
-    state.backgroundColor || ''
+    state.backgroundColor
   );
+} else {
+  document.documentElement.style.removeProperty(
+    '--custom-bg'
+  );
+}
+  
 }
 
 /*
@@ -3101,9 +3108,8 @@ document.querySelector(
     '#backgroundColor'
   ).value = '';
 
-  document.documentElement.style.setProperty(
-    '--custom-bg',
-    ''
+  document.documentElement.style.removeProperty(
+    '--custom-bg'
   );
 };
 
