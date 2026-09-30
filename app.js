@@ -3141,6 +3141,31 @@ document.querySelector(
 };
 
 
+document.querySelectorAll(
+  '.background-preset'
+).forEach(
+  preset => {
+    preset.onclick = () => {
+      const color =
+        preset.dataset.color;
+
+      document.querySelector(
+        '#backgroundColor'
+      ).value = color;
+
+      document.documentElement.style.setProperty(
+        '--custom-bg',
+        color
+      );
+
+      document.documentElement.classList.add(
+        'custom-background'
+      );
+    };
+  }
+);
+
+
 document.querySelector(
   '#exportBtn'
 ).onclick = () => {
