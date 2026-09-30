@@ -75,18 +75,29 @@
       <label>主题<select id="themeSelect"><option value="auto">跟随系统</option><option value="dark">深色</option><option value="light">浅色</option></select></label>
       <label class="color-setting">
   <span>背景颜色</span>
+
   <span class="color-control">
     <input
       type="color"
       id="backgroundColor"
       value="#ffffff"
     >
+
     <button
       type="button"
       id="resetBackgroundColor"
     >恢复默认</button>
   </span>
 </label>
+
+<div class="background-presets">
+  <button type="button" class="background-preset" data-color="#F5F5F5" style="--preset-color:#F5F5F5"></button>
+  <button type="button" class="background-preset" data-color="#EAF2FF" style="--preset-color:#EAF2FF"></button>
+  <button type="button" class="background-preset" data-color="#EAF8F0" style="--preset-color:#EAF8F0"></button>
+  <button type="button" class="background-preset" data-color="#FFF5E6" style="--preset-color:#FFF5E6"></button>
+  <button type="button" class="background-preset" data-color="#F5EEFF" style="--preset-color:#F5EEFF"></button>
+  <button type="button" class="background-preset" data-color="#FFF0F3" style="--preset-color:#FFF0F3"></button>
+</div>
       <label class="check"><input type="checkbox" id="showDate"> 显示日期</label>
       
       <!--
