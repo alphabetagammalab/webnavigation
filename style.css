@@ -77,6 +77,7 @@ button {
     );
 }
 
+/* 浅色模式使用自定义背景时，关闭浅色渐变 */
 .custom-background:not(.dark) .background {
   background: none;
 }
@@ -1332,6 +1333,11 @@ label select:focus {
       rgba(70, 105, 175, 0.12),
       transparent 30%
     );
+}
+
+/* 深色模式始终使用原来的主题背景色 */
+.dark body {
+  background: var(--bg);
 }
 
 .dark .primary {
