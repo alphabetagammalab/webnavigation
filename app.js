@@ -382,6 +382,7 @@ function normalizeUrl(url){
 /* 搜索历史显示相关 */
 
 const defaultSites = [
+  site('MPIAB', 'https://www.ab.mpg.de'),
   site('Google', 'https://www.google.com'),
   site('YouTube', 'https://www.youtube.com'),
   site('GitHub', 'https://github.com'),
