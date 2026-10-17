@@ -11,8 +11,10 @@
   --danger: #e05252;
   --radius: 22px;
 */
-
-  --bg:#e7eaee;
+  /*
+  --bg:#e7eaee;#D4E7F6
+  */
+  --bg:#d4e7f6;
   --text:#18202a;
   --muted:#7c8794;
   --card:rgba(255,255,255,.62);
