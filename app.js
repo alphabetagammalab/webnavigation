@@ -344,7 +344,8 @@ const ENGINES = {
   baidu: {
     name: 'Baidu',
     short: '百',
-    icon: './icons/baidu.svg',
+    // icon: './icons/baidu.svg',
+    icon: 'https://www.baidu.com/favicon.ico‘,
     url: 'https://www.baidu.com/s?wd=',
     placeholder:'使用百度搜索或输入网址'
   },
