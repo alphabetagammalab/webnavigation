@@ -583,8 +583,16 @@ button {
     opacity 0.16s ease;
 }
 
+/*
 .site-card:hover {
   transform: translateY(-2px);
+  background: transparent;
+  box-shadow: none;
+  opacity: 1;
+}
+*/
+.site-card:hover {
+  transform: none;
   background: transparent;
   box-shadow: none;
   opacity: 1;
@@ -609,12 +617,16 @@ button {
     box-shadow 0.16s ease;
 }
 
+/*
 .site-card:hover .favicon {
   transform: translateY(-2px) scale(1.04);
   box-shadow: 0 10px 26px rgba(40, 52, 70, 0.14);
 }
-
-
+*/
+.site-card:hover .favicon {
+  transform: scale(1.08);
+  box-shadow: 0 10px 26px rgba(40, 52, 70, 0.14);
+}
 
 .favicon-wrap {
   position: relative;
@@ -663,11 +675,16 @@ button {
     box-shadow 0.16s ease;
 }
 
+/*
 .site-card:hover .favicon-wrap .favicon-initial {
   transform: translateY(-2px) scale(1.04);
   box-shadow: 0 10px 26px rgba(40, 52, 70, 0.14);
 }
-
+*/
+.site-card:hover .favicon-wrap .favicon-initial {
+  transform: scale(1.08);
+  box-shadow: 0 10px 26px rgba(40, 52, 70, 0.14);
+}
 
 
 /* 聚合目标提示 */
